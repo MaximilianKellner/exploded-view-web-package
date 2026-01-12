@@ -5,15 +5,11 @@ import { AnimationHandler } from './modules/animation-handler.js';
 import { HighlightHandler } from './modules/highlight-handler.js';
 import { ClickHandler } from './modules/click-handler.js';
 import { CameraHandler } from './modules/camera-handler.js';
-import { UIHandler } from './modules/ui-Handler.js';
 import { StatsHandler } from './modules/ui-stats-handler.js';
 import { defaultOptions } from './config/default-options.js';
 import { deepMerge } from './utils/deep-merge.js';
 
-// InfoElement Modules
-import { CardHandler } from './modules/info-elements/card-handler.js';
-import { PointerHandler } from './modules/info-elements/pointer-handler.js';
-import { AttachedCardHandler } from './modules/info-elements/attached-card-handler.js';
+// UIHandler und InfoElement-Handler werden dynamisch geladen für Code-Splitting
 
 import './css/main.css';
 // Assets referenzieren, sodass der Bundler sie mitnimmt
@@ -48,7 +44,7 @@ class ExplodedViewer {
             this._setupRenderer();
             this._setupCamera();
             this._setupLights();
-            this._setupHandlers();
+            await this._setupHandlers();
 
             await this._loadModel();
             this._loadCoordinateSystem();
@@ -134,26 +130,34 @@ class ExplodedViewer {
         window.addEventListener('resize', this._resizeListener);
     }
 
-    _setupHandlers() {
+    async _setupHandlers() {
         this.animationHandler = new AnimationHandler(this.scene, this.config, this.renderer);
         
-        // Handler je nach Infoelement Typ auswählen
+        // Handler je nach Infoelement Typ dynamisch laden (Code-Splitting)
         let handlerType = this.config.infoElementType || 'card';
         switch (handlerType) {
-            case 'pointer':
+            case 'pointer': {
+                const { PointerHandler } = await import('./modules/info-elements/pointer-handler.js');
                 this.infoElementHandler = new PointerHandler(this.camera, this.config.pointerConfig);
                 console.log('pointer');
                 break;
-            case 'card':
+            }
+            case 'card': {
+                const { CardHandler } = await import('./modules/info-elements/card-handler.js');
                 this.infoElementHandler = new CardHandler();
                 console.log('card');
                 break;
-            case 'attached-card':
+            }
+            case 'attached-card': {
+                const { AttachedCardHandler } = await import('./modules/info-elements/attached-card-handler.js');
                 this.infoElementHandler = new AttachedCardHandler();
                 console.log('attached-card');
                 break;
-            default:
+            }
+            default: {
+                const { CardHandler } = await import('./modules/info-elements/card-handler.js');
                 this.infoElementHandler = new CardHandler();
+            }
         }
 
         this.infoElementHandler.initialize(this.config.cardDataPath, this.config);
@@ -164,11 +168,15 @@ class ExplodedViewer {
         this.clickHandler = new ClickHandler(this.camera, this.scene, this.infoElementHandler, this.renderer, this.highlightHandler);
         this.clickHandler.initialize();
 
-        this.uiHandler = new UIHandler();
-        this.uiHandler.initialize(this.config, this.lights, this.scene, this.camera, this.controls, this.cameraHandler, this.renderer);
-        this.uiHandler.setAnimationHandler(this.animationHandler);
-        this.uiHandler.setCameraHandler(this.cameraHandler);
-        this.uiHandler.setHighlightHandler(this.highlightHandler);
+        // UIHandler nur laden wenn Debug-UI aktiviert ist (Code-Splitting)
+        if (this.config.showDebugUI !== false) {
+            const { UIHandler } = await import('./modules/ui-Handler.js');
+            this.uiHandler = new UIHandler();
+            this.uiHandler.initialize(this.config, this.lights, this.scene, this.camera, this.controls, this.cameraHandler, this.renderer);
+            this.uiHandler.setAnimationHandler(this.animationHandler);
+            this.uiHandler.setCameraHandler(this.cameraHandler);
+            this.uiHandler.setHighlightHandler(this.highlightHandler);
+        }
 
         if (this.config.showStats) {
             this.statsHandler = new StatsHandler();
@@ -256,7 +264,9 @@ class ExplodedViewer {
         });
 
         this.editor.setInfoElementHandler(this.infoElementHandler);
-        this.editor.setUIHandler(this.uiHandler);
+        if (this.uiHandler) {
+            this.editor.setUIHandler(this.uiHandler);
+        }
         this.editor.cameraHandler = this.cameraHandler;
         this.editor.transformHandler = new TransformControlsHandler(this.camera, this.renderer, this.scene);
     }
