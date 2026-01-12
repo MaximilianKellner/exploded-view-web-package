@@ -1,20 +1,21 @@
 import ExplodedViewer from './ExplodedViewer.js';
 
 /**
- * Beispielhaftes Setup des Exploded viewers.
+ * Beispielhaftes Setup des Exploded viewers (Viewer-Demo).
+ * Dies ist die Entry-Point für die Viewer-Demo (index.html)
  */
 
 // Sportwagen
 const sportwagen = {
     sceneConfigPath: '/car/scene-config.json', // Pfad zur Szenenkonfiguration
     modelPath: '/car/911.glb', // Pfad zum explodierbaren .glb Modell
-    //modelPath: '/car/911-with-ground.glb', // Pfad zum explodierbaren .glb Modell
+    modelPath: '/car/911-with-ground.glb', // Pfad zum explodierbaren .glb Modell
     explosionConfigPath: '/car/911-exp-config.json', // Pfad zur Explosions-Konfiguration
     cardDataPath: '/car/911-cards.json', // Pfad zu den Card-Inhalten
     showDebugUI: true,
     showStats: true,
 
-    editMode: true,  // Edit-Mode beim Start
+    editMode: false,
     
     sceneConfig: {
         backgroundColor: "#6480be", //old: 353535 -- blue: 6480be

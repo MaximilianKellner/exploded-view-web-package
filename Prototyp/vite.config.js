@@ -11,11 +11,20 @@ export default defineConfig({
   },
   build: {
     lib: {
-      // Could also be a dictionary or array of multiple entry points
-      entry: resolve(__dirname, 'src/index.js'),
+      // Multi-Entry Build: Separate Bundles für Viewer und Editor
+      entry: {
+        'exploded-viewer': resolve(__dirname, 'src/index.js'),
+        'editor': resolve(__dirname, 'src/editor/onboarding-editor.js')
+      },
       name: 'ExplodedViewer',
       // the proper extensions will be added
-      fileName: 'exploded-viewer',
+      fileName: (format, entryName) => {
+        if (format === 'umd') {
+          return `${entryName}.umd.cjs`;
+        } else if (format === 'es') {
+          return `${entryName}.js`;
+        }
+      }
     },
     rollupOptions: {
       // make sure to externalize deps that shouldn't be bundled
