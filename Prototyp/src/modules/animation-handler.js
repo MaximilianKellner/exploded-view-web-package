@@ -383,6 +383,43 @@ export class AnimationHandler {
         }
     }
 
+    // --- Timeline-Editor Hilfsmethoden ---
+
+    //Gibt den aktuellen Fortschritt als Prozent (0-100) zurück
+    getProgressPercent() {
+        return this.config.animationConfig.expFactor * 100;
+    }
+
+    // Setzt den Fortschritt animiert (0-100%)
+    setProgress(percent) {
+        const factor = Math.max(0, Math.min(100, percent)) / 100;
+        this.setExplosionFactorAnimated(factor);
+    }
+
+    //Springt direkt zu einem Progress-Wert ohne Animation
+    seekToProgress(percent) {
+        const factor = Math.max(0, Math.min(100, percent)) / 100;
+        this.config.animationConfig.expFactor = factor;
+    }
+
+    // Setzt die Gesamtdauer der Animation (ms)
+    setAnimationDuration(durationMs) {
+        if (durationMs > 0) {
+            this.config.animationConfig.animationDuration = durationMs;
+        }
+    }
+
+    // Gibt die aktuelle Zeit basierend auf Progress und Dauer zurück
+    getCurrentTime() {
+        const duration = this.config.animationConfig.animationDuration || 1500;
+        return this.config.animationConfig.expFactor * duration;
+    }
+
+    // Gibt die Gesamtdauer der Animation zurück
+    getTotalDuration() {
+        return this.config.animationConfig.animationDuration || 1500;
+    }
+
     destroy() {
         // Animation stoppen
         if (this.animation) {

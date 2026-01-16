@@ -15,7 +15,7 @@ const sportwagen = {
     showDebugUI: true,
     showStats: true,
 
-    editMode: false,
+    editMode: true,
     
     sceneConfig: {
         backgroundColor: "#6480be", //old: 353535 -- blue: 6480be
