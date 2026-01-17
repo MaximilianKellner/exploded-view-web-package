@@ -1,5 +1,6 @@
 import '../../css/editor-timeline.css';
 import { TimelineDataManager } from './timeline-data-manager.js';
+import { ScrubberController } from './scrubber-controller.js';
 
 export class EditorTimeline {
     constructor(container, animationHandler, explosionConfigPath) {
@@ -8,19 +9,19 @@ export class EditorTimeline {
         this.explosionConfigPath = explosionConfigPath;
         
         this.dataManager = null;
+        this.scrubberController = null;
         this.element = null;
-        this.isDragging = false;
         
         // werden in _cacheDOMElements gesetzt
-        this.playPauseBtn = null;
-        this.currentTimeDisplay = null;
-        this.totalTimeDisplay = null;
         this.timelineColumn = null;
         this.timelineHeader = null;
         this.scrubber = null;
         this.scrubberHead = null;
         this.timeInput = null;
         this.objectsColumn = null;
+        this.playPauseBtn = null;
+        this.startBtn = null;
+        this.endBtn = null;
 
         this._initDataManager();
     }
@@ -135,7 +136,28 @@ export class EditorTimeline {
         
         this.container.appendChild(this.element);
         this._cacheDOMElements();
-        this._setupEventListeners();
+        this._initScrubberController();
+        this._setupKeyframeHandles();
+    }
+    
+    /**
+     * Initialisiert ScrubberController mit allen UI-Elementen
+     */
+    _initScrubberController() {
+        this.scrubberController = new ScrubberController(
+            this.animationHandler,
+            this.dataManager,
+            {
+                timeInput: this.timeInput,
+                scrubber: this.scrubber,
+                scrubberHead: this.scrubberHead,
+                timelineHeader: this.timelineHeader,
+                timelineColumn: this.timelineColumn,
+                playPauseBtn: this.playPauseBtn,
+                startBtn: this.startBtn,
+                endBtn: this.endBtn,
+            }
+        );
     }
     
     // DOM Element Referenzen für bessere Performance
@@ -148,7 +170,7 @@ export class EditorTimeline {
         this.objectsColumn = this.element.querySelector('.objects-column');
         
         // Buttons
-        this.playBtn = this.element.querySelector('#timeline-play-pause');
+        this.playPauseBtn = this.element.querySelector('#timeline-play-pause');
         this.startBtn = this.element.querySelector('#timeline-start');
         this.endBtn = this.element.querySelector('#timeline-end');
     }
@@ -204,7 +226,18 @@ export class EditorTimeline {
         }
     }
 
+    // ScrubberController verwaltet jetzt move scrubber --> Bleibt hier für Keyframe-Handle Interaktion erhalten
     _moveScrubber(e, snap = true) {
+        // Delegiert an ScrubberController (falls dieser initialisiert ist)
+        console.log('-------------- RETURN --------------');
+        if (this.scrubberController) {
+
+            // ScrubberController kümmert sich um Scrubber-Bewegung
+            return;
+        }
+
+        console.log('EditorTimeline: _moveScrubber aufgerufen');
+
         const rect = this.timelineHeader.getBoundingClientRect();
         let x = e.clientX - rect.left;
 
@@ -335,9 +368,20 @@ export class EditorTimeline {
     }
 
     destroy() {
+        // Cleanup ScrubberController
+        if (this.scrubberController) {
+            this.scrubberController.destroy();
+            this.scrubberController = null;
+        }
+
         if (this.element && this.element.parentElement) {
             this.element.parentElement.removeChild(this.element);
         }
+    }
+
+    // Gibt Zugriff auf den ScrubberController für externe Steuerung
+    getScrubberController() {
+        return this.scrubberController;
     }
 }
     
