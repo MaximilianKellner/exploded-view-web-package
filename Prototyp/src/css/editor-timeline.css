@@ -1,0 +1,337 @@
+.timeline-container {
+    display: flex;
+    width: 90vw;
+    max-width: 3500px;
+    min-width: 360px;
+    flex-direction: column;
+    align-items: center;
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+
+    transition: width 0.05s ease-in-out;
+
+    button {
+        background-color: var(--c-button);
+        border-radius: var(--r-radius-button);
+        height: 24px;
+
+        align-items: center;
+        justify-content: center;
+        display: flex;
+
+        &:hover {
+            background-color: var(--c-button-highlight);
+        }
+
+        img {
+            filter: invert(var(--invert-value));
+            width: 20px;
+            height: 20px;
+            padding: 1px 4px;
+        }
+    }
+}
+
+@media  (max-width: 1300px) {
+    .timeline-container {
+        width: 100%;
+    }
+    
+}
+
+.top-bar {
+    background-color: var(--c-lightest);
+    border: 2px solid var(--c-border);
+    box-sizing: border-box;
+    position: relative;
+    display: flex;
+    width: 100%;
+    align-items: center;
+    border-radius: 7px 7px 0 0;
+
+    padding: 3px;
+
+    --top-bar-item-height: 24px;
+
+    .anim-btn-group {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        gap: var(--xxs);
+        margin: 0;
+    }
+
+    .time-control {
+        position: absolute;
+        right: 3px;
+        gap: 3px;
+        display: flex;
+        align-items: center;
+        height: var(--top-bar-item-height);
+
+        img {
+            background-color: var(--c-button);
+            border-radius:  var(--r-radius-button) 0 0 var(--r-radius-button);
+            padding: 4px;
+            height: 100%;
+            box-sizing: border-box;
+        }
+
+        /* Input mit Einheit */
+        span {
+            display: flex;
+            height: 100%;
+
+            input {
+                height: 100%;
+                box-sizing: border-box;
+                max-width: 40px;
+                text-align: end;
+                
+                background-color: var(--c-button);
+                color: var(--c-body-text);
+                border: none;
+
+                &:focus {
+                    outline: none; /* entfernt den Fokus-Rahmen */
+                    border: 2px solid var(--c-border-light);
+                    background-color: var(--c-lightest);
+                }
+            }
+
+            /* Entfernt Spin-Buttons bei number inputs */
+            input[type="number"]::-webkit-outer-spin-button,
+            input[type="number"]::-webkit-inner-spin-button {
+                -webkit-appearance: none;
+                margin: 0;
+            }
+            input[type="number"] {
+                -moz-appearance: textfield; /* Firefox */
+            }
+
+            .unit {
+                background-color: var(--c-button);
+                color: var(--c-body-text);
+                padding: 0 8px;
+                padding-left: 1px;
+                align-items: center;
+                height: 100%;
+                display: flex;
+                font-size: .8rem;
+                border-radius:  0 var(--r-radius-button) var(--r-radius-button) 0;
+            }
+        }
+    }
+}
+
+.obj-timeline-container {
+    display: grid;
+    grid-template-columns: minmax(150px, 250px) 1fr;
+    grid-template-rows: auto 1fr;
+    width: 100%;
+    height: 200px;
+    background-color: var(--c-lighter);
+    overflow: hidden;
+}
+
+/* ----------- Grid Header (Sticky) ----------- */
+.grid-header-left {
+    grid-column: 1;
+    grid-row: 1;
+    display: flex;
+    position: sticky;
+    top: 0;
+    gap: var(--xxs);
+    align-items: flex-end;
+    justify-content: end;
+    padding: var(--s);
+    background-color: var(--c-lightest);
+    border-right: 2px solid var(--c-border);
+
+    h2 {
+        margin: 0;
+        color: var(--c-header);
+        font-size: 1.1rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    p {
+        white-space: nowrap;
+        margin: 0 0 2px 0;
+        font-size: 0.8rem;
+        color: var(--c-body-text);
+    }
+}
+
+.grid-header-right {
+    grid-column: 2;
+    grid-row: 1;
+    background-color: var(--c-lighter);
+    position: sticky;
+    top: 0;
+
+    .timeline-header {
+        position: relative;
+        height: 100%;
+        margin: 0 var(--xxl);
+    }
+}
+
+/* ----------- Scrollbarer Content Wrapper ----------- */
+.grid-content-wrapper {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    display: grid;
+    grid-template-columns: minmax(150px, 250px) 1fr;
+    overflow-y: auto;
+    position: relative;
+}
+
+/* ----------- Objektnamen Spalte ----------- */
+.objects-column {
+    grid-column: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--c-lightest);
+    padding: var(--s);
+    padding-top: 0;
+    gap: var(--s);
+    border-right: 2px solid var(--c-border);
+}
+
+.object-item {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--c-body-text);
+    font-size: 1rem;
+    min-height: var(--l);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    text-align: right;
+}
+
+
+/* ----------- Timeline Spalte ----------- */
+.timeline-column {
+    grid-column: 2;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--c-lighter);
+    margin: 0 var(--xxl);
+    gap: var(--s);
+    user-select: none;
+    position: relative;
+}
+
+.timeline-row-item {
+    position: relative;
+    min-height: var(--l);
+    width: 100%;
+    cursor: pointer;
+}
+
+/* ----------- Skala / Grid Lines ----------- */
+.grid-line {
+    position: absolute;
+    top: 0;
+    background-color: #333;
+    pointer-events: none;
+    white-space: nowrap;
+    width: 2px;
+    bottom: 0;
+
+}
+
+.timeline-header .grid-line {
+    height: 100%;
+    width: 2px;
+    top: 30px;
+}
+
+/* Label element*/
+.timeline-header .grid-line::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 50%;
+    top: -15px; 
+    transform: translateX(-50%);
+    font-size: 0.75rem; 
+    color: var(--c-body-text);
+}
+
+.timeline-column .grid-line::before {
+    display: none; /* Keine Labels im unteren Breich der Timeline-Column */
+}
+
+/* ----------- Scrubber ----------- */
+/* Scrubber-Kopf im Header */
+#scrubber-head {
+    position: absolute;
+    background-color: var(--c-accent-border);   
+    bottom: 0;
+    width: 2px;
+    height: 20px;
+    pointer-events: none;
+}
+
+/* Label über dem Kopf */
+#scrubber-head::before {
+    content: attr(data-percent);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--c-accent-border);
+    color: #ffffff;
+    padding: 2px 5px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    white-space: nowrap;
+    margin-bottom: -5px;
+}
+
+/* Scrubber-Linie durch den Content */
+#scrubber {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background-color: var(--c-accent-border);
+    pointer-events: none;
+    z-index: 10;
+}
+
+/* ----------- Keyframes ----------- */
+.keyframe-bar {
+    position: absolute;
+    height: 3px;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: var(--c-orange);
+    border: 2px solid var(--c-orange-border);
+}
+
+.keyframe-handle {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background-color: var(--c-orange);
+    border: 2px solid var(--c-orange-border);
+    cursor: grab;
+    z-index: 2;
+    border-radius: 2px;
+    transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.keyframe-handle:hover {
+    transform: translate(-50%, -50%) rotate(45deg) scale(1.3);
+}

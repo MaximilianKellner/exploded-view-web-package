@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { EditorPanel } from './editor-panel.js';
+import { EditorTimeline } from './editor-timeline.js';
 import '../../css/editor.css';
 
 export class EditorController {
@@ -30,6 +31,10 @@ export class EditorController {
             onChange: this._onPanelChange,
             onExport: this._onExportConfig
         });
+
+        // Editor Timeline initialisieren
+        this.editorTimeline = new EditorTimeline(container, animationHandler);
+        this.editorTimeline.hide(); // Initial versteckt
     }
 
     enable() {
@@ -44,6 +49,9 @@ export class EditorController {
         
         // UI-Handler (Tweakpane) ausblenden
         this.uiHandler?.hide();
+        
+        // Timeline anzeigen
+        this.editorTimeline?.show();
         
         // ClickHandler in Edit-Mode setzen
         this.clickHandler?.setEditMode(true);
@@ -75,6 +83,9 @@ export class EditorController {
         
         // UI-Handler wieder anzeigen
         this.uiHandler?.show();
+        
+        // Timeline verstecken
+        this.editorTimeline?.hide();
         
         // ClickHandler zurück in Viewer-Mode
         this.clickHandler?.setEditMode(false);
