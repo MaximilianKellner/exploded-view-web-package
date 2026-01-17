@@ -1,9 +1,13 @@
 import '../../css/editor-timeline.css';
+import { TimelineDataManager } from './timeline-data-manager.js';
 
 export class EditorTimeline {
-    constructor(container, animationHandler) {
+    constructor(container, animationHandler, explosionConfigPath) {
         this.container = container;
         this.animationHandler = animationHandler;
+        this.explosionConfigPath = explosionConfigPath;
+        
+        this.dataManager = null;
         this.element = null;
         this.isDragging = false;
         
@@ -15,24 +19,62 @@ export class EditorTimeline {
         this.timelineHeader = null;
         this.scrubber = null;
         this.scrubberHead = null;
+        this.timeInput = null;
+        this.objectsColumn = null;
 
-        this._init();
+        this._initDataManager();
+    }
+
+    async _initDataManager() {
+        try {
+            this.dataManager = new TimelineDataManager(this.animationHandler, this.explosionConfigPath);
+            await this.dataManager._init();
+            this._init();
+        } catch (error) {
+            console.error('Fehler beim Initialisieren des TimelineDataManager:', error);
+        }
     }
     
     _init() {
         this.element = document.createElement('div');
         this.element.className = 'timeline-container';
         
+        // Objekte aus dataManager laden
+        const objects = this.dataManager?.getObjects() || [];
+        const duration = this.dataManager?.getAnimationDuration() || 1500;
+        const objectCount = objects.length;
+        
+        // HTML-Template für animierte Objekte
+        let objectsHtml = objects
+            .map(obj => `<div class="object-item" data-object-id="${obj.name}">${obj.name}</div>`)
+            .join('');
+        
+        // HTML-Template für Keyframe-Bars aus start/end Werten
+        let keyframesHtml = objects
+            .map(obj => {
+                const startPercent = this.dataManager.normalizedToPercent(obj.start);
+                const endPercent = this.dataManager.normalizedToPercent(obj.end);
+                const width = endPercent - startPercent;
+                
+                return `<div class="timeline-row-item" data-object-id="${obj.name}">
+                    <div class="keyframe-bar" style="left: ${startPercent}%; width: ${width}%;">
+                        <div class="keyframe-handle" style="left: 0;"></div>
+                        <div class="keyframe-handle" style="left: 100%;"></div>
+                    </div>
+                </div>`;
+            })
+            .join('');
+        
         this.element.innerHTML = `
             <div class="top-bar">
         <div class="anim-btn-group">
-            <button>
+            <button id="timeline-start">
                 <img src="/icon/editor/start.svg" alt="start icon">
             </button>
-            <button>
+            <button id="timeline-play-pause">
                 <img src="/icon/editor/play.svg" alt="play icon">
             </button>
-            <button>
+            <button id="timeline-end">
                 <img src="/icon/editor/end.svg" alt="end icon">
             </button>
         </div>
@@ -40,7 +82,7 @@ export class EditorTimeline {
         <div class="time-control">
             <img src="/icon/editor/timer.svg" alt="timer icon">
             <span>
-                <input type="number" id="time-input" value="8000" max="999999" min="1">
+                <input type="number" id="time-input" value="${duration}" max="999999" min="1">
                 <span class="unit">ms</span>
             </span>
         </div>
@@ -50,7 +92,7 @@ export class EditorTimeline {
         <!-- Grid Header: Sticky -->
         <div class="grid-header-left">
             <h2>Animierte Objekte</h2>
-            <p id="object-count">(4/32)</p>
+            <p id="object-count">(${objectCount}/${objectCount})</p>
         </div>
         
         <!-- Timeline Header: Sticky -->
@@ -70,10 +112,7 @@ export class EditorTimeline {
         <div class="grid-content-wrapper">
 
             <div class="objects-column">
-                <div class="object-item" data-object-id="obj1">Objekt 1</div>
-                <div class="object-item" data-object-id="obj2">Objekt 2</div>
-                <div class="object-item" data-object-id="obj3">Objekt 3</div>
-                <div class="object-item" data-object-id="obj4">Objekt 4</div>
+                ${objectsHtml}
             </div>
 
             <!-- Timeline Spalte mit Keyframes -->
@@ -88,29 +127,7 @@ export class EditorTimeline {
                 <!-- Scrubber-Linie (läuft durch Timeline) -->
                 <div id="scrubber" style="left: 0%;"></div>
                 
-                <div class="timeline-row-item" data-object-id="obj1">
-                    <div class="keyframe-bar" style="left: 75%; width: 25%;">
-                        <div class="keyframe-handle" style="left: 0;"></div>
-                        <div class="keyframe-handle" style="left: 100%;"></div>
-                    </div>
-                </div>
-                <div class="timeline-row-item" data-object-id="obj2">
-                    <div class="keyframe-bar" style="left: 50%; width: 25%;">
-                        <div class="keyframe-handle" style="left: 0;"></div>
-                        <div class="keyframe-handle" style="left: 100%;"></div>
-                    </div>
-                </div>
-                <div class="timeline-row-item" data-object-id="obj3">
-                    <div class="keyframe-bar" style="left: 5%; width: 35%;">
-                        <div class="keyframe-handle" style="left: 0;"></div>
-                        <div class="keyframe-handle" style="left: 100%;"></div>
-                    </div>
-                </div><div class="timeline-row-item" data-object-id="obj4">
-                    <div class="keyframe-bar" style="left: 5%; width: 35%;">
-                        <div class="keyframe-handle" style="left: 0;"></div>
-                        <div class="keyframe-handle" style="left: 100%;"></div>
-                    </div>
-                </div>
+                ${keyframesHtml}
             </div>
         </div>
     </div>
@@ -127,9 +144,13 @@ export class EditorTimeline {
         this.timelineHeader = this.element.querySelector('.timeline-header');
         this.scrubber = this.element.querySelector('#scrubber');
         this.scrubberHead = this.element.querySelector('#scrubber-head');
-        this.playPauseBtn = this.element.querySelector('#timeline-play-pause');
-        this.currentTimeDisplay = this.element.querySelector('#timeline-current');
-        this.totalTimeDisplay = this.element.querySelector('#timeline-total');
+        this.timeInput = this.element.querySelector('#time-input');
+        this.objectsColumn = this.element.querySelector('.objects-column');
+        
+        // Buttons
+        this.playBtn = this.element.querySelector('#timeline-play-pause');
+        this.startBtn = this.element.querySelector('#timeline-start');
+        this.endBtn = this.element.querySelector('#timeline-end');
     }
 
     _setupEventListeners() {
@@ -170,6 +191,17 @@ export class EditorTimeline {
 
         // Keyframe Handle Interaktivität
         this._setupKeyframeHandles();
+        
+        // Time-Input Event: Wenn Duration geändert wird
+        if (this.timeInput) {
+            this.timeInput.addEventListener('change', (e) => {
+                const newDuration = parseInt(e.target.value) || 1500;
+                if (this.dataManager) {
+                    this.dataManager.setAnimationDuration(newDuration);
+                    console.log('Animation-Dauer aktualisiert:', newDuration + 'ms');
+                }
+            });
+        }
     }
 
     _moveScrubber(e, snap = true) {
@@ -270,6 +302,14 @@ export class EditorTimeline {
             const startPercent = Math.round(parseFloat(this.activeBar.style.left) || 0);
             const width = Math.round(parseFloat(this.activeBar.style.width) || 0);
             const endPercent = startPercent + width;
+            
+            // Objekt-ID ermitteln
+            const objectId = this.activeBar.closest('.timeline-row-item')?.getAttribute('data-object-id');
+            
+            if (objectId && this.dataManager) {
+                // Keyframe mit DataManager aktualisieren
+                this.dataManager.updateKeyframe(objectId, startPercent, endPercent);
+            }
             
             console.log(`Keyframe Position: ${startPercent}%-${endPercent}%`);
             

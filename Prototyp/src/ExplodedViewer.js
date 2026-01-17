@@ -260,7 +260,8 @@ class ExplodedViewer {
             camera: this.camera,
             renderer: this.renderer,
             clickHandler: this.clickHandler,
-            animationHandler: this.animationHandler
+            animationHandler: this.animationHandler,
+            explosionConfigPath: this.config.explosionConfigPath,
         });
 
         this.editor.setInfoElementHandler(this.infoElementHandler);

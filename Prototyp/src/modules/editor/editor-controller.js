@@ -4,12 +4,13 @@ import { EditorTimeline } from './editor-timeline.js';
 import '../../css/editor.css';
 
 export class EditorController {
-    constructor({ scene, camera, renderer, clickHandler, animationHandler }) {
+    constructor({ scene, camera, renderer, clickHandler, animationHandler, explosionConfigPath }) {
         this.scene = scene;
         this.camera = camera;
         this.renderer = renderer;
         this.clickHandler = clickHandler;
         this.animationHandler = animationHandler;
+        this.explosionConfigPath = explosionConfigPath;
 
         this.enabled = false;
         this.transformHandler = null;
@@ -33,7 +34,7 @@ export class EditorController {
         });
 
         // Editor Timeline initialisieren
-        this.editorTimeline = new EditorTimeline(container, animationHandler);
+        this.editorTimeline = new EditorTimeline(container, animationHandler, this.explosionConfigPath);
         this.editorTimeline.hide(); // Initial versteckt
     }
 
