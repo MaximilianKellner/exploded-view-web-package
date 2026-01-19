@@ -77,11 +77,6 @@ export class ScrubberController {
 
     // Scrubber Dragging: Mouse Down
     _onScrubberMouseDown(e) {
-        // Nicht auf Keyframe-Handles reagieren
-        if (e.target.classList.contains('keyframe-handle')) {
-            return;
-        }
-        
         this.isDraggingScrubber = true;
         // Pause während Drag
         if (this.animationHandler.isAnimating) {

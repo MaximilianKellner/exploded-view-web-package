@@ -1,6 +1,7 @@
 import '../../css/editor-timeline.css';
 import { TimelineDataManager } from './timeline-data-manager.js';
 import { ScrubberController } from './scrubber-controller.js';
+import { KeyframeController } from './keyframe-controller.js';
 
 export class EditorTimeline {
     constructor(container, animationHandler, explosionConfigPath) {
@@ -10,6 +11,7 @@ export class EditorTimeline {
         
         this.dataManager = null;
         this.scrubberController = null;
+        this.keyframeController = null;
         this.element = null;
         
         // werden in _cacheDOMElements gesetzt
@@ -93,7 +95,7 @@ export class EditorTimeline {
         <!-- Grid Header: Sticky -->
         <div class="grid-header-left">
             <h2>Animierte Objekte</h2>
-            <p id="object-count">(${objectCount}/${objectCount})</p>
+            <p id="object-count">(${objectCount}/TODO)</p>
         </div>
         
         <!-- Timeline Header: Sticky -->
@@ -137,7 +139,7 @@ export class EditorTimeline {
         this.container.appendChild(this.element);
         this._cacheDOMElements();
         this._initScrubberController();
-        this._setupKeyframeHandles();
+        this._initKeyframeController();
     }
     
     /**
@@ -159,6 +161,15 @@ export class EditorTimeline {
             }
         );
     }
+
+    // Initialisiert KeyframeController für Keyframe-Handle Interaktionen
+    _initKeyframeController() {
+        this.keyframeController = new KeyframeController(
+            this.dataManager,
+            this.timelineColumn
+        );
+        this.keyframeController.initializeKeyframeHandles();
+    }
     
     // DOM Element Referenzen für bessere Performance
     _cacheDOMElements() {
@@ -175,189 +186,9 @@ export class EditorTimeline {
         this.endBtn = this.element.querySelector('#timeline-end');
     }
 
-    _setupEventListeners() {
-        // Scrubber Movement: Klickbereich Timeline-Header und Timeline-Column
-        this.timelineHeader.addEventListener('mousedown', (e) => {
-            this.isDragging = true;
-            this._moveScrubber(e);
-        });
-
-        this.timelineColumn.addEventListener('mousedown', (e) => {
-                this.isDragging = true;
-                this._moveScrubber(e);
-        });
-
-        window.addEventListener('mousemove', (e) => {
-            if (this.isDragging) {
-                this._moveScrubber(e);
-            }
-            if (this.activeHandle && this.activeBar) {
-                this._moveKeyframeHandle(e);
-            }
-        });
-
-        window.addEventListener('mouseup', () => {
-            if (this.isDragging) {
-                this.isDragging = false;
-            }
-            if (this.activeHandle && this.activeBar) {
-                this._onKeyframeHandleRelease();
-            }
-        });
-
-        // Initial-Position setzen
-        const currentPercent = parseInt(this.scrubberHead.getAttribute('data-percent')) || 0;
-        const percentStr = currentPercent + '%';
-        this.scrubber.style.left = percentStr;
-        this.scrubberHead.style.left = percentStr;
-
-        // Keyframe Handle Interaktivität
-        this._setupKeyframeHandles();
-        
-        // Time-Input Event: Wenn Duration geändert wird
-        if (this.timeInput) {
-            this.timeInput.addEventListener('change', (e) => {
-                const newDuration = parseInt(e.target.value) || 1500;
-                if (this.dataManager) {
-                    this.dataManager.setAnimationDuration(newDuration);
-                    console.log('Animation-Dauer aktualisiert:', newDuration + 'ms');
-                }
-            });
-        }
-    }
-
-    // ScrubberController verwaltet jetzt move scrubber --> Bleibt hier für Keyframe-Handle Interaktion erhalten
-    _moveScrubber(e, snap = true) {
-        // Delegiert an ScrubberController (falls dieser initialisiert ist)
-        console.log('-------------- RETURN --------------');
-        if (this.scrubberController) {
-
-            // ScrubberController kümmert sich um Scrubber-Bewegung
-            return;
-        }
-
-        console.log('EditorTimeline: _moveScrubber aufgerufen');
-
-        const rect = this.timelineHeader.getBoundingClientRect();
-        let x = e.clientX - rect.left;
-
-        // Begrenzung auf 0-100%
-        if (x < 0) x = 0;
-        if (x > rect.width) x = rect.width;
-
-        // Prozent berechnen
-        let percent = (x / rect.width) * 100;
-
-        // Beim Ziehen einrasten lassen
-        if (snap) {
-            percent = Math.round(percent);
-        }
-
-        // Beide Scrubber-Teile synchron bewegen
-        const percentStr = Math.round(percent) + '%';
-        this.scrubber.style.left = percentStr;
-        this.scrubberHead.style.left = percentStr;
-        this.scrubberHead.setAttribute('data-percent', percentStr);
-        
-        // AnimationHandler aktualisieren
-        if (this.animationHandler) {
-            this.animationHandler.seekToProgress(percent);
-        }
-    }
-
-    getScrubberPosition() {
-        const percent = this.scrubber.getAttribute('data-percent');
-        return percent ? parseInt(percent) : 0;
-    }
-
-    _setupKeyframeHandles() {
-        const handles = this.element.querySelectorAll('.keyframe-handle');
-        handles.forEach(handle => {
-            handle.addEventListener('mousedown', (e) => {
-
-                // Entfernt --> Scrubber als % label nutzen und später live vorschau.
-                //e.stopPropagation(); // Verhindert Scrubber-Bewegung
-
-                this.activeHandle = handle;
-                this.activeBar = handle.closest('.keyframe-bar');
-                
-                // Handle-Typ über keyframe-handle.style.left bestimmen: 0 = links, 100% = rechts
-                this.handleType = parseFloat(handle.style.left) === 0 ? 'left' : 'right';
-                
-                // Cursor --> Griff-Icon
-                document.body.style.cursor = 'ew-resize';
-            });
-        });
-    }
-
-    _moveKeyframeHandle(e) {
-        const timelineRect = this.timelineColumn.getBoundingClientRect();
-        let x = e.clientX - timelineRect.left;
-        
-        // Begrenzung auf Timeline-Bereich
-        if (x < 0) x = 0;
-        if (x > timelineRect.width) x = timelineRect.width;
-        
-        let newPercent = (x / timelineRect.width) * 100;
-        newPercent = Math.max(0, Math.min(100, newPercent));
-        
-        // Einrasten an ganzen Prozentwerten
-        newPercent = Math.round(newPercent);
-        
-        // Aktuelle Bar-Werte (gerundet)
-        const currentLeft = Math.round(parseFloat(this.activeBar.style.left) || 0);
-        const currentWidth = Math.round(parseFloat(this.activeBar.style.width) || 0);
-        const currentRight = currentLeft + currentWidth;
-        
-        const minWidth = 1; // Mindestbreite 1%
-        
-        if (this.handleType === 'left') {
-            // Linker Handle (Start)
-            const maxLeft = currentRight - minWidth;
-            newPercent = Math.min(newPercent, maxLeft);
-            
-            const newWidth = currentRight - newPercent;
-            this.activeBar.style.left = Math.round(newPercent) + '%';
-            this.activeBar.style.width = Math.round(newWidth) + '%';
-        } else {
-            // Rechter Handle (End)
-            const minRight = currentLeft + minWidth;
-            newPercent = Math.max(newPercent, minRight);
-            
-            const newWidth = newPercent - currentLeft;
-            this.activeBar.style.width = Math.round(newWidth) + '%';
-        }
-    }
-
-    _onKeyframeHandleRelease() {
-        if (this.activeHandle && this.activeBar) {
-            // Werte ausgeben
-            const startPercent = Math.round(parseFloat(this.activeBar.style.left) || 0);
-            const width = Math.round(parseFloat(this.activeBar.style.width) || 0);
-            const endPercent = startPercent + width;
-            
-            // Objekt-ID ermitteln
-            const objectId = this.activeBar.closest('.timeline-row-item')?.getAttribute('data-object-id');
-            
-            if (objectId && this.dataManager) {
-                // Keyframe mit DataManager aktualisieren
-                this.dataManager.updateKeyframe(objectId, startPercent, endPercent);
-            }
-            
-            console.log(`Keyframe Position: ${startPercent}%-${endPercent}%`);
-            
-            // Cursor zurücksetzen
-            document.body.style.cursor = '';
-        }
-        
-        this.activeHandle = null;
-        this.activeBar = null;
-        this.handleType = null;
-    }
-
     show() {
         if (this.element) {
-            this.element.style.display = 'flex';
+            this.element.style.display = 'block';
         }
     }
 
@@ -374,14 +205,23 @@ export class EditorTimeline {
             this.scrubberController = null;
         }
 
+        // Cleanup KeyframeController
+        if (this.keyframeController) {
+            this.keyframeController.destroy();
+            this.keyframeController = null;
+        }
+
         if (this.element && this.element.parentElement) {
             this.element.parentElement.removeChild(this.element);
         }
     }
 
-    // Gibt Zugriff auf den ScrubberController für externe Steuerung
     getScrubberController() {
         return this.scrubberController;
+    }
+
+    getKeyframeController() {
+        return this.keyframeController;
     }
 }
     
