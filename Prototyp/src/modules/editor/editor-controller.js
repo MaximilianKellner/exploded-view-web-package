@@ -24,6 +24,8 @@ export class EditorController {
         this._onTransformChange = this._onTransformChange.bind(this);
         this._onPanelChange = this._onPanelChange.bind(this);
         this._onExportConfig = this._onExportConfig.bind(this);
+        this._onKeyframeChange = this._onKeyframeChange.bind(this);
+        this._onPanelTimelineChange = this._onPanelTimelineChange.bind(this);
 
         // Editor Panel initialisieren
         const container = this.renderer.domElement.parentElement;
@@ -70,6 +72,11 @@ export class EditorController {
                 this.transformHandler.controls.addEventListener('change', this._onTransformChange);
             }
         }
+        
+        // Keyframe-Callbacks registrieren (Timeline <-> EditorPanel Synchronisation)
+        this.editorTimeline?.setKeyframeCallbacks({
+            onKeyframeChange: this._onKeyframeChange
+        });
     }
 
     disable() {
@@ -139,7 +146,27 @@ export class EditorController {
         this._createPreviewObject(object);
         
         // Panel anzeigen und mit Daten füllen
-        const item = this.animationHandler.getExplodableItem(object);
+        let item = this.animationHandler.getExplodableItem(object);
+        
+        // Wenn keine Config existiert, Standardwerte verwenden und Config erstellen
+        if (!item) {
+            const defaultConfig = {
+                expDirection: new THREE.Vector3(0, 1, 0),
+                targetLevel: 1,
+                speedMultiplier: 1,
+                start: 0,
+                end: 1
+            };
+            
+            // Neue Config im AnimationHandler erstellen
+            this.animationHandler.updateObjectConfig(object, defaultConfig);
+            item = this.animationHandler.getExplodableItem(object);
+            
+            // Timeline aktualisieren - objectCount und ggf. neue Items hinzufügen
+            this.editorTimeline?.updateObjectCount();
+        }
+        
+        // Panel mit Daten anzeigen
         if (item) {
             this.editorPanel.show({
                 name: object.name,
@@ -197,6 +224,9 @@ export class EditorController {
             const layerDist = this.animationHandler.config.animationConfig.layerDistance || 1;
             const offset = item.expDirection.clone().multiplyScalar(item.targetLevel * layerDist);
             this.previewObject.position.copy(item.originalPosition).add(offset);
+        } else {
+            // Fallback: Original-Position verwenden, wenn keine Config existiert
+            this.previewObject.position.copy(originalObject.position);
         }
 
         // PreviewObject als Sibling hinzufügen (gleicher Parent)
@@ -245,6 +275,19 @@ export class EditorController {
             const offset = item.expDirection.clone().multiplyScalar(item.targetLevel * layerDist);
             this.previewObject.position.copy(item.originalPosition).add(offset);
         }
+        
+        // Timeline aktualisieren wenn start/end geändert wurden
+        if (data.start !== undefined || data.end !== undefined) {
+            const startPercent = this.editorTimeline?.dataManager?.normalizedToPercent(data.start);
+            const endPercent = this.editorTimeline?.dataManager?.normalizedToPercent(data.end);
+            
+            if (startPercent !== undefined && endPercent !== undefined) {
+                const keyframeController = this.editorTimeline?.keyframeController;
+                if (keyframeController) {
+                    keyframeController.updateKeyframeBar(this.selectedObject.name, startPercent, endPercent);
+                }
+            }
+        }
     }
 
     // Callback für Export Button
@@ -289,4 +332,37 @@ export class EditorController {
             }
         }
     }
+
+    /**
+     * Callback wenn Keyframes in der Timeline geändert werden
+     * Aktualisiert das EditorPanel mit neuen start/end Werten
+     */
+    _onKeyframeChange(objectId, normalizedStart, normalizedEnd) {
+        // Prüfen, ob das geänderte Objekt das aktuell ausgewählte ist
+        if (this.selectedObject && this.selectedObject.name === objectId) {
+            // Falls ja offenees EditorPanel mit neuen Werten aktualisieren
+            this.editorPanel.updateStartEnd(normalizedStart, normalizedEnd);
+        }
+    }
+
+    /**
+     * Callback wenn start/end im EditorPanel geändert werden
+     * Aktualisiert die Timeline mit neuen Keyframe-Werten
+     */
+    _onPanelTimelineChange(start, end) {
+        if (!this.selectedObject) return;
+        
+        // Timeline aktualisieren
+        const dataManager = this.editorTimeline?.dataManager;
+        if (dataManager) {
+            const startPercent = dataManager.normalizedToPercent(start);
+            const endPercent = dataManager.normalizedToPercent(end);
+            
+            const keyframeController = this.editorTimeline?.keyframeController;
+            if (keyframeController) {
+                keyframeController.updateKeyframeBar(this.selectedObject.name, startPercent, endPercent);
+            }
+        }
+    }
 }
+

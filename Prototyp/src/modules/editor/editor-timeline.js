@@ -176,8 +176,13 @@ export class EditorTimeline {
         );
         this.keyframeController.initializeKeyframeHandles();
     }
-    
-    // DOM Element Referenzen für bessere Performance
+
+    // Setzt Callbacks für Keyframe-Änderungen (für EditorController)
+    setKeyframeCallbacks(callbacks) {
+        if (this.keyframeController) {
+            this.keyframeController.setCallbacks(callbacks);
+        }
+    }
     _cacheDOMElements() {
         this.timelineColumn = this.element.querySelector('.timeline-column');
         this.timelineHeader = this.element.querySelector('.timeline-header');
@@ -190,6 +195,68 @@ export class EditorTimeline {
         this.playPauseBtn = this.element.querySelector('#timeline-play-pause');
         this.startBtn = this.element.querySelector('#timeline-start');
         this.endBtn = this.element.querySelector('#timeline-end');
+    }
+
+    /**
+     * Aktualisiert die objectCount und fügt neue Objekte zur Timeline UI hinzu
+     */
+    updateObjectCount() {
+        if (!this.dataManager) return;
+        
+        // Objekt-Liste im DataManager aktualisieren
+        this.dataManager.refreshObjects();
+        
+        // Neue Objektliste aus animationHandler laden
+        const objects = this.dataManager.getObjects();
+        const objectCount = objects.length;
+        const totalObjectsCount = this.dataManager.getTotalObjectsCount();
+        
+        // Object Count Text aktualisieren
+        const countElement = this.element.querySelector('#object-count');
+        if (countElement) {
+            countElement.textContent = `(${objectCount}/${totalObjectsCount})`;
+        }
+        
+        // Neue Objekte zur Timeline hinzufügen (die nicht bereits vorhanden sind)
+        const objectsColumn = this.element.querySelector('.objects-column');
+        const timelineColumn = this.element.querySelector('.timeline-column');
+        
+        if (objectsColumn && timelineColumn) {
+            objects.forEach(obj => {
+                // Prüfen, ob Objekt bereits in Timeline vorhanden ist
+                const existingItem = objectsColumn.querySelector(`[data-object-id="${obj.name}"]`);
+                
+                if (!existingItem) {
+                    // Neues Objekt-Item zur objects-column hinzufügen
+                    const objectItem = document.createElement('div');
+                    objectItem.className = 'object-item';
+                    objectItem.setAttribute('data-object-id', obj.name);
+                    objectItem.textContent = obj.name;
+                    objectsColumn.appendChild(objectItem);
+                    
+                    // Neues Keyframe-Row zur timeline-column hinzufügen
+                    const startPercent = this.dataManager.normalizedToPercent(obj.start);
+                    const endPercent = this.dataManager.normalizedToPercent(obj.end);
+                    const width = endPercent - startPercent;
+                    
+                    const timelineRowItem = document.createElement('div');
+                    timelineRowItem.className = 'timeline-row-item';
+                    timelineRowItem.setAttribute('data-object-id', obj.name);
+                    timelineRowItem.innerHTML = `
+                        <div class="keyframe-bar" style="left: ${startPercent}%; width: ${width}%;">
+                            <div class="keyframe-handle" style="left: 0;"></div>
+                            <div class="keyframe-handle" style="left: 100%;"></div>
+                        </div>
+                    `;
+                    timelineColumn.appendChild(timelineRowItem);
+                    
+                    // Keyframe-Handles für das neue Objekt initialisieren
+                    if (this.keyframeController) {
+                        this.keyframeController.initializeKeyframeHandlesForObject(obj.name);
+                    }
+                }
+            });
+        }
     }
 
     show() {

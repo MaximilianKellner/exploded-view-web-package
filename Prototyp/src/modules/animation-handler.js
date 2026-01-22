@@ -353,8 +353,21 @@ export class AnimationHandler {
     }
 
     updateObjectConfig(object, newConfig) {
-        const item = this.getExplodableItem(object);
-        if (!item) return;
+        let item = this.getExplodableItem(object);
+        
+        // Objekt ohne Animation eine Animation hinzufügen (Editor)
+        if (!item) {
+            item = {
+                object: object,
+                originalPosition: object.position.clone(),
+                targetLevel: 0,
+                start: 0,
+                end: 1,
+                speedMultiplier: 1.0,
+                expDirection: new THREE.Vector3(0, 1, 0)
+            };
+            this.explodableObjects.push(item);
+        }
 
         if (newConfig.expDirection) item.expDirection.copy(newConfig.expDirection);
         if (newConfig.targetLevel !== undefined) item.targetLevel = newConfig.targetLevel;
@@ -362,14 +375,30 @@ export class AnimationHandler {
         if (newConfig.start !== undefined) item.start = newConfig.start;
         if (newConfig.end !== undefined) item.end = newConfig.end;
 
-        // Update internal config object
-        if (this.explosionConfig && this.explosionConfig.objects[object.name]) {
+        // Internes Config-Objekt erstellen oder aktualisieren
+        if (this.explosionConfig) {
+            if (!this.explosionConfig.objects) {
+                this.explosionConfig.objects = {};
+            }
+            
+            // Config für dieses Objekt erstellen oder aktualisieren
+            if (!this.explosionConfig.objects[object.name]) {
+                this.explosionConfig.objects[object.name] = {};
+            }
+            
             const configObj = this.explosionConfig.objects[object.name];
             configObj.level = item.targetLevel;
             configObj.expDirection = item.expDirection.toArray();
-            configObj.speedMultiplier = item.speedMultiplier;
-            configObj.start = item.start;
-            configObj.end = item.end;
+            
+            if (item.speedMultiplier !== undefined) {
+                configObj.speedMultiplier = item.speedMultiplier;
+            }
+            if (item.start !== undefined) {
+                configObj.start = item.start;
+            }
+            if (item.end !== undefined) {
+                configObj.end = item.end;
+            }
         }
     }
 

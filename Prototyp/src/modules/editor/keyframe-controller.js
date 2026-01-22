@@ -17,11 +17,19 @@ export class KeyframeController {
         // Constraints
         this.minWidth = 1; // Mindestbreite in %
         
+        // Callbacks für externe Listener
+        this.callbacks = {};
+        
         this._init();
     }
 
     _init() {
         this._setupEventListeners();
+    }
+
+    //Registriert einen Callback für Keyframe-Änderungen
+    setCallbacks(callbacks) {
+        this.callbacks = callbacks;
     }
 
     // Setzt alle Event-Listener für Keyframe-Handles auf
@@ -136,6 +144,13 @@ export class KeyframeController {
         if (objectId && this.dataManager) {
             this.dataManager.updateKeyframe(objectId, startPercent, endPercent);
             console.log(`Keyframe aktualisiert: ${objectId} [${startPercent}%-${endPercent}%]`);
+            
+            // Callback für externe Listener (z.B. EditorPanel)
+            if (this.callbacks.onKeyframeChange) {
+                const normalizedStart = this.dataManager.percentToNormalized(startPercent);
+                const normalizedEnd = this.dataManager.percentToNormalized(endPercent);
+                this.callbacks.onKeyframeChange(objectId, normalizedStart, normalizedEnd);
+            }
         }
 
         // Cleanup
@@ -153,6 +168,20 @@ export class KeyframeController {
         const handles = this.timelineElement.querySelectorAll('.keyframe-handle');
         // Keine zusätzliche Initialisierung nötig - Event-Delegation läuft über _setupEventListeners
         console.log(`✓ KeyframeController: ${handles.length} Keyframe-Handles initialisiert`);
+    }
+
+    /**
+     * Initialisiert Keyframe-Handles für ein neu hinzugefügtes Objekt
+     * Event-Delegation funktioniert automatisch über _setupEventListeners
+     */
+    initializeKeyframeHandlesForObject(objectId) {
+        if (!this.timelineElement) return;
+        
+        const rowItem = this.timelineElement.querySelector(`[data-object-id="${objectId}"]`);
+        if (!rowItem) return;
+        
+        const handles = rowItem.querySelectorAll('.keyframe-handle');
+        console.log(`✓ KeyframeController: ${handles.length} Keyframe-Handles für "${objectId}" initialisiert`);
     }
 
     // Aktualisiert Keyframe-Bar visuell (z.B. nach Daten-Änderung)

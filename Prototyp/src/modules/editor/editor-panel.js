@@ -106,6 +106,12 @@ export class EditorPanel {
         this.callbacks = callbacks;
     }
 
+    // Aktualisiert start/end Werte von außen (z.B. aus Timeline)
+    updateStartEnd(start, end) {
+        this.inputs.start.value = parseFloat(start).toFixed(2);
+        this.inputs.end.value = parseFloat(end).toFixed(2);
+    }
+
     show(objectData) {
         this.element.classList.add('visible');
         this.update(objectData);

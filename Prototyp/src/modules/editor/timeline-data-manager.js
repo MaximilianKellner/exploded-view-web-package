@@ -9,8 +9,10 @@ export class TimelineDataManager {
         
         this.animationDuration = 1500; // ms (Standard)
         this.objects = []; // Array von {name, start, end, level, expDirection, speedMultiplier}
+        this.totalObjectsCount = 0; // Gecachte Anzahl der ursprünglichen Modell-Objekte
         
         this._initFromHandler();
+        this._cacheTotalObjectsCount();
     }
     
     _initFromHandler() {
@@ -34,16 +36,12 @@ export class TimelineDataManager {
         console.log(`TimelineDataManager: ${this.objects.length} Objekte aus Handler geladen`);
     }
 
-    // Gibt alle animierten Objekte zurück
-    getObjects() {
-        return this.objects;
-    }
-
-    // Gibt die Gesamtanzahl der Objekte in der Szene zurück (nur echte Blender-Objekte)
-    getTotalObjectsCount() {
+    // Cacht die Gesamtanzahl der Objekte beim ersten Laden --> bleibt konstant, auch wenn neue PreviewObjects hinzugefügt werden
+    _cacheTotalObjectsCount() {
         if (!this.animationHandler || !this.animationHandler.scene) {
             console.warn('TimelineDataManager: Scene nicht verfügbar');
-            return 0;
+            this.totalObjectsCount = 0;
+            return;
         }
         
         // Finde das geladene Modell (erste Gruppe/Objekt in der Scene)
@@ -55,7 +53,22 @@ export class TimelineDataManager {
             }
         }
         
-        return modelRoot ? modelRoot.children.length : 0;
+        this.totalObjectsCount = modelRoot ? modelRoot.children.length : 0;
+    }
+
+    // Gibt alle animierten Objekte zurück
+    getObjects() {
+        return this.objects;
+    }
+
+    // Aktualisiert die Liste der animierten Objekte aus dem AnimationHandler
+    refreshObjects() {
+        this._initFromHandler();
+    }
+
+    // Gibt die Gesamtanzahl der Objekte in der Szene zurück (gecachter Wert - bleibt konstant)
+    getTotalObjectsCount() {
+        return this.totalObjectsCount;
     }
 
     //Gibt ein spezifisches Objekt nach Name zurück
