@@ -157,6 +157,7 @@
     padding: var(--s);
     background-color: var(--c-lightest);
     border-right: 2px solid var(--c-border);
+    user-select: none;
 
     h2 {
         margin: 0;

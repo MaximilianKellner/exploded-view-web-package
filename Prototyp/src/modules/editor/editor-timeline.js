@@ -41,6 +41,11 @@ export class EditorTimeline {
         this.element = document.createElement('div');
         this.element.className = 'timeline-container';
         
+        // Verhindern, dass Klicks durch die UI auf die 3D-Szene durchgehen
+        ['click', 'mousedown', 'mouseup', 'touchstart', 'touchend'].forEach(event => {
+            this.element.addEventListener(event, (e) => e.stopPropagation());
+        });
+
         // Objekte aus dataManager laden
         const objects = this.dataManager?.getObjects() || [];
         const duration = this.dataManager?.getAnimationDuration() || 1500;
