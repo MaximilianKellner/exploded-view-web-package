@@ -4,60 +4,34 @@
  * Lädt Daten aus explosionConfig und synchronisiert mit animationHandler
  */
 export class TimelineDataManager {
-    constructor(animationHandler, explosionConfigPath) {
+    constructor(animationHandler) {
         this.animationHandler = animationHandler;
-        this.explosionConfigPath = explosionConfigPath; // Standardpfad
         
-        this.explosionConfig = null;
         this.animationDuration = 1500; // ms (Standard)
         this.objects = []; // Array von {name, start, end, level, expDirection, speedMultiplier}
         
-        this._init();
+        this._initFromHandler();
     }
     
-    async _init() {
-        await this.loadConfig();
-        this._parseObjects();
-    }
-
-    // Lädt die Explosions-Konfiguration aus JSON
-    async loadConfig() {
-        try {
-            const response = await fetch(this.explosionConfigPath);
-            //console.log(response);
-            if (!response.ok) {
-                throw new Error(`Config konnte nicht geladen werden: ${response.status}`);
-            }
-            this.explosionConfig = await response.json();
-            console.log('TimelineDataManager: explosionConfig geladen', this.explosionConfig);
-            return this.explosionConfig;
-        } catch (error) {
-            console.error('TimelineDataManager Error beim Laden der Config:', error);
-            throw error;
-        }
-    }
-
-    /**
-     * Konvertiert explosionConfig Objekte in Timeline-Format
-     * start/end sind Werte von 0-1 (0% - 100% der Animation)
-     */
-    _parseObjects() {
-        if (!this.explosionConfig || !this.explosionConfig.objects) {
-            console.warn('TimelineDataManager: Keine objects in explosionConfig');
+    _initFromHandler() {
+        if (!this.animationHandler || !this.animationHandler.explodableObjects) {
+            console.warn('TimelineDataManager: Keine explodierbaren Objekte im Handler gefunden');
             return;
         }
 
-        this.objects = Object.entries(this.explosionConfig.objects).map(([name, config]) => ({
-            name,
-            start: config.start ?? 0,
-            end: config.end ?? 1,
-            level: config.level ?? 0,
-            expDirection: config.expDirection ?? [0, 0, 0],
-            speedMultiplier: config.speedMultiplier ?? 1,
-            sequence: config.sequence ?? null,
+        const rawObjects = this.animationHandler.explodableObjects;
+        
+        this.objects = rawObjects.map(item => ({
+            name: item.object.name,
+            start: item.start !== undefined ? item.start : 0,
+            end: item.end !== undefined ? item.end : 1,
+            level: item.targetLevel,
+            expDirection: item.expDirection,
+            speedMultiplier: item.speedMultiplier,
+            sequence: item.sequence ?? null,
         }));
 
-        console.log(`TimelineDataManager: ${this.objects.length} Objekte geparst`);
+        console.log(`TimelineDataManager: ${this.objects.length} Objekte aus Handler geladen`);
     }
 
     // Gibt alle animierten Objekte zurück
@@ -127,19 +101,10 @@ export class TimelineDataManager {
         }
     }
 
-    // Exportiert die aktuellen Daten (für Speicherung)
-    export() {
-        return {
-            animationDuration: this.animationDuration,
-            explosionConfig: this.explosionConfig,
-        };
-    }
-
     debugInfo() {
         console.group('TimelineDataManager Debug Info');
         console.table(this.objects);
         console.log('Duration:', this.animationDuration + 'ms');
-        console.log('Config URL:', this.explosionConfigPath);
         console.groupEnd();
     }
 }

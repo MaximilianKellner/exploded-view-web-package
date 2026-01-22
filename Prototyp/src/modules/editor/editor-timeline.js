@@ -30,8 +30,7 @@ export class EditorTimeline {
 
     async _initDataManager() {
         try {
-            this.dataManager = new TimelineDataManager(this.animationHandler, this.explosionConfigPath);
-            await this.dataManager._init();
+            this.dataManager = new TimelineDataManager(this.animationHandler);
             this._init();
         } catch (error) {
             console.error('Fehler beim Initialisieren des TimelineDataManager:', error);
