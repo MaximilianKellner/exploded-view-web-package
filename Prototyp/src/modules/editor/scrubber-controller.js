@@ -135,6 +135,7 @@ export class ScrubberController {
      */
     _syncScrubberWithAnimation() {
         if (!this.animationHandler.isAnimating) {
+            this._updatePlayPauseButtonState();
             return;
         }
 

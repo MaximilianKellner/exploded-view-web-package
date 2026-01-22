@@ -63,6 +63,14 @@
         margin: 0;
     }
 
+    #timeline-play-pause {
+        content: url(../../public/icon/editor/play.svg);
+        
+        &.playing {
+            content: url(../../public/icon/editor/pause.svg);
+        }
+    }
+
     .time-control {
         position: absolute;
         right: 3px;

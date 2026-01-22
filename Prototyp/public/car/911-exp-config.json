@@ -5,50 +5,44 @@
     "boden": {
       "level": 100,
       "expDirection": [0, -1, 0],
-      "speedMultiplier": 3.5,
       "sequence": 1,
       "start": 0,
-      "end": 0.333
+      "end": 0.095
     },
     "baum": {
       "level": 100,
       "expDirection": [0, -1, 0],
-      "speedMultiplier": 2.1,
       "sequence": 1,
       "start": 0,
-      "end": 0.333
+      "end": 0.159
     },
     "baum001": {
       "level": 100,
       "expDirection": [0, -1, 0],
-      "speedMultiplier": 2.4,
       "sequence": 1,
       "start": 0,
-      "end": 0.333
+      "end": 0.139
     },
     "baum002": {
       "level": 100,
       "expDirection": [0, -1, 0],
-      "speedMultiplier": 2.3,
       "sequence": 1,
       "start": 0,
-      "end": 0.333
+      "end": 0.145
     },
     "baum003": {
       "level": 100,
       "expDirection": [0, -1, 0],
-      "speedMultiplier": 2.0,
       "sequence": 1,
       "start": 0,
-      "end": 0.333
+      "end": 0.167
     },
     "baum004": {
       "level": 100,
       "expDirection": [0, -1, 0],
-      "speedMultiplier": 2,
       "sequence": 1,
       "start": 0,
-      "end": 0.333
+      "end": 0.167
     },
     "main-body": {
       "level": 0,
@@ -72,17 +66,15 @@
       "level": 1.5,
       "expDirection": [0, 0, 1],
       "sequence": 3,
-      "speedMultiplier": 2.5,
       "start": 0.666,
-      "end": 1
+      "end": 0.8
     },
     "Scheinwerfer-L": {
       "level": 1.5,
       "expDirection": [0, 0, 1],
       "sequence": 3,
-      "speedMultiplier": 1.5,
       "start": 0.666,
-      "end": 1
+      "end": 0.889
     },
     "Licht": {
       "level": 1,
@@ -128,33 +120,29 @@
       "level": 3,
       "expDirection": [-1, 0, 0],
       "sequence": 2,
-      "speedMultiplier": 2,
       "start": 0.333,
-      "end": 0.666
+      "end": 0.5
     },
     "RRBremse": {
       "level": 1,
       "expDirection": [-1, 0, 0],
       "sequence": 3,
-      "speedMultiplier": 2,
       "start": 0.666,
-      "end": 1
+      "end": 0.833
     },
     "RL": {
       "level": 3,
       "expDirection": [1, 0, 0],
       "sequence": 2,
-      "speedMultiplier": 2,
       "start": 0.333,
-      "end": 0.666
+      "end": 0.5
     },
     "RLBremse": {
       "level": 1,
       "expDirection": [1, 0, 0],
       "sequence": 3,
-      "speedMultiplier": 2,
       "start": 0.666,
-      "end": 1
+      "end": 0.833
     },
     "RSchweller": {
       "level": 1,
@@ -166,7 +154,6 @@
       "level": 2,
       "expDirection": [0, 0, 1],
       "sequence": 2,
-      "speedMultiplier": 1,
       "start": 0.333,
       "end": 0.666
     },
