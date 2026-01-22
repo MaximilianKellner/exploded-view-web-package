@@ -85,7 +85,7 @@ export class EditorTimeline {
         <div class="time-control">
             <img src="/icon/editor/timer.svg" alt="timer icon">
             <span>
-                <input type="number" id="time-input" value="${duration}" max="999999" min="1">
+                <input type="number" id="time-input" value="${duration}" max="99999" min="1">
                 <span class="unit">ms</span>
             </span>
         </div>

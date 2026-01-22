@@ -56,12 +56,20 @@ export class ScrubberController {
 
         // Start Button - Sprung zu 0%
         if (this.startBtn) {
-            this.startBtn.addEventListener('click', () => this.seekTo(0));
+            this.startBtn.addEventListener('click', () => {
+                this.seekTo(0);
+                // Richtung zurücksetzen (vorwärts abspielen beim nächsten Klick)
+                this.animationHandler.isReversed = false;
+            });
         }
 
         // End Button - Sprung zu 100%
         if (this.endBtn) {
-            this.endBtn.addEventListener('click', () => this.seekTo(100));
+            this.endBtn.addEventListener('click', () => {
+                this.seekTo(100);
+                // Richtung umkehren (rückwärts abspielen beim nächsten Klick)
+                this.animationHandler.isReversed = true;
+            });
         }
 
         // Time Input: Duration ändern
