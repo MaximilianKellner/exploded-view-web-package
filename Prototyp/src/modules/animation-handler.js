@@ -339,6 +339,19 @@ export class AnimationHandler {
         }
     }
 
+    updateObjectConfigByName(objectName, newConfig) {
+        const item = this.explodableObjects.find(i => i.object.name === objectName);
+        if (item) {
+            this.updateObjectConfig(item.object, newConfig);
+            
+            // Update der Position für direktes visuelles Feedback
+            if (!this.isAnimating) {
+                const offset = this._calculateOffset(item);
+                item.object.position.copy(item.originalPosition).add(offset);
+            }
+        }
+    }
+
     updateObjectConfig(object, newConfig) {
         const item = this.getExplodableItem(object);
         if (!item) return;

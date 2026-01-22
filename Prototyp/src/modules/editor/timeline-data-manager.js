@@ -121,9 +121,8 @@ export class TimelineDataManager {
         obj.end = end;
 
         // Synchronisiere mit animationHandler
-        if (this.animationHandler && this.animationHandler.explosionConfig?.objects[objectName]) {
-            this.animationHandler.explosionConfig.objects[objectName].start = start;
-            this.animationHandler.explosionConfig.objects[objectName].end = end;
+        if (this.animationHandler) {
+            this.animationHandler.updateObjectConfigByName(objectName, { start, end });
             console.log(`Keyframe aktualisiert: ${objectName} [${startPercent}%-${endPercent}%]`);
         }
     }
