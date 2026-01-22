@@ -14,10 +14,7 @@ export class EditorPanel {
         this.element = document.createElement('div');
         this.element.className = 'editor-panel';
 
-        // Verhindern, dass Klicks durch die UI auf die 3D-Szene durchgehen
-        ['click', 'mousedown', 'mouseup', 'touchstart', 'touchend'].forEach(event => {
-            this.element.addEventListener(event, (e) => e.stopPropagation());
-        });
+
 
         this.element.innerHTML = `
             <h3 id="editor-title">No Selection</h3>

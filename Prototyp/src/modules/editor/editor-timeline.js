@@ -42,7 +42,8 @@ export class EditorTimeline {
         this.element.className = 'timeline-container';
         
         // Verhindern, dass Klicks durch die UI auf die 3D-Szene durchgehen
-        ['click', 'mousedown', 'mouseup', 'touchstart', 'touchend'].forEach(event => {
+        // Mouseup und Touchend nicht blockieren, damit Drag-Operationen beendet werden können
+        ['click', 'mousedown', 'touchstart'].forEach(event => {
             this.element.addEventListener(event, (e) => e.stopPropagation());
         });
 
@@ -50,6 +51,7 @@ export class EditorTimeline {
         const objects = this.dataManager?.getObjects() || [];
         const duration = this.dataManager?.getAnimationDuration() || 1500;
         const objectCount = objects.length;
+        const totalObjectsCount = this.dataManager?.getTotalObjectsCount() || 0;
         
         // HTML-Template für animierte Objekte
         let objectsHtml = objects
@@ -99,7 +101,7 @@ export class EditorTimeline {
         <!-- Grid Header: Sticky -->
         <div class="grid-header-left">
             <h2>Animierte Objekte</h2>
-            <p id="object-count">(${objectCount}/TODO)</p>
+            <p id="object-count">(${objectCount}/${totalObjectsCount})</p>
         </div>
         
         <!-- Timeline Header: Sticky -->

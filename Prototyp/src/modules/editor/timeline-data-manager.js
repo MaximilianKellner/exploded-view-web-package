@@ -39,6 +39,25 @@ export class TimelineDataManager {
         return this.objects;
     }
 
+    // Gibt die Gesamtanzahl der Objekte in der Szene zurück (nur echte Blender-Objekte)
+    getTotalObjectsCount() {
+        if (!this.animationHandler || !this.animationHandler.scene) {
+            console.warn('TimelineDataManager: Scene nicht verfügbar');
+            return 0;
+        }
+        
+        // Finde das geladene Modell (erste Gruppe/Objekt in der Scene)
+        let modelRoot = null;
+        for (let child of this.animationHandler.scene.children) {
+            if (child.isGroup || child.isMesh) {
+                modelRoot = child;
+                break;
+            }
+        }
+        
+        return modelRoot ? modelRoot.children.length : 0;
+    }
+
     //Gibt ein spezifisches Objekt nach Name zurück
     getObjectByName(name) {
         return this.objects.find(obj => obj.name === name);
