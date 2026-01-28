@@ -7,12 +7,18 @@
     z-index: 1000;
     display: none;
     flex-direction: column;
-
+    max-width: 400px;
     border-bottom-left-radius: 8px;
     overflow: hidden;
+    border-left: 2px solid var(--c-border-light);
 
     &.visible {
         display: flex;
+    }
+
+    #editor-title {
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .editor-value-display {
@@ -30,8 +36,9 @@
     .editor-row {
         display: flex;
         justify-content: space-between;
-        margin-bottom: var(--xs);
+        margin-bottom: var(--xxs);
         align-items: center;
+        gap: var(--xxxl);
     }
 
     .editor-input-group {
@@ -51,13 +58,18 @@
         }
     }
 
+    .editor-row:nth-of-type(1) {
+        margin-top: var(--s);
+        margin-bottom: var(--m);
+    }
+
     .editor-row:nth-of-type(2) .editor-input-group {
         border-bottom-left-radius: 0;
         border-bottom-right-radius: 0;
     }
 
     .editor-row:nth-of-type(3) {
-        margin-bottom: var(--l);
+        margin-bottom: var(--m);
     
         .editor-input-group {
             border-top-left-radius: 0;
@@ -98,19 +110,22 @@
 
 .editor-content {
     flex: 1;
-    padding: var(--xl) var(--xxl);
-    padding-bottom: var(--xs);
-    
-    overflow-y: auto;
+    padding: var(--l) var(--xxl);
+    padding-bottom: var(--m);
+    padding-right: var(--xl);
 }
 
 .editor-btn {
     flex: 1;
     background-color: var(--c-button);
-    border: 1px solid var(--c-button-highlight);
+    border: 2px solid var(--c-button-highlight);
     color: white;
     cursor: pointer;
     padding: var(--xs);
+
+    &:is(:first-child) {
+        border-left: none;
+    }
 
     &:hover {
         background-color: var(--c-button-highlight);
@@ -118,10 +133,12 @@
 
     &.blue {
         background-color: var(--c-accent);
-        border: 1px solid var(--c-accent-border);
+        border: 2px solid var(--c-accent-border);
+        margin-left: -2px;
+        z-index: 1;
 
         &:hover {
-        background-color: var(--c-accent-border);
+            background-color: var(--c-accent-border);
         }
     }
 }
