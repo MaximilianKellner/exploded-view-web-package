@@ -44,13 +44,6 @@ export class EditorPanel {
                 </div>
 
                 <div class="editor-row">
-                    <span class="editor-label">Geschwindigkeit</span>
-                    <div class="editor-input-group">
-                        <input type="number" step="0.1" class="editor-input" id="speed">
-                    </div>
-                </div>
-
-                <div class="editor-row">
                     <span class="editor-label">Start</span>
                     <div class="editor-input-group">
                         <input type="number" class="editor-input" step="0.01" id="start">
@@ -79,7 +72,6 @@ export class EditorPanel {
             dirY: this.element.querySelector('#dir-y'),
             dirZ: this.element.querySelector('#dir-z'),
             layer: this.element.querySelector('#layer'),
-            speed: this.element.querySelector('#speed'),
             start: this.element.querySelector('#start'),
             end: this.element.querySelector('#end'),
             title: this.element.querySelector('#editor-title'),
@@ -93,7 +85,6 @@ export class EditorPanel {
         this.inputs.dirY.addEventListener('change', handleChange);
         this.inputs.dirZ.addEventListener('change', handleChange);
         this.inputs.layer.addEventListener('change', handleChange);
-        this.inputs.speed.addEventListener('change', handleChange);
         this.inputs.start.addEventListener('change', handleChange);
         this.inputs.end.addEventListener('change', handleChange);
 
@@ -136,7 +127,6 @@ export class EditorPanel {
         this.inputs.dirZ.value = parseFloat(data.expDirection.z).toFixed(2);
         
         this.inputs.layer.value = parseFloat(data.targetLevel).toFixed(2);
-        this.inputs.speed.value = parseFloat(data.speedMultiplier).toFixed(2);
         this.inputs.start.value = parseFloat(data.start).toFixed(2);
         this.inputs.end.value = parseFloat(data.end).toFixed(2);
 
@@ -168,7 +158,6 @@ export class EditorPanel {
                 parseFloat(this.inputs.dirZ.value)
             ).normalize(),
             targetLevel: parseFloat(this.inputs.layer.value),
-            speedMultiplier: parseFloat(this.inputs.speed.value),
             start: parseFloat(this.inputs.start.value),
             end: parseFloat(this.inputs.end.value)
         };

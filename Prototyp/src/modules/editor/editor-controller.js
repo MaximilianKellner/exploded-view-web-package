@@ -153,7 +153,6 @@ export class EditorController {
             const defaultConfig = {
                 expDirection: new THREE.Vector3(0, 1, 0),
                 targetLevel: 1,
-                speedMultiplier: 1,
                 start: 0,
                 end: 1
             };
@@ -172,7 +171,6 @@ export class EditorController {
                 name: object.name,
                 expDirection: item.expDirection,
                 targetLevel: item.targetLevel,
-                speedMultiplier: item.speedMultiplier,
                 start: item.start,
                 end: item.end
             });
@@ -325,7 +323,6 @@ export class EditorController {
                     name: this.selectedObject.name,
                     expDirection: updatedItem.expDirection,
                     targetLevel: updatedItem.targetLevel,
-                    speedMultiplier: updatedItem.speedMultiplier,
                     start: updatedItem.start,
                     end: updatedItem.end
                 });

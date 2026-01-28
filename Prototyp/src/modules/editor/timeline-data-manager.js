@@ -8,7 +8,7 @@ export class TimelineDataManager {
         this.animationHandler = animationHandler;
         
         this.animationDuration = 1500; // ms (Standard)
-        this.objects = []; // Array von {name, start, end, level, expDirection, speedMultiplier}
+        this.objects = []; // Array von {name, start, end, level, expDirection}
         this.totalObjectsCount = 0; // Gecachte Anzahl der ursprünglichen Modell-Objekte
         
         this._initFromHandler();
@@ -29,7 +29,6 @@ export class TimelineDataManager {
             end: item.end !== undefined ? item.end : 1,
             level: item.targetLevel,
             expDirection: item.expDirection,
-            speedMultiplier: item.speedMultiplier,
             sequence: item.sequence ?? null,
         }));
 

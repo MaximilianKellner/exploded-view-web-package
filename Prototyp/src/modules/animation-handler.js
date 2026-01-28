@@ -103,7 +103,6 @@ export class AnimationHandler {
                     targetLevel: objectConfig.level !== undefined ? objectConfig.level : 0,
                     start: start,
                     end: end,
-                    speedMultiplier: objectConfig.speedMultiplier >= 1 ? objectConfig.speedMultiplier : 1.0,
                     expDirection: new THREE.Vector3().fromArray(expDirection).normalize()
                 });
             }
@@ -363,7 +362,6 @@ export class AnimationHandler {
                 targetLevel: 0,
                 start: 0,
                 end: 1,
-                speedMultiplier: 1.0,
                 expDirection: new THREE.Vector3(0, 1, 0)
             };
             this.explodableObjects.push(item);
@@ -371,7 +369,6 @@ export class AnimationHandler {
 
         if (newConfig.expDirection) item.expDirection.copy(newConfig.expDirection);
         if (newConfig.targetLevel !== undefined) item.targetLevel = newConfig.targetLevel;
-        if (newConfig.speedMultiplier !== undefined) item.speedMultiplier = newConfig.speedMultiplier;
         if (newConfig.start !== undefined) item.start = newConfig.start;
         if (newConfig.end !== undefined) item.end = newConfig.end;
 
@@ -389,10 +386,6 @@ export class AnimationHandler {
             const configObj = this.explosionConfig.objects[object.name];
             configObj.level = item.targetLevel;
             configObj.expDirection = item.expDirection.toArray();
-            
-            if (item.speedMultiplier !== undefined) {
-                configObj.speedMultiplier = item.speedMultiplier;
-            }
             if (item.start !== undefined) {
                 configObj.start = item.start;
             }

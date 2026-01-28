@@ -4,66 +4,56 @@
     "body": {
       "level": 0,
       "expDirection": [0, 0, 0],
-      "speedMultiplier": 1,
       "sequence": 1
     },
     "bein-l": {
       "level": 2,
       "expDirection": [0, -1, 0],
-      "speedMultiplier": 1,
       "sequence": 5
     },
     "bein-r": {
       "level": 2,
       "expDirection": [0, -1, 0],
-      "speedMultiplier": 1,
       "sequence": 5
     },
     
     "huefte": {
       "level": 1,
       "expDirection": [0, -1, 0],
-      "speedMultiplier": 1,
       "sequence": 6
     },
 
     "arm-l": {
       "level": 1,
       "expDirection": [1, 0.1, 0],
-      "speedMultiplier": 1,
       "sequence": 4
     },
     "arm-r": {
       "level": 1,
       "expDirection": [-1, 0.1, 0],
-      "speedMultiplier": 1,
       "sequence": 3
     },
 
     "hand-l": {
       "level": 2,
       "expDirection": [1, -1.5, 0],
-      "speedMultiplier": 1,
       "sequence": 4
     },
     "hand-r": {
       "level": 2,
       "expDirection": [-1, -1.5, 0],
-      "speedMultiplier": 1,
       "sequence": 3
     },
     
     "kopf": {
       "level": 1,
       "expDirection": [0, 1, 0],
-      "speedMultiplier": 1,
       "sequence": 2
     },
     
     "kappe": {
       "level": 2,
       "expDirection": [0, 1.5, 0],
-      "speedMultiplier": 1,
       "sequence": 1
     }
   }

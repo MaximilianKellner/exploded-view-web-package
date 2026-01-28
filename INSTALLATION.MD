@@ -135,7 +135,6 @@ Die wichtigsten Eigenschaften:
 - `level`: Ein Multiplikator für die Explosionsdistanz. Dieser Wert bestimmt auf welcher Ebene sich das Objekt zum Abschluss der Animation befindet.
 - `expDirection`: Ein Vektor `[X, Y, Z]`, der die Richtung der Bewegung angibt.
 - `sequence` (optional): Definiert die Reihenfolge der Animation. Teile mit der gleichen Sequenznummer bewegen sich gleichzeitig.
-- `speedMultiplier` (optional): Ein Multiplikator für die Geschwindigkeit der Animation für ein bestimmtes Teil. Dadurch erreicht das Objekt die Zielebene schneller.
 
 ### Beispiel für eine `exp-config.json`
 
