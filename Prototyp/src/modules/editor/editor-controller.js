@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { EditorPanel } from './editor-panel.js';
 import { EditorTimeline } from './editor-timeline.js';
-import '../../css/editor.css';
+import '../../css/editor-object-panel.css';
 
 export class EditorController {
     constructor({ scene, camera, renderer, clickHandler, animationHandler, explosionConfigPath }) {

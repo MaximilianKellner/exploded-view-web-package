@@ -12,7 +12,7 @@ export class EditorPanel {
 
     _init() {
         this.element = document.createElement('div');
-        this.element.className = 'editor-panel';
+        this.element.className = 'editor-object-panel';
 
 
 
@@ -27,7 +27,12 @@ export class EditorPanel {
             <div class="editor-row">
                 <span class="editor-label">Richtung</span>
                 <div class="editor-input-group">
-                    <input type="number" step="0.1" class="editor-input editor-vector-input" id="dir-x" placeholder="X">
+                <span>
+                <input type="number" step="0.1" class="editor-input editor-vector-input" id="dir-x" placeholder="X">
+                    <span class="unit">
+                        x
+                    </span>
+                </span>
                     <input type="number" step="0.1" class="editor-input editor-vector-input" id="dir-y" placeholder="Y">
                     <input type="number" step="0.1" class="editor-input editor-vector-input" id="dir-z" placeholder="Z">
                 </div>

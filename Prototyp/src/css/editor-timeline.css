@@ -11,6 +11,10 @@
     transform: translateX(-50%);
 
     transition: width 0.05s ease-in-out;
+    
+    &.eingeklappt {
+        transform: translateX(-50%) translateY(68%);
+    }
 
     button {
         background-color: var(--c-button);
@@ -91,45 +95,6 @@
         span {
             display: flex;
             height: 100%;
-
-            input {
-                height: 100%;
-                box-sizing: border-box;
-                max-width: 40px;
-                text-align: end;
-                
-                background-color: var(--c-button);
-                color: var(--c-body-text);
-                border: none;
-
-                &:focus {
-                    outline: none; /* entfernt den Fokus-Rahmen */
-                    border: 2px solid var(--c-border-light);
-                    background-color: var(--c-lightest);
-                }
-            }
-
-            /* Entfernt Spin-Buttons bei number inputs */
-            input[type="number"]::-webkit-outer-spin-button,
-            input[type="number"]::-webkit-inner-spin-button {
-                -webkit-appearance: none;
-                margin: 0;
-            }
-            input[type="number"] {
-                -moz-appearance: textfield; /* Firefox */
-            }
-
-            .unit {
-                background-color: var(--c-button);
-                color: var(--c-body-text);
-                padding: 0 8px;
-                padding-left: 1px;
-                align-items: center;
-                height: 100%;
-                display: flex;
-                font-size: .8rem;
-                border-radius:  0 var(--r-radius-button) var(--r-radius-button) 0;
-            }
         }
     }
 }
