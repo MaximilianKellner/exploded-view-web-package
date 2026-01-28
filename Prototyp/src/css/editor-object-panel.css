@@ -53,7 +53,7 @@
 
         .vertical-divider {
             width: 1px;
-            height: 60%;
+            height: var(--m);
             background-color: var(--c-border-light);
         }
     }
