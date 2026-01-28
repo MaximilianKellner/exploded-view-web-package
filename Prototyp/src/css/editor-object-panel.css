@@ -4,35 +4,129 @@
     right: 0px;
     background-color: var(--c-lighter);
     color: #fff;
-    padding: 15px;
     z-index: 1000;
     display: none;
+    flex-direction: column;
+
+    border-bottom-left-radius: 8px;
+    overflow: hidden;
 
     &.visible {
-        display: block;
+        display: flex;
     }
 
-    .editor-title {
+    .editor-value-display {
+        width: 100%;
+        max-width: 160px;
+        box-sizing: border-box;
+        font-size: .9rem;
+        text-align: center;
+        background-color: var(--c-dark);
+        padding: var(--xxs) var(--xs);
+        border: 2px solid var(--c-border);
+        border-radius: 8px;
     }
 
     .editor-row {
         display: flex;
         justify-content: space-between;
+        margin-bottom: var(--s);
     }
-}
 
-    .editor-btn {
-    background-color: var(--c-accent);
-    border: 1px solid var(--c-accent-border);
-    color: white;
-    cursor: pointer;
-    padding: 5px;
+    .editor-input-group {
+        display: flex;
+        align-items: center;
+        background-color: var(--c-button);
+        
+        overflow: hidden;
+        border-radius: 8px;
+        border: 2px solid var(--c-border-light);
+        max-width: 160px;
+
+        .vertical-divider {
+            width: 1px;
+            height: 60%;
+            background-color: var(--c-border-light);
+        }
+    }
+
+    .editor-row:nth-of-type(2) .editor-input-group {
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+
+    .editor-row:nth-of-type(3) .editor-input-group {
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+        margin-bottom: var(--s);
+    }
+
+    .editor-row:nth-of-type(4) .editor-input-group {
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+
+    .editor-row:nth-of-type(5) .editor-input-group {
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
     }
 
     input {
+        position: relative;
+        border: none;
+        height: 25px;
+        text-align: center;
+        width: 100%;
+        display: flex;
+        flex: 1;
+        max-width: none;
+
+        &:focus {
+            outline: none; /* entfernt den Fokus-Rahmen */
+            border: none;
+    }
+    }
+
+    .editor-actions {
+        display: flex;
+    }
+}
+
+.editor-content {
+    flex: 1;
+    padding: var(--xl) var(--xxl);
+    padding-bottom: var(--xs);
+    
+    overflow-y: auto;
+}
+
+.editor-btn {
+    flex: 1;
+    background-color: var(--c-button);
+    border: 1px solid var(--c-button-highlight);
+    color: white;
+    cursor: pointer;
+    padding: var(--xs);
+
+    &:hover {
+        background-color: var(--c-button-highlight);
+    }
+
+    &.blue {
+        background-color: var(--c-accent);
+        border: 1px solid var(--c-accent-border);
+
+        &:hover {
+        background-color: var(--c-accent-border);
+        }
+    }
+}
+
+
+/* Basis Input-Stil für alle Editor UI-Elemente */
+input {
     height: 100%;
     box-sizing: border-box;
-    max-width: 40px;
     text-align: end;
 
     background-color: var(--c-button);
@@ -64,6 +158,7 @@ input[type="number"] {
     padding-left: 1px;
     align-items: center;
     height: 100%;
+    display: inline-flex;
     font-size: 0.8rem;
     border-radius: 0 var(--r-radius-button) var(--r-radius-button) 0;
 }

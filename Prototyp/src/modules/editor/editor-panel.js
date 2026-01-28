@@ -17,58 +17,57 @@ export class EditorPanel {
 
 
         this.element.innerHTML = `
-            <h3 id="editor-title">No Selection</h3>
-            
-            <div class="editor-row">
-                <span class="editor-label">Vector</span>
-                <div class="editor-value-display" id="vector-display">0.00, 0.00, 0.00</div>
-            </div>
-
-            <div class="editor-row">
-                <span class="editor-label">Richtung</span>
-                <div class="editor-input-group">
-                <span>
-                <input type="number" step="0.1" class="editor-input editor-vector-input" id="dir-x" placeholder="X">
-                    <span class="unit">
-                        x
-                    </span>
-                </span>
-                    <input type="number" step="0.1" class="editor-input editor-vector-input" id="dir-y" placeholder="Y">
-                    <input type="number" step="0.1" class="editor-input editor-vector-input" id="dir-z" placeholder="Z">
+            <div class="editor-content">
+                <h3 id="editor-title">No Selection</h3>
+                
+                <div class="editor-row">
+                    <span class="editor-label">Vector</span>
+                    <div class="editor-value-display" id="vector-display">0.00 | 0.00 | 0.00</div>
                 </div>
-            </div>
 
-            <div class="editor-row">
-                <span class="editor-label">Layer</span>
-                <div class="editor-input-group">
-                    <input type="number" step="0.1" class="editor-input" id="layer">
+                <div class="editor-row">
+                    <span class="editor-label">Richtung</span>
+                    <div class="editor-input-group">
+                        <input type="number" step="0.1" class="editor-input editor-vector-input" id="dir-x" placeholder="X">
+                        <span class="vertical-divider"></span>
+                        <input type="number" step="0.1" class="editor-input editor-vector-input" id="dir-y" placeholder="Y">
+                        <span class="vertical-divider"></span>
+                        <input type="number" step="0.1" class="editor-input editor-vector-input" id="dir-z" placeholder="Z">
+                    </div>
                 </div>
-            </div>
 
-            <div class="editor-row">
-                <span class="editor-label">Speed</span>
-                <div class="editor-input-group">
-                    <input type="number" step="0.1" class="editor-input" id="speed">
+                <div class="editor-row">
+                    <span class="editor-label">Ebene</span>
+                    <div class="editor-input-group">
+                        <input type="number" step="0.1" class="editor-input" id="layer">
+                    </div>
                 </div>
-            </div>
 
-            <div class="editor-row">
-                <span class="editor-label">Start</span>
-                <div class="editor-input-group">
-                    <input type="number" step="0.01" min="0" max="1" class="editor-input" id="start">
+                <div class="editor-row">
+                    <span class="editor-label">Geschwindigkeit</span>
+                    <div class="editor-input-group">
+                        <input type="number" step="0.1" class="editor-input" id="speed">
+                    </div>
                 </div>
-            </div>
 
-            <div class="editor-row">
-                <span class="editor-label">Ende</span>
-                <div class="editor-input-group">
-                    <input type="number" step="0.01" min="0" max="1" class="editor-input" id="end">
+                <div class="editor-row">
+                    <span class="editor-label">Start</span>
+                    <div class="editor-input-group">
+                        <input type="number" class="editor-input" step="0.01" id="start">
+                    </div>
+                </div>
+
+                <div class="editor-row">
+                    <span class="editor-label">Ende</span>
+                    <div class="editor-input-group">
+                        <input type="number" class="editor-input" step="0.01" id="end">
+                    </div>
                 </div>
             </div>
 
             <div class="editor-actions">
-                <button class="editor-btn editor-btn-secondary" id="btn-reset">TODO Reset</button>
-                <button class="editor-btn" id="btn-export">Export Config</button>
+                <button class="editor-btn" id="btn-reset">TODO Reset</button>
+                <button class="editor-btn blue" id="btn-export">Export Config</button>
             </div>
         `;
 
@@ -158,7 +157,7 @@ export class EditorPanel {
         
         // Normalisierten Vektor mit Layer multiplizieren
         const vec = dir.multiplyScalar(level);
-        this.inputs.vectorDisplay.textContent = `${vec.x.toFixed(2)}, ${vec.y.toFixed(2)}, ${vec.z.toFixed(2)}`;
+        this.inputs.vectorDisplay.textContent = `${vec.x.toFixed(2)} | ${vec.y.toFixed(2)} | ${vec.z.toFixed(2)}`;
     }
 
     _onInputChange() {
