@@ -67,6 +67,9 @@ export class EditorController {
         if (this.transformHandler) {
             this.transformHandler.setCameraHandler(this.cameraHandler);
             
+            // TransformHandler an ClickHandler übergeben um Drag-Click-Konflikte zu vermeiden
+            this.clickHandler?.setTransformHandler(this.transformHandler);
+            
             // Listener für Transform-Änderungen hinzufügen, um Animationen synchron zu halten
             if (this.transformHandler.controls) {
                 this.transformHandler.controls.addEventListener('change', this._onTransformChange);

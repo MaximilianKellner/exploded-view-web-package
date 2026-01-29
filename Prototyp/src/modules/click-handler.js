@@ -12,6 +12,7 @@ export class ClickHandler {
         this.infoElementHandler = infoElementHandler;
         this.renderer = renderer;
         this.highlightHandler = highlightHandler;
+        this.transformHandler = null;
 
         this.lastHighlightedObject = null;
         this.lastSelectedObject = null; // Für Edit-Mode
@@ -29,6 +30,11 @@ export class ClickHandler {
 
     // --- Verarbeitung vom click Event ---
     _onObjectClick(event) {
+        // Klick ignorieren wenn gerade mit TransformControls gedragged wurde
+        if (this.transformHandler?.preventNextClick) {
+            return;
+        }
+
         // Die Bounding Box des Canvas-Elements abrufen
         const rect = this.renderer.domElement.getBoundingClientRect();
 
@@ -153,6 +159,10 @@ export class ClickHandler {
             // Edit-Mode deaktivieren - Selection zurücksetzen
             this.lastSelectedObject = null;
         }
+    }
+
+    setTransformHandler(transformHandler) {
+        this.transformHandler = transformHandler;
     }
 
     destroy() {
