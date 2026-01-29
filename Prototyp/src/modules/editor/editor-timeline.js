@@ -24,6 +24,7 @@ export class EditorTimeline {
         this.playPauseBtn = null;
         this.startBtn = null;
         this.endBtn = null;
+        this.einklappenBtn = null;
 
         this._initDataManager();
     }
@@ -94,6 +95,10 @@ export class EditorTimeline {
                 <input type="number" id="time-input" value="${duration}" max="99999" min="1">
                 <span class="unit">ms</span>
             </span>
+
+            <button id="einklappen">
+                <img src="/icon/editor/einklappen.svg" alt="einklappen">
+            </button>
         </div>
     </div>
 
@@ -144,10 +149,21 @@ export class EditorTimeline {
         
         this.container.appendChild(this.element);
         this._cacheDOMElements();
+        this._initEinklappenButton();
         this._initScrubberController();
         this._initKeyframeController();
     }
     
+    //Einklappen-Button zum Ein-/Ausklappen der Timeline
+    _initEinklappenButton() {
+        if (this.einklappenBtn) {
+            this.einklappenBtn.addEventListener('click', () => {
+                this.element.classList.toggle('eingeklappt');
+                this.einklappenBtn.classList.toggle('eingeklappt');
+            });
+        }
+    }
+
     /**
      * Initialisiert ScrubberController mit allen UI-Elementen
      */
@@ -195,6 +211,7 @@ export class EditorTimeline {
         this.playPauseBtn = this.element.querySelector('#timeline-play-pause');
         this.startBtn = this.element.querySelector('#timeline-start');
         this.endBtn = this.element.querySelector('#timeline-end');
+        this.einklappenBtn = this.element.querySelector('#einklappen');
     }
 
     /**
