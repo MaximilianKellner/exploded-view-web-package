@@ -1,4 +1,4 @@
-.editor-object-panel {
+.editor-anim-panel {
     position: absolute;
     top: 0px;
     right: 0px;
@@ -48,7 +48,6 @@
         
         overflow: hidden;
         border-radius: 8px;
-        border: 2px solid var(--c-border-light);
         max-width: 160px;
 
         .vertical-divider {
@@ -118,7 +117,7 @@
 .editor-btn {
     flex: 1;
     background-color: var(--c-button);
-    border: 2px solid var(--c-button-highlight);
+    /*border: 2px solid var(--c-button-highlight);*/
     color: white;
     cursor: pointer;
     padding: var(--xs);
@@ -133,7 +132,7 @@
 
     &.blue {
         background-color: var(--c-accent);
-        border: 2px solid var(--c-accent-border);
+        /*border: 2px solid var(--c-accent-border);*/
         margin-left: -2px;
         z-index: 1;
 

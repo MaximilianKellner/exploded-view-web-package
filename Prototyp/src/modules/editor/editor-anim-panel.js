@@ -12,7 +12,7 @@ export class EditorPanel {
 
     _init() {
         this.element = document.createElement('div');
-        this.element.className = 'editor-object-panel';
+        this.element.className = 'editor-anim-panel';
 
 
 
