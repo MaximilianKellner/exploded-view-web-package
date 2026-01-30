@@ -1,0 +1,55 @@
+.editor-scene-panel {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    background-color: var(--c-lighter);
+    color: #fff;
+    z-index: 1000;
+    display: none;
+    flex-direction: column;
+    max-width: 320px;
+    border-bottom-right-radius: 8px;
+    overflow: hidden;
+    border-right: 2px solid var(--c-border-light);
+    border-bottom: 2px solid var(--c-border-light);
+
+    &.visible {
+        display: flex;
+    }
+    .editor-title {
+        margin: var(--s);
+    }
+
+    .editor-content {
+        padding: 0;
+    }
+
+    summary {
+        background-color: var(--c-lightest);
+        border-top: 2px solid var(--c-border-light);
+        border-bottom: 2px solid var(--c-border-light);
+
+        padding: var(--xs) var(--m);
+    }
+
+    .editor-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: var(--l);
+        margin-bottom: var(--s);
+
+        padding: var(--xs) var(--m);
+    }
+
+    .editor-input-group {
+        display: flex;
+        align-items: center;
+        background-color: var(--c-button);
+        border-radius: 8px;
+        padding: 0 var(--xs);
+        height: 26px;
+    }
+
+
+}

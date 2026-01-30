@@ -1,7 +1,9 @@
 import * as THREE from 'three';
 import { EditorPanel } from './editor-anim-panel.js';
+import { EditorScenePanel } from './editor-scene-panel.js';
 import { EditorTimeline } from './editor-timeline.js';
 import '../../css/editor-anim-panel.css';
+import '../../css/editor-scene-panel.css';
 
 export class EditorController {
     constructor({ scene, camera, renderer, clickHandler, animationHandler, explosionConfigPath }) {
@@ -35,6 +37,13 @@ export class EditorController {
             onExport: this._onExportConfig
         });
 
+        // Scene Settings Panel initialisieren
+        this.editorScenePanel = new EditorScenePanel(container, {
+            scene: this.scene,
+            renderer: this.renderer,
+            config: this.animationHandler?.config
+        });
+
         // Editor Timeline initialisieren
         this.editorTimeline = new EditorTimeline(container, animationHandler, this.explosionConfigPath);
         this.editorTimeline.hide(); // Initial versteckt
@@ -55,6 +64,9 @@ export class EditorController {
         
         // Timeline anzeigen
         this.editorTimeline?.show();
+
+        // Scene Settings Panel anzeigen
+        this.editorScenePanel?.show();
         
         // ClickHandler in Edit-Mode setzen
         this.clickHandler?.setEditMode(true);
@@ -97,6 +109,9 @@ export class EditorController {
         
         // Timeline verstecken
         this.editorTimeline?.hide();
+
+        // Scene Settings Panel verstecken
+        this.editorScenePanel?.hide();
         
         // ClickHandler zurück in Viewer-Mode
         this.clickHandler?.setEditMode(false);
