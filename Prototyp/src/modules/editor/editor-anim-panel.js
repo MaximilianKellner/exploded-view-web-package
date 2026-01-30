@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import '../../css/editor-components.css';
 
 export class EditorPanel {
     constructor(container) {

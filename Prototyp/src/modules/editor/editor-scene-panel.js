@@ -1,5 +1,6 @@
 import { EditorColorPicker } from './editor-colorpicker.js';
 import '../../css/editor-colorpicker.css';
+import '../../css/editor-components.css';
 
 export class EditorScenePanel {
     constructor(container, { scene, renderer, config }) {
@@ -64,7 +65,14 @@ export class EditorScenePanel {
                             <span class="vertical-divider"></span>
                             <input type="number" step="0.1" class="editor-input editor-vector-input" id="dir-z" placeholder="Z">
                         </div>
+                        </div>
+
+                                        <div class="editor-row">
+                    <span class="editor-label">Ebene</span>
+                    <div class="editor-input-group">
+                        <input type="number" step="0.1" class="editor-input" id="layer">
                     </div>
+                </div>
                 </details>
             </div>
         `;

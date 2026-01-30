@@ -16,6 +16,7 @@
     &.visible {
         display: flex;
     }
+    
     .editor-title {
         margin: var(--s);
     }
@@ -28,25 +29,10 @@
         background-color: var(--c-lightest);
         border-top: 2px solid var(--c-border-light);
         border-bottom: 2px solid var(--c-border-light);
-
         padding: var(--xs) var(--m);
     }
 
     .editor-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: var(--l);
-        margin: var(--xxs) 0;
         padding: var(--xs) var(--m);
-    }
-
-    .editor-input-group {
-        display: flex;
-        align-items: center;
-        background-color: var(--c-button);
-        border-radius: 8px;
-        padding: 0 var(--xs);
-        height: 26px;
     }
 }
