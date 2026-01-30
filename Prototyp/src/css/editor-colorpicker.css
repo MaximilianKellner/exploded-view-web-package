@@ -10,13 +10,16 @@
     gap: 3px;
 }
 
+.custom-picker-wrapper {
+    padding: 2px;
+}
+
 /* Die linke Farb-Box */
 .color-preview-box {
     width: 20px;
     height: 100%;
     background-color: #fdfd96; /* Startfarbe */
     border: 2px solid var(--c-border-light);
-
     border-radius: 5px 0 0 5px;
 }
 
@@ -24,12 +27,14 @@
 .color-hex-label {
     height: 100%;
     padding: 0 var(--xxs);
-    border: 2px solid var(--c-border-light);
     font-family: monospace;
+    display: flex;
+    align-items: center;
     font-size: 1rem;
     user-select: none;
     color: #ffffff;
     background-color: var(--c-button);
+    border: 2px solid var(--c-border-light);
     border-radius: 0 5px 5px 0;
 }
 

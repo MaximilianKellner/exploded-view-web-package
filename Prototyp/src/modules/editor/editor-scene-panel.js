@@ -51,14 +51,17 @@ export class EditorScenePanel {
 
                         <div class="editor-row">
                             <span class="editor-label">Stärke</span>
-                            <div class="editor-input-group">
-                                <input type="range" class="editor-input" id="sun-intensity" />
+                            <div class="slider-container">
+                                <div class="slider-value" id="sun-intensity-value">0</div>
+                                <div class="slider-wrapper">
+                                    <input type="range" class="editor-slider" id="sun-intensity" min="0" max="100" value="60" />
+                                </div>
                             </div>
                         </div>
 
                         <div class="editor-row">
                         <span class="editor-label">Richtung</span>
-                        <div class="editor-input-group">
+                        <div class="editor-input-group bordered">
                             <input type="number" step="0.1" class="editor-input editor-vector-input" id="dir-x" placeholder="X">
                             <span class="vertical-divider"></span>
                             <input type="number" step="0.1" class="editor-input editor-vector-input" id="dir-y" placeholder="Y">
@@ -103,10 +106,16 @@ export class EditorScenePanel {
         // Referenzen für andere Inputs
         this.inputs = {
             sunIntensity: this.element.querySelector('#sun-intensity'),
+            sunIntensityValue: this.element.querySelector('#sun-intensity-value'),
             dirX: this.element.querySelector('#dir-x'),
             dirY: this.element.querySelector('#dir-y'),
             dirZ: this.element.querySelector('#dir-z'),
         };
+
+        // Event Listener für Slider
+        this.inputs.sunIntensity.addEventListener('input', (e) => {
+            this.inputs.sunIntensityValue.textContent = `${e.target.value}`;
+        });
     }
 
     show() {

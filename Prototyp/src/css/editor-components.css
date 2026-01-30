@@ -1,0 +1,224 @@
+/* Gemeinsame Editor-Styles */
+
+/* Editor Content-Bereich */
+.editor-content {
+    flex: 1;
+    padding: var(--m) var(--l);
+    padding-bottom: var(--m);
+    padding-right: var(--m);
+}
+
+/* Editor Row */
+.editor-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--l);
+    margin: var(--xxs);
+    color: var(--c-body-text);
+}
+
+/* Editor Input Group */
+.editor-input-group {
+    display: flex;
+    align-items: center;
+    background-color: var(--c-button);
+    border-radius: 5px;
+    overflow: hidden;
+    max-width: 160px;
+
+    .vertical-divider {
+        width: 1px;
+        height: var(--m);
+        background-color: var(--c-border-light);
+    }
+
+    &.bordered {
+        border: 2px solid var(--c-border-light);
+        box-sizing: border-box;
+        height: 24px;
+    }
+}
+
+/* Editor Buttons */
+.editor-btn {
+    flex: 1;
+    background-color: var(--c-button);
+    color: white;
+    cursor: pointer;
+    padding: var(--xs);
+
+    &:is(:first-child) {
+        border-left: none;
+    }
+
+    &:hover {
+        background-color: var(--c-button-highlight);
+    }
+
+    &.blue {
+        background-color: var(--c-accent);
+        margin-left: -2px;
+        z-index: 1;
+
+        &:hover {
+            background-color: var(--c-accent-border);
+        }
+    }
+}
+
+/* Basis Input-Stil für alle Editor UI-Elemente */
+input {
+    height: 100%;
+    min-height: 24px;
+    box-sizing: border-box;
+    text-align: end;
+    background-color: var(--c-button);
+    color: var(--c-body-text);
+    border: none;
+    border-radius: inherit;
+    border: 2px solid var(--c-border-light);
+
+    padding: 0 var(--s);
+    width: 100%;
+
+    &:focus {
+        outline: none;
+        border: 2px solid var(--c-border-light);
+        background-color: var(--c-lightest);
+    }
+}
+
+/* Spezielle Styles für Vektor-Inputs (X, Y, Z) */
+.editor-vector-input {
+    flex: 1;
+    text-align: center;
+    min-width: 0;
+    border: none;
+
+    &:focus {
+        outline: none;
+        border: none;
+        background-color: var(--c-lightest);
+    }
+}
+
+/* Entfernt Spin-Buttons bei number inputs */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield; /* Firefox */
+}
+
+/* Unit-Label */
+.unit {
+    background-color: var(--c-button);
+    color: var(--c-body-text);
+    padding: 0 8px;
+    padding-left: 1px;
+    align-items: center;
+    height: 100%;
+    display: inline-flex;
+    font-size: 0.8rem;
+    border-radius: 0 var(--r-radius-button) var(--r-radius-button) 0;
+}
+
+/* Slider Container */
+.slider-container {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    height: 20px;
+    max-width: 106px;
+    box-sizing: border-box;
+}
+
+/* Slider Value Display */
+.slider-value {
+    color: #ffffff;
+    width: 20px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    background-color: var(--c-button);
+    font-family: monospace;
+    font-size: 1rem;
+    border: 2px solid var(--c-border-light);
+    border-radius: 5px 0 0 5px;
+    z-index: 1;
+}
+
+/* Slider Wrapper --> verhindert Überlauf in Prozentwert*/
+.slider-wrapper {
+    flex: 1;
+    height: 100%;
+    overflow: hidden;
+    border: 2px solid var(--c-border-light);
+    border-radius: 0 5px 5px 0;
+    position: relative;
+}
+
+/* Range Slider Styling */
+.editor-slider {
+    width: 100%;
+    height: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+    cursor: pointer;
+    margin: 0;
+    padding: 0;
+    border: none;
+
+    &:focus {
+        outline: none;
+        border: none;
+    }
+}
+
+/* Webkit (Chrome, Safari, Edge) */
+.editor-slider::-webkit-slider-track {
+    height: 100%;
+    background: var(--c-button);
+}
+
+.editor-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 0;
+    height: 0;
+    background: transparent;
+    box-shadow: -400px 0 0 400px #fdfd96;
+}
+
+/* Firefox */
+.editor-slider::-moz-range-track {
+    height: 100%;
+    background: var(--c-button);
+}
+
+.editor-slider::-moz-range-thumb {
+    width: 0;
+    height: 0;
+    background: transparent;
+    border: none;
+    box-shadow: -400px 0 0 400px #fdfd96;
+}
+
+/* Focus State */
+.editor-slider:focus {
+    outline: none;
+}
+
+.editor-slider:focus::-webkit-slider-thumb {
+    box-shadow: -400px 0 0 400px #fdfd96;
+}
+
+.editor-slider:focus::-moz-range-thumb {
+    box-shadow: -400px 0 0 400px #fdfd96;
+}

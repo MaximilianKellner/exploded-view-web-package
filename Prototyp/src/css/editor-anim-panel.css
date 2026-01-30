@@ -8,9 +8,10 @@
     display: none;
     flex-direction: column;
     max-width: 400px;
-    border-bottom-left-radius: 8px;
+    border-bottom-left-radius: 10px;
     overflow: hidden;
     border-left: 2px solid var(--c-border-light);
+    border-bottom: 2px solid var(--c-border-light);
 
     &.visible {
         display: flex;
@@ -30,7 +31,7 @@
         background-color: var(--c-dark);
         padding: var(--xxs) var(--xs);
         outline: 2px solid var(--c-border);
-        border-radius: 8px;
+        border-radius: 5px;
     }
 
     .editor-row {
@@ -72,7 +73,22 @@
         border-top-right-radius: 0;
     }
 
+    input {
+        position: relative;
+        height: 25px;
+        text-align: center;
+        width: 100%;
+        display: flex;
+        flex: 1;
+        max-width: none;
+
+        &:focus {
+            outline: none; /* entfernt den Fokus-Rahmen */
+        }
+    }
+
     .editor-actions {
         display: flex;
+        outline: 2px solid var(--c-border-light);
     }
 }

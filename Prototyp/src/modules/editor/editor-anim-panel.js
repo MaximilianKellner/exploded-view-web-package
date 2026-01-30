@@ -28,7 +28,7 @@ export class EditorPanel {
 
                 <div class="editor-row">
                     <span class="editor-label">Richtung</span>
-                    <div class="editor-input-group">
+                    <div class="editor-input-group bordered">
                         <input type="number" step="0.1" class="editor-input editor-vector-input" id="dir-x" placeholder="X">
                         <span class="vertical-divider"></span>
                         <input type="number" step="0.1" class="editor-input editor-vector-input" id="dir-y" placeholder="Y">

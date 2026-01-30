@@ -91,6 +91,17 @@
             box-sizing: border-box;
         }
 
+        #time-input {
+            border: none;
+            width: 40px;
+            padding: 0;
+
+            &:focus {
+                outline: none;
+                border: 2px solid var(--c-border-light);
+            }
+        }
+
         /* Input mit Einheit */
         span {
             display: flex;
