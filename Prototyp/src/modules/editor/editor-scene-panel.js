@@ -24,7 +24,7 @@ export class EditorScenePanel {
             <div class="editor-content">
                 <h3 class="editor-title">Szenen Einstellungen</h3>
 
-                <details class="editor-details" open>
+                <details class="editor-details">
                     <summary>Szene</summary>
                         <div class="editor-row">
                             <span class="editor-label">Hintergrund</span>
@@ -37,7 +37,7 @@ export class EditorScenePanel {
                         </div>
                 </details>
 
-                <details class="editor-details" open>
+                <details class="editor-details">
                     <summary>Sun</summary>
                         <div class="editor-row">
                             <span class="editor-label">Farbe</span>

@@ -22,7 +22,7 @@ export class EditorPanel {
                 <h3 id="editor-title">No Selection</h3>
                 
                 <div class="editor-row">
-                    <span class="editor-label">Vector</span>
+                    <span class="editor-label">Vektor</span>
                     <div class="editor-value-display" id="vector-display">0.00 | 0.00 | 0.00</div>
                 </div>
 

@@ -8,6 +8,12 @@
     padding-right: var(--m);
 }
 
+.editor-label {
+    font-size: 0.9rem;
+    color: var(--c-body-text);
+    user-select: none;
+}
+
 /* Editor Row */
 .editor-row {
     display: flex;
@@ -125,6 +131,7 @@ input[type="number"] {
     display: inline-flex;
     font-size: 0.8rem;
     border-radius: 0 var(--r-radius-button) var(--r-radius-button) 0;
+    user-select: none;
 }
 
 /* Slider Container */
