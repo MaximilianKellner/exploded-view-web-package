@@ -1,3 +1,6 @@
+import { EditorColorPicker } from './editor-colorpicker.js';
+import '../../css/editor-colorpicker.css';
+
 export class EditorScenePanel {
     constructor(container, { scene, renderer, config }) {
         this.container = container;
@@ -7,6 +10,7 @@ export class EditorScenePanel {
 
         this.element = null;
         this.inputs = {};
+        this.colorPickers = {};
 
         this._init();
     }
@@ -23,8 +27,11 @@ export class EditorScenePanel {
                     <summary>Szene</summary>
                         <div class="editor-row">
                             <span class="editor-label">Hintergrund</span>
-                            <div class="editor-input-group">
-                                <input type="color" class="editor-input" id="scene-bg" />
+                            <div class="custom-picker-wrapper" data-picker="background">
+                                <div class="picker-trigger">
+                                    <div class="color-preview-box"></div>
+                                    <div class="color-hex-label"></div>
+                                </div>
                             </div>
                         </div>
                 </details>
@@ -33,44 +40,69 @@ export class EditorScenePanel {
                     <summary>Sun</summary>
                         <div class="editor-row">
                             <span class="editor-label">Farbe</span>
-                            <div class="editor-input-group">
-                                <input type="color" class="editor-input" id="scene-bg" />
-                            </div>
+                                <div class="custom-picker-wrapper" data-picker="sunColor">
+                                    <div class="picker-trigger">
+                                        <div class="color-preview-box"></div>
+                                        <div class="color-hex-label"></div>
+                                    </div>
+                                </div>
                         </div>
 
                         <div class="editor-row">
                             <span class="editor-label">Stärke</span>
                             <div class="editor-input-group">
-                                <input type="range" class="editor-input" id="scene-bg" />
+                                <input type="range" class="editor-input" id="sun-intensity" />
                             </div>
                         </div>
 
                         <div class="editor-row">
-                            <span class="editor-label">Position</span>
-                            <div class="editor-input-group">
-                                <input type="range" class="editor-input" id="scene-bg" />
-                            </div>
+                        <span class="editor-label">Richtung</span>
+                        <div class="editor-input-group">
+                            <input type="number" step="0.1" class="editor-input editor-vector-input" id="dir-x" placeholder="X">
+                            <span class="vertical-divider"></span>
+                            <input type="number" step="0.1" class="editor-input editor-vector-input" id="dir-y" placeholder="Y">
+                            <span class="vertical-divider"></span>
+                            <input type="number" step="0.1" class="editor-input editor-vector-input" id="dir-z" placeholder="Z">
                         </div>
+                    </div>
                 </details>
             </div>
         `;
 
         this.container.appendChild(this.element);
 
+        // Farben aus Config auslesen
+        const sceneConfig = this.config?.sceneConfig;
+        const bgColor = sceneConfig?.backgroundColor || 
+                       (this.scene?.background?.isColor ? '#' + this.scene.background.getHexString() : '#1e1e1e');
+
+        // ColorPicker mit finalen Werten initialisieren
+        const backgroundWrapper = this.element.querySelector('[data-picker="background"]');
+        const sunColorWrapper = this.element.querySelector('[data-picker="sunColor"]');
+
+        this.colorPickers.background = new EditorColorPicker(
+            backgroundWrapper,
+            bgColor,
+            (color) => this._onBackgroundChange(color)
+        );
+
+        this.colorPickers.sunColor = new EditorColorPicker(
+            sunColorWrapper,
+            '#ffffff',
+            (color) => this._onSunColorChange(color)
+        );
+
+        // Referenzen für andere Inputs
         this.inputs = {
-            background: this.element.querySelector('#scene-bg'),
+            sunIntensity: this.element.querySelector('#sun-intensity'),
+            dirX: this.element.querySelector('#dir-x'),
+            dirY: this.element.querySelector('#dir-y'),
+            dirZ: this.element.querySelector('#dir-z'),
         };
-
-        this.inputs.background.addEventListener('input', () => {
-            this._onBackgroundChange();
-        });
-
-        this.update();
     }
 
     show() {
         this.element.classList.add('visible');
-        this.update();
     }
 
     hide() {
@@ -81,17 +113,23 @@ export class EditorScenePanel {
         const sceneConfig = this.config?.sceneConfig;
         if (!sceneConfig) return;
 
-        if (typeof sceneConfig.backgroundColor === 'string') {
-            this.inputs.background.value = sceneConfig.backgroundColor;
+        // Hintergrundfarbe aktualisieren falls sich Config geändert hat
+        if (sceneConfig.backgroundColor) {
+            this.colorPickers.background?.setColor(sceneConfig.backgroundColor);
         }
     }
 
-    _onBackgroundChange() {
+    _onBackgroundChange(color) {
         const sceneConfig = this.config?.sceneConfig;
         if (!sceneConfig) return;
 
-        const color = this.inputs.background.value;
         sceneConfig.backgroundColor = color;
         this.scene?.background?.set(color);
+    }
+
+    _onSunColorChange(color) {
+        // Implementierung für Sun Color Change
+        console.log('Sun Color changed:', color);
+        // TODO: Sun Light Farbe in der Szene aktualisieren
     }
 }

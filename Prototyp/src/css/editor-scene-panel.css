@@ -37,8 +37,7 @@
         justify-content: space-between;
         align-items: center;
         gap: var(--l);
-        margin-bottom: var(--s);
-
+        margin: var(--xxs) 0;
         padding: var(--xs) var(--m);
     }
 
@@ -50,6 +49,4 @@
         padding: 0 var(--xs);
         height: 26px;
     }
-
-
 }

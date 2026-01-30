@@ -262,6 +262,7 @@ class ExplodedViewer {
             clickHandler: this.clickHandler,
             animationHandler: this.animationHandler,
             explosionConfigPath: this.config.explosionConfigPath,
+            config: this.config,
         });
 
         this.editor.setInfoElementHandler(this.infoElementHandler);

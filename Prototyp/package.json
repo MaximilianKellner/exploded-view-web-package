@@ -51,13 +51,14 @@
     "registry": "https://registry.npmjs.org/"
   },
   "devDependencies": {
-    "vite": "^7.1.12",
-    "three": "^0.182.0"
+    "three": "^0.182.0",
+    "vite": "^7.1.12"
   },
   "peerDependencies": {
     "three": "^0.182.0"
   },
   "dependencies": {
+    "@simonwep/pickr": "^1.9.1",
     "animejs": "^4.2.2",
     "stats.js": "^0.17.0",
     "tweakpane": "^4.0.5"

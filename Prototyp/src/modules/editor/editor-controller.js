@@ -6,13 +6,14 @@ import '../../css/editor-anim-panel.css';
 import '../../css/editor-scene-panel.css';
 
 export class EditorController {
-    constructor({ scene, camera, renderer, clickHandler, animationHandler, explosionConfigPath }) {
+    constructor({ scene, camera, renderer, clickHandler, animationHandler, explosionConfigPath, config }) {
         this.scene = scene;
         this.camera = camera;
         this.renderer = renderer;
         this.clickHandler = clickHandler;
         this.animationHandler = animationHandler;
         this.explosionConfigPath = explosionConfigPath;
+        this.config = config;
 
         this.enabled = false;
         this.transformHandler = null;
@@ -41,7 +42,7 @@ export class EditorController {
         this.editorScenePanel = new EditorScenePanel(container, {
             scene: this.scene,
             renderer: this.renderer,
-            config: this.animationHandler?.config
+            config: this.config
         });
 
         // Editor Timeline initialisieren

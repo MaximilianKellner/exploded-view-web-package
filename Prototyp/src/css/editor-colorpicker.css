@@ -1,0 +1,121 @@
+
+/* Container für den Trigger */
+.picker-trigger {
+    display: flex;
+    align-items: center;
+    border-radius: 12px;
+    cursor: pointer;
+    width: fit-content;
+    height: 20px;
+    gap: 3px;
+}
+
+/* Die linke Farb-Box */
+.color-preview-box {
+    width: 20px;
+    height: 100%;
+    background-color: #fdfd96; /* Startfarbe */
+    border: 2px solid var(--c-border-light);
+
+    border-radius: 5px 0 0 5px;
+}
+
+/* Der Text-Bereich */
+.color-hex-label {
+    height: 100%;
+    padding: 0 var(--xxs);
+    border: 2px solid var(--c-border-light);
+    font-family: monospace;
+    font-size: 1rem;
+    user-select: none;
+    color: #ffffff;
+    background-color: var(--c-button);
+    border-radius: 0 5px 5px 0;
+}
+
+/* -------------- Reset Pickr -------------- */
+.pickr {
+    display: inline-block;
+}
+
+.pickr .pcr-button {
+    all: unset; 
+    display: block;
+}
+
+/* --------------- ------------------------ */
+
+/* Overrides */
+.pickr .pcr-button {
+    border: 2px solid var(--c-border-light);    
+    border-radius: 5px 0 0 5px !important;
+    overflow: hidden;
+
+    &::after {
+        border-radius: 3px 0 0 3px !important;
+    }
+}
+
+.pcr-app {
+    background: var(--c-lightest) !important;
+    border: 2px solid var(--c-border-light);
+
+    border-radius: var(--xs) !important;
+    overflow: hidden;
+    padding: var(--xxs);
+
+    .pcr-selection {
+        /* Vorschau Kreis*/
+        .pcr-color-preview {
+            margin: 0 !important;
+            justify-content: start !important;
+        }
+
+        .pcr-color-preview .pcr-current-color{
+            border: 2px solid var(--c-border-light) !important;
+            border-radius: var(--r-radius-button) !important;
+            align-self: flex-start !important;
+        }
+
+        .pcr-color-chooser {
+            margin-top: 12px !important;
+        }
+
+        .pcr-color-chooser .pcr-slider {
+            outline: 2px solid var(--c-border-light) !important;
+        }
+    }
+
+    .pcr-color-palette {
+        /* Farbbereich */
+        .pcr-palette {
+            border-radius: 4px !important  ;
+            border: 2px solid var(--c-border-light);
+        }
+
+        .pcr-palette::before {
+            border-radius: 10px !important  ;
+        }        
+    }
+
+    /* Inputs */
+
+    .pcr-interaction {
+        padding: 0  !important;
+
+        input {
+            background-color: var(--c-button) !important;
+            border: 2px solid var(--c-border-light);
+            border-radius: var(--r-radius-button) !important;
+            color: #ecf0f1 !important;
+        }
+
+        /* Save button */
+        .pcr-interaction .pcr-save {
+            background-color: var(--c-button-highlight) !important;
+            border: none !important;
+            border-radius: var(--r-radius-button) !important;
+            color: #ecf0f1 !important;
+        }
+    }
+}

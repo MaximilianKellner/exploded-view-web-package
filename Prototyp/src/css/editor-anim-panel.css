@@ -36,6 +36,7 @@
     .editor-row {
         display: flex;
         justify-content: space-between;
+        margin-top: var(--xxs);
         margin-bottom: var(--xxs);
         align-items: center;
         gap: var(--xxxl);
