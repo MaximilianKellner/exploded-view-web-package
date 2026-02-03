@@ -104,7 +104,6 @@
     }
 
     /* Inputs */
-
     .pcr-interaction {
         padding: 0  !important;
 
@@ -115,7 +114,9 @@
             color: #ecf0f1 !important;
 
             margin-top: 0  !important;
-
+            padding: var(--xxs) !important;
+            font-family: monospace !important;
+            font-size: 0.9rem !important;
         }
 
         /* Save button */

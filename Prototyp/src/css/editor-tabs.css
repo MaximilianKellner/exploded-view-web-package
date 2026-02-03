@@ -107,7 +107,7 @@
     align-items: center;
     padding: var(--xs);
     gap: var(--s);
-    justify-content: flex-start;
+    justify-content: space-between;
 
     img {
         width: 17px;

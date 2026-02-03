@@ -120,7 +120,7 @@ export class TabObjekte {
         });
     }
 
-    // Prüft, ob ein Objekt in den explodableObjects ist (also eine Animation hat)
+    // Prüft, ob ein Objekt in den explodableObjects/eine Animation hat
     _isObjectAnimated(object) {
         if (!this.animationHandler?.explodableObjects) {
             return false;
@@ -161,5 +161,29 @@ export class TabObjekte {
     refresh() {
         this._collectObjects();
         this.searchInput.value = '';
+    }
+
+    // Aktualisirrt das animated icon eines spezifischen Objekts --> performanter als kompletter refresh
+    updateObjectIcon(objectName) {
+        const listItem = this.objectItems[objectName];
+        if (!listItem) return;
+        
+        const object = this.allObjects.find(obj => obj.name === objectName);
+        if (!object) return;
+        
+        const isAnimated = this._isObjectAnimated(object);
+        const animatedIconHTML = isAnimated 
+            ? '<img src="../icon/editor/animated.svg" alt="animated icon" />' 
+            : '';
+        
+        listItem.innerHTML = `
+            <span class="item-name">${objectName}</span>
+            ${animatedIconHTML}
+        `;
+        
+        // Event Listener neu binden, da innerHTML überschrieben wurde
+        listItem.addEventListener('click', () => {
+            this._selectObject(object, listItem);
+        });
     }
 }

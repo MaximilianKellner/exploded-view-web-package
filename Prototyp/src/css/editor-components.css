@@ -105,7 +105,9 @@ input {
     border: none;
     border-radius: inherit;
     border: 2px solid var(--c-border-light);
-
+    font-family: monospace;
+    font-size: 0.9rem;
+    
     padding: 0 var(--s);
     width: 100%;
 
@@ -176,7 +178,7 @@ input[type="number"] {
     user-select: none;
     background-color: var(--c-button);
     font-family: monospace;
-    font-size: 1rem;
+    font-size: .85rem;
     border: 2px solid var(--c-border-light);
     border-radius: 5px 0 0 5px;
     z-index: 1;

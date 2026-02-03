@@ -200,6 +200,9 @@ export class EditorController {
             
             // Timeline aktualisieren - objectCount und ggf. neue Items hinzufügen
             this.editorTimeline?.updateObjectCount();
+            
+            // Objektliste im Sidebar aktualisieren --> animated icon hinzufügen
+            this.editorSidebarPanel?.getTab('objects')?.updateObjectIcon(object.name);
         }
         
         // Panel mit Daten anzeigen

@@ -148,7 +148,7 @@ export class EditorPanel {
         
         // Normalisierten Vektor mit Layer multiplizieren
         const vec = dir.multiplyScalar(level);
-        this.inputs.vectorDisplay.textContent = `${vec.x.toFixed(2)} | ${vec.y.toFixed(2)} | ${vec.z.toFixed(2)}`;
+        this.inputs.vectorDisplay.textContent = `${vec.x.toFixed(1)} | ${vec.y.toFixed(1)} | ${vec.z.toFixed(1)}`;
     }
 
     _onInputChange() {
