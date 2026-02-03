@@ -78,13 +78,13 @@ export class EditorTimeline {
         this.element.innerHTML = `
             <div class="top-bar">
         <div class="anim-btn-group">
-            <button id="timeline-start">
+            <button id="timeline-start" title="Start der Animation">
                 <img src="/icon/editor/start.svg" alt="start icon">
             </button>
-            <button id="timeline-play-pause">
+            <button id="timeline-play-pause" title="Abspielen/Pause">
                 <img src="/icon/editor/play.svg" alt="play icon">
             </button>
-            <button id="timeline-end">
+            <button id="timeline-end" title="Ende der Timeline">
                 <img src="/icon/editor/end.svg" alt="end icon">
             </button>
         </div>
@@ -96,7 +96,7 @@ export class EditorTimeline {
                 <span class="unit">ms</span>
             </span>
 
-            <button id="einklappen">
+            <button id="einklappen" title="Ein-/Ausklappen der Timeline">
                 <img src="/icon/editor/einklappen.svg" alt="einklappen">
             </button>
         </div>
