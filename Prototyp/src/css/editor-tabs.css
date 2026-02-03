@@ -54,11 +54,22 @@
 
 }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 3d2ab79a5d6e26ddb95234498fba81fe296481a4
 /* ---- LISTEN ---- */
 .tab-list-section {
     flex: 1;
     overflow-y: auto;
+<<<<<<< HEAD
     margin-bottom: 39px; /* Platz für Footer */
+=======
+}
+
+.tab-object-list,
+.tab-light-list {
+>>>>>>> 3d2ab79a5d6e26ddb95234498fba81fe296481a4
 
 }
 
@@ -82,6 +93,15 @@
     }
 }
 
+<<<<<<< HEAD
+=======
+.tab-list-item.active .item-name,
+.tab-list-item.active .item-type,
+.tab-list-item.active .item-info {
+    color: #ffffff;
+}
+
+>>>>>>> 3d2ab79a5d6e26ddb95234498fba81fe296481a4
 /* Item Labels */
 .item-name {
     flex: 1;
@@ -103,6 +123,14 @@
     border-radius: 3px;
 }
 
+<<<<<<< HEAD
+=======
+.tab-list-item.active .item-type,
+.tab-list-item.active .item-info {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+>>>>>>> 3d2ab79a5d6e26ddb95234498fba81fe296481a4
 /* ---- LICHTER-SPEZIFISCH ---- */
 .light-item-content {
     flex: 1;
@@ -152,15 +180,23 @@
     color: var(--c-l-accent);
     font-size: 0.9rem;
     list-style: none;
+<<<<<<< HEAD
     margin-bottom: 39px; /* Platz für Footer */
+=======
+>>>>>>> 3d2ab79a5d6e26ddb95234498fba81fe296481a4
 }
 
 /* ---- FOOTER ---- */
 .tab-footer {
+<<<<<<< HEAD
+=======
+    padding: var(--s) var(--m);
+>>>>>>> 3d2ab79a5d6e26ddb95234498fba81fe296481a4
     background-color: var(--c-lighter);
     border-top: 1px solid var(--c-border);
     flex-shrink: 0;
     display: flex;
+<<<<<<< HEAD
     height: 39px;
     position: absolute;
     bottom: 0;
@@ -176,6 +212,15 @@
             height: 19px;
             margin-right: var(--xxs);
         }
+=======
+    gap: var(--xs);
+
+    &.editor-btn {
+        flex: 1;
+        padding: var(--xs) var(--s);
+        font-size: 0.85rem;
+        border-radius: 4px;
+>>>>>>> 3d2ab79a5d6e26ddb95234498fba81fe296481a4
     }
 }
 
