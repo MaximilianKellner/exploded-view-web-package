@@ -1,12 +1,12 @@
 /**
  * Objekte-Tab: Listet alle Objekte der Szene auf
  * Mit Suchfunktion und Möglichkeit zur Auswahl/Bearbeitung
+ * Nutzt das gleiche Event System wie der ClickHandler zur Auswahl und Vorschau
  */
 export class TabObjekte {
-    constructor({ scene, animationHandler, onObjectSelect }) {
+    constructor({ scene, animationHandler }) {
         this.scene = scene;
         this.animationHandler = animationHandler;
-        this.onObjectSelect = onObjectSelect; // Callback wenn Objekt ausgewählt
 
         this.element = null;
         this.searchInput = null;
@@ -52,23 +52,30 @@ export class TabObjekte {
         });
     }
 
-    /**
-     * Sammelt alle Mesh-Objekte aus der Szene
-     */
+    //Sammelt alle animierbaren Objekte (model.children) --> explodableObjects und potenzielle explodableObjects
     _collectObjects() {
         this.allObjects = [];
-        this.scene.traverse((node) => {
-            // Nur Meshes mit Namen erfassen
-            if (node.isMesh && node.name && !node.name.startsWith('_')) {
-                this.allObjects.push(node);
+        
+        // Findet das root Modell --> normalerweise das erste Group-Objekt in der Scene
+        let modelRoot = null;
+        for (let child of this.scene.children) {
+            if (child.isGroup || (child.isMesh && child.children.length > 0)) {
+                modelRoot = child;
+                break;
             }
-        });
+        }
+        
+        // Sammle alle children des Modells
+        if (modelRoot && modelRoot.children.length > 0) {
+            this.allObjects = Array.from(modelRoot.children).filter(child => 
+                child.name && !child.name.startsWith('_')
+            );
+        }
+        
         this._renderList(this.allObjects);
     }
 
-    /**
-     * Filtert die Objektliste nach Suchtext
-     */
+    // Filtert die Objektliste nach Suchtext
     _filterObjects(searchText) {
         const text = searchText.toLowerCase();
         this.filteredObjects = this.allObjects.filter(obj => 
@@ -77,9 +84,7 @@ export class TabObjekte {
         this._renderList(this.filteredObjects);
     }
 
-    /**
-     * Rendert die Objektliste
-     */
+    //Rendert die Objektliste
     _renderList(objects) {
         this.objectList.innerHTML = '';
         this.objectItems = {};
@@ -101,9 +106,7 @@ export class TabObjekte {
         });
     }
 
-    /**
-     * Selektiert ein Objekt und triggert Callback
-     */
+    // Selektiert ein Objekt und dispatcht Custom Event (wie ClickHandler)
     _selectObject(object, listItem) {
         // Highlight entfernen
         Object.values(this.objectItems).forEach(item => {
@@ -113,22 +116,23 @@ export class TabObjekte {
         // Neues Item hervorheben
         listItem.classList.add('active');
 
-        // Callback aufrufen (EditorController kümmert sich um Gizmo etc.)
-        if (this.onObjectSelect) {
-            this.onObjectSelect(object);
-        }
+        // Custom Event dispatchen (nutzt die bestehende Logik vom ClickHandler)
+        window.dispatchEvent(new CustomEvent('ev:objectSelected', { 
+            detail: { 
+                object: object,
+                UUID: object.uuid,
+                position: object.position.clone(),
+                isMultiSelect: false
+            } 
+        }));
     }
 
-    /**
-     * Gibt das Root-Element zurück
-     */
+    // Gibt das Root-Element zurück
     getElement() {
         return this.element;
     }
 
-    /**
-     * Aktualisiert die Objektliste (z. B. wenn neue Objekte hinzugefügt)
-     */
+    // Aktualisiert die Objektliste
     refresh() {
         this._collectObjects();
         this.searchInput.value = '';
