@@ -1,6 +1,6 @@
 .timeline-container {
     display: flex;
-    width: 90vw;
+    width: 75vw;
     max-width: 3500px;
     min-width: 360px;
     flex-direction: column;
@@ -13,7 +13,7 @@
     transition: width 0.05s ease-in-out, transform 0.3s ease-in-out;
     
     &.eingeklappt {
-        transform: translateX(-50%) translateY(68%);
+        transform: translateX(-50%) translateY(63%);
     }
 
     button {
@@ -134,7 +134,7 @@
     grid-template-columns: minmax(150px, 250px) 1fr;
     grid-template-rows: auto 1fr;
     width: 100%;
-    height: 200px;
+    height: 170px;
     background-color: var(--c-lighter);
     overflow: hidden;
 }

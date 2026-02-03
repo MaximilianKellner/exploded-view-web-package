@@ -2,8 +2,10 @@ import * as THREE from 'three';
 import { EditorPanel } from './editor-anim-panel.js';
 import { EditorScenePanel } from './editor-scene-panel.js';
 import { EditorTimeline } from './editor-timeline.js';
+import { EditorSidebarPanel } from './editor-sidebar-panel.js';
 import '../../css/editor-anim-panel.css';
 import '../../css/editor-scene-panel.css';
+import '../../css/editor-sidebar-panel.css';
 
 export class EditorController {
     constructor({ scene, camera, renderer, clickHandler, animationHandler, explosionConfigPath, config }) {
@@ -24,6 +26,7 @@ export class EditorController {
         // Event handlers
         this._onObjectSelected = this._onObjectSelected.bind(this);
         this._onObjectDeselected = this._onObjectDeselected.bind(this);
+        this._onLightSelected = this._onLightSelected.bind(this);
         this._onTransformChange = this._onTransformChange.bind(this);
         this._onPanelChange = this._onPanelChange.bind(this);
         this._onExportConfig = this._onExportConfig.bind(this);
@@ -36,6 +39,16 @@ export class EditorController {
         this.editorPanel.setCallbacks({
             onChange: this._onPanelChange,
             onExport: this._onExportConfig
+        });
+
+        // Sidebar Panel initialisieren (mit Tab-Komponenten)
+        this.editorSidebarPanel = new EditorSidebarPanel(container, {
+            scene: this.scene,
+            renderer: this.renderer,
+            config: this.config,
+            animationHandler: this.animationHandler,
+            onObjectSelect: this._onObjectSelected,
+            onLightSelect: this._onLightSelected
         });
 
         // Scene Settings Panel initialisieren
@@ -65,6 +78,9 @@ export class EditorController {
         
         // Timeline anzeigen
         this.editorTimeline?.show();
+
+        // Sidebar anzeigen
+        this.editorSidebarPanel?.show();
 
         // Scene Settings Panel anzeigen
         this.editorScenePanel?.show();
@@ -111,6 +127,9 @@ export class EditorController {
         // Timeline verstecken
         this.editorTimeline?.hide();
 
+        // Sidebar verstecken
+        this.editorSidebarPanel?.hide();
+
         // Scene Settings Panel verstecken
         this.editorScenePanel?.hide();
         
@@ -136,7 +155,17 @@ export class EditorController {
 
     // Event Handler für Objektauswahl
     _onObjectSelected(event) {
-        const { object, UUID } = event.detail;
+        // Wenn event ein Custom Event ist (von window.addEventListener)
+        let object, UUID;
+        
+        if (event.detail) {
+            // Custom Event vom Click Handler
+            object = event.detail.object;
+            UUID = event.detail.UUID;
+        } else {
+            // Direkter Aufruf von der Objektliste in der Sidebar
+            object = event;
+        }
 
         // Prüfen, ob das geklickte Objekt unser eigener Ghost ist (oder ein Teil davon)
         if (this.ghostObject) {
@@ -210,6 +239,14 @@ export class EditorController {
             this.editorPanel.hide();
             console.log('EditorController: Objekt deselektiert:', object.name);
         }
+    }
+
+    /**
+     * Event Handler für Licht-Auswahl aus der Sidebar
+     */
+    _onLightSelected(light) {
+        console.log('EditorController: Licht ausgewählt:', light.name);
+        // TODO: Gizmo für Lichter, Eigenschaften-Panel, etc.
     }
 
     // Temporäres Objekt zur visualisierung der Transformation erstellen

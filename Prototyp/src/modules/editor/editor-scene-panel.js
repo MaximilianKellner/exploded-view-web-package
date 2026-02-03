@@ -119,7 +119,9 @@ export class EditorScenePanel {
     }
 
     show() {
-        this.element.classList.add('visible');
+
+        //TODO
+        this.element.classList.remove('visible');
     }
 
     hide() {
