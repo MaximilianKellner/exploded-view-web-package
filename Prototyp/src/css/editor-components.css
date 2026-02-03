@@ -73,6 +73,28 @@
     }
 }
 
+
+.einklappen-btn, #einklappen-timeline {
+    border-radius: var(--r-radius-button) var(--r-radius-button) var(--r-radius-button) var(--r-radius-button);
+    padding: 0px;
+    width: 24px;
+    height: 24px;
+
+    img {
+        border-radius:  var(--r-radius-button);
+        background-color: transparent;
+        width: 100%;
+        height: 100%;
+        transition: transform 0.4s ease-in;
+    }
+
+    &.eingeklappt {
+        img {
+            transform: rotate(180deg);
+        }
+    }   
+}
+
 /* Basis Input-Stil für alle Editor UI-Elemente */
 input {
     height: 100%;

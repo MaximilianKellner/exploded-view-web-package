@@ -63,13 +63,24 @@ export class TabScene {
                     </div>
 
                     <div class="editor-row">
-                        <span class="editor-label">Richtung</span>
+                        <span class="editor-label">Position</span>
                         <div class="editor-input-group bordered">
                             <input type="number" step="0.1" class="editor-input editor-vector-input" id="dir-x" placeholder="X" value="1">
                             <span class="vertical-divider"></span>
                             <input type="number" step="0.1" class="editor-input editor-vector-input" id="dir-y" placeholder="Y" value="1">
                             <span class="vertical-divider"></span>
                             <input type="number" step="0.1" class="editor-input editor-vector-input" id="dir-z" placeholder="Z" value="1">
+                        </div>
+                    </div>
+
+                    <div class="editor-row">
+                        <span class="editor-label">Rotation</span>
+                        <div class="editor-input-group bordered">
+                            <input type="number" step="0.1" class="editor-input editor-vector-input" id="rot-x" placeholder="X" value="45°">
+                            <span class="vertical-divider"></span>
+                            <input type="number" step="0.1" class="editor-input editor-vector-input" id="rot-y" placeholder="Y" value="90°">
+                            <span class="vertical-divider"></span>
+                            <input type="number" step="0.1" class="editor-input editor-vector-input" id="rot-z" placeholder="Z" value="0°">
                         </div>
                     </div>
                 </details>

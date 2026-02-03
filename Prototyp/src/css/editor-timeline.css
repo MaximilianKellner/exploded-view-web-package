@@ -108,25 +108,6 @@
             display: flex;
             height: 100%;
         }
-
-        #einklappen {
-            border-radius: var(--r-radius-button) var(--r-radius-button) var(--r-radius-button) var(--r-radius-button);
-            padding: 0px;
-            width: 24px;
-
-            img {
-                border-radius:  var(--r-radius-button);
-                background-color: transparent;
-                width: 100%;
-                transition: transform 0.4s ease-in-out;
-            }
-
-            &.eingeklappt {
-                img {
-                    transform: rotate(180deg);
-                }
-            }   
-        }
     }
 }
 

@@ -10,8 +10,8 @@
     max-width: 400px;
     border-bottom-left-radius: 10px;
     overflow: hidden;
-    border-left: 2px solid var(--c-border-light);
-    border-bottom: 2px solid var(--c-border-light);
+    border-left: 2px solid var(--c-border);
+    border-bottom: 2px solid var(--c-border);
 
     &.visible {
         display: flex;
@@ -90,6 +90,6 @@
 
     .editor-actions {
         display: flex;
-        outline: 2px solid var(--c-border-light);
+        outline: 2px solid var(--c-border);
     }
 }

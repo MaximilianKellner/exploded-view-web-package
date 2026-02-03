@@ -18,6 +18,7 @@ export class EditorSidebarPanel {
         this.tabContents = {};
         this.tabs = {}; // Speichert Tab-Komponenten
         this.activeTab = 'scene';
+        this.einklappenBtn = null;
 
         this._init();
     }
@@ -27,12 +28,17 @@ export class EditorSidebarPanel {
         this.sidebarContent = document.createElement('div');
         this.sidebarContent.className = 'editor-sidebar-panel';
         
-        const logoContainer = document.createElement('div');
-        logoContainer.className = 'editor-sidebar-logo';
-        logoContainer.id = 'editor-sidebar-logo';
-        logoContainer.innerHTML = '<img src="../logo-block.svg" alt="Logo">';
+        const sidebarHeader = document.createElement('div');
+        sidebarHeader.className = 'editor-sidebar-header';
+        sidebarHeader.id = 'editor-sidebar-header';
+        sidebarHeader.innerHTML = `
+            <img src="../logo-block.svg" alt="Logo">
+            <button class="einklappen-btn" id="einklappen-sidebar">
+                <img src="/icon/editor/einklappen.svg" alt="Logo">
+            </button>
+        `;
         
-        this.sidebarContent.appendChild(logoContainer);
+        this.sidebarContent.appendChild(sidebarHeader);
         
         // Tab-Navigationssystem
         const tabNav = document.createElement('div');
@@ -98,6 +104,10 @@ export class EditorSidebarPanel {
         this.sidebarContent.appendChild(tabContentsContainer);
         
         this.container.appendChild(this.sidebarContent);
+        
+        // DOM-Elemente cachen und Einklappen-Button initialisieren
+        this._cacheDOMElements();
+        this._initEinklappenButton();
     }
 
     _switchTab(tabId) {
@@ -111,6 +121,19 @@ export class EditorSidebarPanel {
         this.activeTab = tabId;
         this.tabButtons[tabId].classList.add('active');
         this.tabContents[tabId].classList.add('active');
+    }
+
+    _cacheDOMElements() {
+        this.einklappenBtn = this.sidebarContent.querySelector('#einklappen-sidebar');
+    }
+
+    _initEinklappenButton() {
+        if (this.einklappenBtn) {
+            this.einklappenBtn.addEventListener('click', () => {
+                this.sidebarContent.classList.toggle('eingeklappt');
+                this.einklappenBtn.classList.toggle('eingeklappt');
+            });
+        }
     }
 
     //Setzt den Inhalt eines Tabs (wird vom Benutzer aufgerufen)

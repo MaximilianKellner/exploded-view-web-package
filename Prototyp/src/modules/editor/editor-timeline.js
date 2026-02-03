@@ -1,4 +1,5 @@
 import '../../css/editor-timeline.css';
+import '../../css/editor-components.css';
 import { TimelineDataManager } from './timeline-data-manager.js';
 import { ScrubberController } from './scrubber-controller.js';
 import { KeyframeController } from './keyframe-controller.js';
@@ -96,7 +97,7 @@ export class EditorTimeline {
                 <span class="unit">ms</span>
             </span>
 
-            <button id="einklappen" title="Ein-/Ausklappen der Timeline">
+            <button id="einklappen-timeline" title="Ein-/Ausklappen der Timeline">
                 <img src="/icon/editor/einklappen.svg" alt="einklappen">
             </button>
         </div>
@@ -211,7 +212,7 @@ export class EditorTimeline {
         this.playPauseBtn = this.element.querySelector('#timeline-play-pause');
         this.startBtn = this.element.querySelector('#timeline-start');
         this.endBtn = this.element.querySelector('#timeline-end');
-        this.einklappenBtn = this.element.querySelector('#einklappen');
+        this.einklappenBtn = this.element.querySelector('#einklappen-timeline');
     }
 
     /**

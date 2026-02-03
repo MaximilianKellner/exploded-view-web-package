@@ -1,0 +1,230 @@
+/* ---- TAB-INHALTE STYLING ---- */
+
+/* Gemeinsamer Style für alle Tab-Inhalte */
+.tab-szene-content,
+.tab-objekte-content,
+.tab-lichter-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+/* ---- SUCHE ---- */
+.tab-search-section {    
+    background-color: var(--c-lightest);
+    padding: var(--s);
+    display: inline-flex;
+    gap: var(--xxs);
+    height: 30px;
+    border-top: 2px solid var(--c-border);
+
+    input, .tab-search-input {
+        background-color: var(--c-button);
+        border: 2px solid var(--c-border-light);
+        border-radius: 5px 0 0 5px;
+        box-sizing: border-box;
+
+        &:focus {
+            outline: none;
+            background-color: var(--c-dark);
+        }
+    }
+
+    button {
+        background-color: var(--c-button);
+        border: 2px solid var(--c-border-light);
+        border-radius: 5px;
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+        box-sizing: border-box;
+        justify-content: center;
+        align-items: center;
+        display: flex;
+        padding: var(--xxs);
+        
+        img {
+            width: 19px;
+            height: 19px;
+        }
+
+        &:hover {
+            background-color: var(--c-button-highlight);
+        }
+    }
+
+}
+
+/* ---- LISTEN ---- */
+.tab-list-section {
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 39px; /* Platz für Footer */
+
+}
+
+/* ---- LIST-ITEMS ---- */
+.tab-list-item {
+    background-color: var(--c-lighter);
+    padding: var(--xxs);
+
+    &:nth-child(even) {
+        background-color: var(--c-lightest);
+    }
+
+    &:hover {
+        background-color: var(--c-border);
+    }
+
+    &.active {
+        color: #ffffff;
+        background-color: var(--c-accent);
+        border: 2px solid var(--c-accent-border);
+    }
+}
+
+/* Item Labels */
+.item-name {
+    flex: 1;
+    font-weight: 500;
+    color: var(--c-body-text);
+    font-size: 0.9rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.item-type,
+.item-info {
+    font-size: 0.75rem;
+    color: var(--c-l-accent);
+    white-space: nowrap;
+    padding: 2px 6px;
+    background-color: var(--c-lightest);
+    border-radius: 3px;
+}
+
+/* ---- LICHTER-SPEZIFISCH ---- */
+.light-item-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.light-item-header {
+    display: flex;
+    align-items: center;
+    gap: var(--s);
+    justify-content: space-between;
+}
+
+.light-item-details {
+    display: flex;
+    align-items: center;
+    gap: var(--s);
+    font-size: 0.8rem;
+    color: var(--c-l-accent);
+}
+
+.tab-list-item.active .light-item-details {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.light-color {
+    width: 16px;
+    height: 16px;
+    border-radius: 2px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    flex-shrink: 0;
+}
+
+.light-intensity {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ---- EMPTY STATE ---- */
+.tab-list-empty {
+    padding: var(--m);
+    text-align: center;
+    color: var(--c-l-accent);
+    font-size: 0.9rem;
+    list-style: none;
+    margin-bottom: 39px; /* Platz für Footer */
+}
+
+/* ---- FOOTER ---- */
+.tab-footer {
+    background-color: var(--c-lighter);
+    border-top: 1px solid var(--c-border);
+    flex-shrink: 0;
+    display: flex;
+    height: 39px;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+
+    .editor-btn {
+        font-size: 0.85rem;
+        align-items: center;
+        justify-content: center;
+        display: flex;
+        img {
+            width: 19px;
+            height: 19px;
+            margin-right: var(--xxs);
+        }
+    }
+}
+
+/* ---- SZENE-TAB SPEZIFISCH ---- */
+.tab-szene-content .editor-content {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.tab-szene-content .editor-title {
+    margin: 0 0 var(--m) 0;
+    font-size: 1rem;
+    color: var(--c-body-text);
+}
+
+.tab-szene-content .editor-details {
+    margin-bottom: var(--m);
+}
+
+.tab-szene-content .editor-details summary {
+    cursor: pointer;
+    padding: var(--xs) var(--s);
+    background-color: var(--c-button);
+    border: 1px solid var(--c-border-light);
+    border-radius: 4px;
+    margin-bottom: var(--xs);
+    font-weight: 500;
+    font-size: 0.9rem;
+    user-select: none;
+    transition: background-color 0.2s ease;
+}
+
+.tab-szene-content .editor-details summary:hover {
+    background-color: var(--c-lightest);
+}
+
+.tab-szene-content .editor-details[open] summary {
+    background-color: var(--c-accent);
+    color: #ffffff;
+    border-color: var(--c-accent-border);
+}
+
+.tab-szene-content .editor-details > div {
+    padding: var(--s) var(--s);
+    background-color: var(--c-button);
+    border: 1px solid var(--c-border-light);
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--m);
+}

@@ -1,0 +1,123 @@
+.editor-sidebar-panel {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    z-index: 1000;
+    background-color: var(--c-lightest);
+    border: 2px solid var(--c-border);
+    border-left: none;
+    border-top: none;
+    border-radius: 0 0 8px 0;
+    max-height: 400px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    color: #ffffff;
+
+    &.eingeklappt {
+        height: min-content;
+            transition: height 0.3s ease-in;
+        height: 40px;
+
+        .editor-sidebar-tabs {
+            transition: transform 0.3s ease-in;
+            transform: translateY(-300%);
+        }
+
+        .editor-sidebar-tab-contents {
+            transition: transform 0.3s ease-in;
+            transform: translateY(-300%);
+        }
+    }
+}
+
+/* Tab Navigation */
+.editor-sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 var(--xs);
+    
+    .einklappen-btn {
+        background-color: var(--c-button);
+        border-radius: var(--r-radius-button);
+        padding: 0;
+        width: 24px;
+        height: 24px;
+        
+        img {
+            border-radius: var(--r-radius-button);
+            background-color: transparent;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.4s ease-in;
+        }
+        
+        &.eingeklappt {
+            img {
+                transform: rotate(180deg);
+            }
+        }
+    }
+
+
+    img {
+        max-width: 100%;
+        height: 40px;
+        object-fit: contain;
+        justify-self: start;
+    }
+}
+
+/* Tab Navigation */
+.editor-sidebar-tabs {
+    display: flex;
+    gap: 0;
+    background-color: var(--c-lightest);
+}
+
+.editor-sidebar-tab-btn {
+    flex: 1;
+    padding: var(--xs) var(--m);
+    background-color: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--c-l-accent);
+    font-size: .75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    
+    &:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    &.active {
+        color: #fff;
+        border-bottom-color: var(--c-accent-border);
+        /*background-color: rgba(74, 158, 255, 0.1);*/
+        background-color: #324655;
+    }
+}
+
+/* Tab Contents Container */
+.editor-sidebar-tab-contents {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background-color: var(--c-lighter);
+}
+
+/* Einzelner Tab Content */
+.editor-sidebar-tab-content {
+    display: none;
+    width: 100%;
+
+    &.active {
+        display: block;
+    }
+}
