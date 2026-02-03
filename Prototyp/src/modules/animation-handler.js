@@ -395,6 +395,27 @@ export class AnimationHandler {
         }
     }
 
+    deleteAnimation(object) {
+        // Entferne aus explodableObjects Array
+        const index = this.explodableObjects.findIndex(i => i.object === object);
+        if (index !== -1) {
+            const item = this.explodableObjects[index];
+            
+            // Objekt zurück zur Originalposition setzen
+            object.position.copy(item.originalPosition);
+            
+            // Aus Array entfernen
+            this.explodableObjects.splice(index, 1);
+        }
+        
+        // Aus explosionConfig entfernen
+        if (this.explosionConfig && this.explosionConfig.objects && this.explosionConfig.objects[object.name]) {
+            delete this.explosionConfig.objects[object.name];
+        }
+        
+        console.log(`Animation für ${object.name} gelöscht`);
+    }
+
     exportConfig() {
         if (!this.explosionConfig) return;
 

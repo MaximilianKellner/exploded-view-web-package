@@ -98,7 +98,7 @@
     color: var(--c-l-accent);
     white-space: nowrap;
     padding: 2px 6px;
-    background-color: var(--c-lightest);
+    background-color: var(--c-border);
     border-radius: 3px;
 }
 /* ---- OBJEKTE-SPEZIFISCH ---- */

@@ -60,8 +60,19 @@ export class EditorPanel {
             </div>
 
             <div class="editor-actions">
-                <button class="editor-btn" id="btn-reset">TODO Reset</button>
+                <button class="editor-btn" id="btn-delete">Animation Löschen</button>
                 <button class="editor-btn blue" id="btn-export">Export Config</button>
+            </div>
+
+            <div class="delete-popup" id="delete-popup">
+                <div class="delete-popup-content">
+                    <h3>Animation Löschen ?</h3>
+                    <p id="delete-popup-text">Wollen sie die Animation wirklich löschen?</p>
+                    <div class="delete-popup-actions">
+                        <button class="editor-btn" id="btn-cancel">Abbrechen</button>
+                        <button class="editor-btn red" id="btn-confirm-delete">Löschen</button>
+                    </div>
+                </div>
             </div>
         `;
 
@@ -93,9 +104,39 @@ export class EditorPanel {
             if (this.callbacks.onExport) this.callbacks.onExport();
         });
         
-        this.element.querySelector('#btn-reset').addEventListener('click', () => {
-             // TODO Reset funnktion
+        this.element.querySelector('#btn-delete').addEventListener('click', () => {
+            this._showDeletePopup();
         });
+
+        this.element.querySelector('#btn-cancel').addEventListener('click', () => {
+            this._hideDeletePopup();
+        });
+
+        this.element.querySelector('#btn-confirm-delete').addEventListener('click', () => {
+            this._hideDeletePopup();
+            if (this.callbacks.onDelete) this.callbacks.onDelete();
+        });
+    }
+
+    _showDeletePopup() {
+        const popup = this.element.querySelector('#delete-popup');
+        const popupText = this.element.querySelector('#delete-popup-text');
+        
+        if (popup) {
+            // Text mit aktuellem Objektnamen aktualisieren
+            if (popupText && this.inputs.title) {
+                const objectName = this.inputs.title.textContent;
+                popupText.textContent = `Wollen sie die Animation für "${objectName}" wirklich löschen?`;
+            }
+            popup.classList.add('visible');
+        }
+    }
+
+    _hideDeletePopup() {
+        const popup = this.element.querySelector('#delete-popup');
+        if (popup) {
+            popup.classList.remove('visible');
+        }
     }
 
     setCallbacks(callbacks) {

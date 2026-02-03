@@ -28,6 +28,7 @@ export class EditorController {
         this._onTransformChange = this._onTransformChange.bind(this);
         this._onPanelChange = this._onPanelChange.bind(this);
         this._onExportConfig = this._onExportConfig.bind(this);
+        this._onDeleteAnimation = this._onDeleteAnimation.bind(this);
         this._onKeyframeChange = this._onKeyframeChange.bind(this);
         this._onPanelTimelineChange = this._onPanelTimelineChange.bind(this);
 
@@ -36,7 +37,8 @@ export class EditorController {
         this.editorPanel = new EditorPanel(container);
         this.editorPanel.setCallbacks({
             onChange: this._onPanelChange,
-            onExport: this._onExportConfig
+            onExport: this._onExportConfig,
+            onDelete: this._onDeleteAnimation
         });
 
         // Sidebar Panel initialisieren --> Tab-Komponenten
@@ -337,6 +339,32 @@ export class EditorController {
     // Callback für Export Button
     _onExportConfig() {
         this.animationHandler.exportConfig();
+    }
+
+    // Callback für Delete Button
+    _onDeleteAnimation() {
+        if (!this.selectedObject) return;
+
+        // Animation im AnimationHandler löschen
+        this.animationHandler.deleteAnimation(this.selectedObject);
+
+        // Panel ausblenden
+        this.editorPanel.hide();
+
+        // Preview-Objekt und Gizmo entfernen
+        this.transformHandler?.detach();
+        this._removePreviewObject();
+
+        // Objektliste im Sidebar aktualisieren (animated icon entfernen)
+        this.editorSidebarPanel?.getTab('objects')?.updateObjectIcon(this.selectedObject.name);
+
+        // Timeline aktualisieren - Keyframe entfernen
+        this.editorTimeline?.updateObjectCount();
+
+        // Selektion zurücksetzen
+        this.selectedObject = null;
+
+        console.log('Animation gelöscht und UI aktualisiert');
     }
 
     // Event Handler für Transform-Änderungen (Verschieben/Rotieren/Skalieren)
