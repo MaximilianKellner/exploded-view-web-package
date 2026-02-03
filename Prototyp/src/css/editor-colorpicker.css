@@ -113,6 +113,9 @@
             border: 2px solid var(--c-border-light);
             border-radius: var(--r-radius-button) !important;
             color: #ecf0f1 !important;
+
+            margin-top: 0  !important;
+
         }
 
         /* Save button */
@@ -122,5 +125,10 @@
             border-radius: var(--r-radius-button) !important;
             color: #ecf0f1 !important;
         }
+    }
+
+    .pcr-type {
+        display: none !important;
+        padding: 0 !important;
     }
 }
