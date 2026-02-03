@@ -30,7 +30,12 @@ export class EditorSidebarPanel {
         const logoContainer = document.createElement('div');
         logoContainer.className = 'editor-sidebar-logo';
         logoContainer.id = 'editor-sidebar-logo';
-        logoContainer.innerHTML = '<img src="../logo-block.svg" alt="Logo">';
+        logoContainer.innerHTML = `
+            <img src="../logo-block.svg" alt="Logo">
+            <button style="background-color: red">
+                <img src="../icon/editor/einklappen.svg" alt="Logo">
+            </button>
+        `;
         
         this.sidebarContent.appendChild(logoContainer);
         

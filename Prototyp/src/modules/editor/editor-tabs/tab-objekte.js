@@ -26,13 +26,17 @@ export class TabObjekte {
 
         this.element.innerHTML = `
             <div class="tab-search-section">
-                <input type="text" class="tab-search-input" placeholder="Objekte durchsuchen..." />
+                    <input type="text" class="tab-search-input" placeholder="Objekte durchsuchen" />
+
+                    <button>
+                        <img src="../icon/editor/search.svg" class="tab-search-icon" alt="Suche" />
+                    </button>
             </div>
             <div class="tab-list-section">
                 <ul class="tab-object-list"></ul>
             </div>
             <div class="tab-footer">
-                <button class="editor-btn blue" id="export-config-btn">Config herunterladen</button>
+                <button class="editor-btn blue" id="export-config-btn">exp-config exportieren</button>
             </div>
         `;
 
@@ -94,7 +98,6 @@ export class TabObjekte {
             li.className = 'tab-list-item';
             li.innerHTML = `
                 <span class="item-name">${obj.name}</span>
-                <span class="item-info">${obj.geometry?.type || 'Mesh'}</span>
             `;
 
             li.addEventListener('click', () => {

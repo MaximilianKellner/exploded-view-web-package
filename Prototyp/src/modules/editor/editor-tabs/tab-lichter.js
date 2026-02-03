@@ -25,13 +25,17 @@ export class TabLichter {
 
         this.element.innerHTML = `
             <div class="tab-search-section">
-                <input type="text" class="tab-search-input" placeholder="Lichter durchsuchen..." />
+                    <input type="text" class="tab-search-input" placeholder="Lichter durchsuchen" />
+
+                    <button>
+                        <img src="../icon/editor/search.svg" class="tab-search-icon" alt="Suche" />
+                    </button>
             </div>
             <div class="tab-list-section">
                 <ul class="tab-light-list"></ul>
             </div>
             <div class="tab-footer">
-                <button class="editor-btn blue" id="export-lights-btn">Lichter-Config herunterladen</button>
+                <button class="editor-btn blue" id="export-lights-btn">scene-config exportieren</button>
             </div>
         `;
 
