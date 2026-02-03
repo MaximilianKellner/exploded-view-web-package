@@ -23,6 +23,7 @@
         border: 2px solid var(--c-border-light);
         border-radius: 5px 0 0 5px;
         box-sizing: border-box;
+        font-family: "Roboto", sans-serif;
 
         &:focus {
             outline: none;
@@ -66,10 +67,13 @@
 .tab-list-item {
     background-color: var(--c-lighter);
     padding: var(--xxs);
+    border-bottom: 2px solid var(--c-border);
 
+    /*
     &:nth-child(even) {
         background-color: var(--c-lightest);
     }
+        */
 
     &:hover {
         background-color: var(--c-border);
@@ -78,7 +82,7 @@
     &.active {
         color: #ffffff;
         background-color: var(--c-accent);
-        border: 2px solid var(--c-accent-border);
+        border-bottom: 2px solid var(--c-accent-border);
     }
 }
 
@@ -185,6 +189,7 @@
         align-items: center;
         justify-content: center;
         display: flex;
+        
         img {
             width: 19px;
             height: 19px;

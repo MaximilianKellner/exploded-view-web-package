@@ -60,8 +60,8 @@ export class EditorPanel {
             </div>
 
             <div class="editor-actions">
-                <button class="editor-btn" id="btn-delete">Animation Löschen</button>
-                <button class="editor-btn blue" id="btn-export">Export Config</button>
+                <button class="editor-btn red" id="btn-delete">Animation Löschen</button>
+                <button class="editor-btn blue" id="btn-export" style="display:none">Export Config</button>
             </div>
 
             <div class="delete-popup" id="delete-popup">

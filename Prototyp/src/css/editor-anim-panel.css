@@ -148,10 +148,11 @@
             font-weight: 500;
 
             &.red {
-                background-color: var(--c-red-border);
+                background-color: var(--c-red);
+                color: #ffffff;
 
                 &:hover {
-                    background-color: #b71c1c;
+                    background-color: var(--c-red-border);
                 }
             }
         }

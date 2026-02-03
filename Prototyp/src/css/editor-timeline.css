@@ -150,6 +150,7 @@
         margin: 0 0 2px 0;
         font-size: 0.8rem;
         color: var(--c-body-text);
+        font-family: monospace;
     }
 }
 

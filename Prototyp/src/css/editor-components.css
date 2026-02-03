@@ -71,6 +71,13 @@
             background-color: var(--c-accent-border);
         }
     }
+
+     &.red {
+
+         &:hover {
+            background-color: var(--c-red);
+        }
+    }
 }
 
 .einklappen-btn, #einklappen-timeline {
