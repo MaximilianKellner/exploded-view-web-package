@@ -89,6 +89,7 @@
             padding: 4px;
             height: 100%;
             box-sizing: border-box;
+            user-select: none;
         }
 
         #time-input {

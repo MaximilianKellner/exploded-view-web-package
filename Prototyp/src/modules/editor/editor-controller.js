@@ -45,7 +45,7 @@ export class EditorController {
             renderer: this.renderer,
             config: this.config,
             animationHandler: this.animationHandler,
-            onObjectSelect: this._onObjectSelected,
+
             onLightSelect: this._onLightSelected
         });
 
@@ -152,25 +152,29 @@ export class EditorController {
             object = event;
         }
 
-        // Prüfen, ob das geklickte Objekt unser eigener Ghost ist (oder ein Teil davon)
-        if (this.ghostObject) {
-            let isGhost = false;
-            if (object === this.ghostObject) isGhost = true;
+        // Prüfen, ob das geklickte Objekt PreviewObject ist --> dann ignorieren
+        if (this.previewObject) {
+            let isPreview = false;
+            if (object === this.previewObject) isPreview = true;
             object.traverseAncestors((ancestor) => {
-                if (ancestor === this.ghostObject) isGhost = true;
+                if (ancestor === this.previewObject) isPreview = true;
             });
             
-            if (isGhost) {
-                console.log('EditorController: Klick auf Ghost ignoriert.');
+            if (isPreview) {
+                console.log('EditorController: Klick auf Preview ignoriert.');
                 return;
             }
         }
         
-        // Vorheriges Objekt deselektieren
-        if (this.selectedObject !== object) {
-            this.transformHandler?.detach();
-            this._removePreviewObject();
+        // Wenn dasselbe Objekt nochmal geklickt wird, nichts tun
+        if (this.selectedObject === object) {
+            console.log('EditorController: Objekt bereits ausgewählt:', object.name);
+            return;
         }
+        
+        // Vorheriges Objekt deselektieren - Preview immer entfernen
+        this.transformHandler?.detach();
+        this._removePreviewObject();
 
         // Neues Objekt selektieren
         this.selectedObject = object;
