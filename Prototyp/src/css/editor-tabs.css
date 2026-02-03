@@ -84,7 +84,6 @@
 
 /* Item Labels */
 .item-name {
-    flex: 1;
     font-weight: 500;
     color: var(--c-body-text);
     font-size: 0.9rem;
@@ -102,6 +101,21 @@
     background-color: var(--c-lightest);
     border-radius: 3px;
 }
+/* ---- OBJEKTE-SPEZIFISCH ---- */
+.tab-object-list .tab-list-item {
+    display: flex;
+    align-items: center;
+    padding: var(--xs);
+    gap: var(--s);
+    justify-content: flex-start;
+
+    img {
+        width: 17px;
+        height: 17px;
+        flex-shrink: 0;
+    }
+}
+
 
 /* ---- LICHTER-SPEZIFISCH ---- */
 .light-item-content {

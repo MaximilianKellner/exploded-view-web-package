@@ -99,8 +99,16 @@ export class TabObjekte {
         objects.forEach((obj) => {
             const li = document.createElement('li');
             li.className = 'tab-list-item';
+            
+            // Prüfen, ob das Objekt animiert ist
+            const isAnimated = this._isObjectAnimated(obj);
+            const animatedIconHTML = isAnimated 
+                ? '<img src="../icon/editor/animated.svg" alt="animated icon" />' 
+                : '';
+            
             li.innerHTML = `
                 <span class="item-name">${obj.name}</span>
+                ${animatedIconHTML}
             `;
 
             li.addEventListener('click', () => {
@@ -110,6 +118,17 @@ export class TabObjekte {
             this.objectList.appendChild(li);
             this.objectItems[obj.name] = li;
         });
+    }
+
+    // Prüft, ob ein Objekt in den explodableObjects ist (also eine Animation hat)
+    _isObjectAnimated(object) {
+        if (!this.animationHandler?.explodableObjects) {
+            return false;
+        }
+        
+        return this.animationHandler.explodableObjects.some(
+            explodable => explodable.object.uuid === object.uuid
+        );
     }
 
     // Selektiert ein Objekt und dispatcht Custom Event (wie ClickHandler)
