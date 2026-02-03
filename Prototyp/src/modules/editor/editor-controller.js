@@ -1,10 +1,8 @@
 import * as THREE from 'three';
 import { EditorPanel } from './editor-anim-panel.js';
-import { EditorScenePanel } from './editor-scene-panel.js';
 import { EditorTimeline } from './editor-timeline.js';
 import { EditorSidebarPanel } from './editor-sidebar-panel.js';
 import '../../css/editor-anim-panel.css';
-import '../../css/editor-scene-panel.css';
 import '../../css/editor-sidebar-panel.css';
 
 export class EditorController {
@@ -41,7 +39,7 @@ export class EditorController {
             onExport: this._onExportConfig
         });
 
-        // Sidebar Panel initialisieren (mit Tab-Komponenten)
+        // Sidebar Panel initialisieren --> Tab-Komponenten
         this.editorSidebarPanel = new EditorSidebarPanel(container, {
             scene: this.scene,
             renderer: this.renderer,
@@ -49,13 +47,6 @@ export class EditorController {
             animationHandler: this.animationHandler,
             onObjectSelect: this._onObjectSelected,
             onLightSelect: this._onLightSelected
-        });
-
-        // Scene Settings Panel initialisieren
-        this.editorScenePanel = new EditorScenePanel(container, {
-            scene: this.scene,
-            renderer: this.renderer,
-            config: this.config
         });
 
         // Editor Timeline initialisieren
@@ -81,9 +72,6 @@ export class EditorController {
 
         // Sidebar anzeigen
         this.editorSidebarPanel?.show();
-
-        // Scene Settings Panel anzeigen
-        this.editorScenePanel?.show();
         
         // ClickHandler in Edit-Mode setzen
         this.clickHandler?.setEditMode(true);
@@ -130,9 +118,6 @@ export class EditorController {
         // Sidebar verstecken
         this.editorSidebarPanel?.hide();
 
-        // Scene Settings Panel verstecken
-        this.editorScenePanel?.hide();
-        
         // ClickHandler zurück in Viewer-Mode
         this.clickHandler?.setEditMode(false);
 
@@ -241,9 +226,7 @@ export class EditorController {
         }
     }
 
-    /**
-     * Event Handler für Licht-Auswahl aus der Sidebar
-     */
+    //Event Handler für Licht-Auswahl aus der Sidebar
     _onLightSelected(light) {
         console.log('EditorController: Licht ausgewählt:', light.name);
         // TODO: Gizmo für Lichter, Eigenschaften-Panel, etc.

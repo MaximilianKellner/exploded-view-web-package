@@ -17,6 +17,7 @@
         display: flex;
     }
 
+
     #editor-title {
         overflow: hidden;
         text-overflow: ellipsis;
