@@ -73,7 +73,6 @@
     }
 }
 
-
 .einklappen-btn, #einklappen-timeline {
     border-radius: var(--r-radius-button) var(--r-radius-button) var(--r-radius-button) var(--r-radius-button);
     padding: 0px;
