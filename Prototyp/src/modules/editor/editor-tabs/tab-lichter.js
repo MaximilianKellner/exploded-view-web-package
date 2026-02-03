@@ -49,9 +49,7 @@ export class TabLichter {
         });
     }
 
-    /**
-     * Sammelt alle Lichter aus der Szene
-     */
+    // Sammelt alle Lichter aus der Szene
     _collectLights() {
         this.allLights = [];
         this.scene.traverse((node) => {
@@ -62,9 +60,7 @@ export class TabLichter {
         this._renderList(this.allLights);
     }
 
-    /**
-     * Filtert die Lichtliste nach Suchtext
-     */
+    // Filtert die Lichtliste nach Suchtext
     _filterLights(searchText) {
         const text = searchText.toLowerCase();
         this.filteredLights = this.allLights.filter(light => 
@@ -74,9 +70,7 @@ export class TabLichter {
         this._renderList(this.filteredLights);
     }
 
-    /**
-     * Rendert die Lichtliste
-     */
+    //Rendert die Lichtliste
     _renderList(lights) {
         this.lightList.innerHTML = '';
         this.lightItems = {};
@@ -116,9 +110,7 @@ export class TabLichter {
         });
     }
 
-    /**
-     * Selektiert ein Licht und triggert Callback
-     */
+    //Selektiert ein Licht und triggert Callback
     _selectLight(light, listItem) {
         // Highlight entfernen
         Object.values(this.lightItems).forEach(item => {
@@ -134,16 +126,12 @@ export class TabLichter {
         }
     }
 
-    /**
-     * Gibt das Root-Element zurück
-     */
+    // Gibt das Root-Element zurück
     getElement() {
         return this.element;
     }
 
-    /**
-     * Exportiert die Lichter-Konfiguration
-     */
+    // Exportiert die Lichter-Konfiguration
     _exportLights() {
         const lightsConfig = this.allLights.map(light => ({
             name: light.name,
@@ -164,9 +152,7 @@ export class TabLichter {
         URL.revokeObjectURL(url);
     }
 
-    /**
-     * Aktualisiert die Lichtliste
-     */
+    // Aktualisiert die Lichtliste
     refresh() {
         this._collectLights();
         this.searchInput.value = '';
