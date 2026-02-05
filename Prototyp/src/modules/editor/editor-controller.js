@@ -32,6 +32,7 @@ export class EditorController {
         this._onExportConfig = this._onExportConfig.bind(this);
         this._onExportSceneConfig = this._onExportSceneConfig.bind(this);
         this._onDeleteAnimation = this._onDeleteAnimation.bind(this);
+        this._onDeleteLight = this._onDeleteLight.bind(this);
         this._onKeyframeChange = this._onKeyframeChange.bind(this);
         this._onPanelTimelineChange = this._onPanelTimelineChange.bind(this);
 
@@ -49,7 +50,7 @@ export class EditorController {
             config: this.config
         });
         this.lightPanel.setCallbacks({
-            onExport: this._onExportSceneConfig
+            onDelete: this._onDeleteLight
         });
 
         // Sidebar Panel initialisieren --> Tab-Komponenten
@@ -411,6 +412,24 @@ export class EditorController {
         this.selectedObject = null;
 
         console.log('Animation gelöscht und UI aktualisiert');
+    }
+
+    _onDeleteLight(light, configKey) {
+        if (!light) return;
+
+        if (light.parent) {
+            light.parent.remove(light);
+        } else {
+            this.scene.remove(light);
+        }
+
+        const lightsConfig = this.config?.sceneConfig?.lights;
+        if (lightsConfig && configKey && lightsConfig[configKey]) {
+            delete lightsConfig[configKey];
+        }
+
+        this.lightPanel?.hide();
+        this.editorSidebarPanel?.getTab('lights')?.refresh();
     }
 
     _createLightConfigFromObject(light) {

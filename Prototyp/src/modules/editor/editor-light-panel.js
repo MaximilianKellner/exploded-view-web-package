@@ -83,7 +83,18 @@ export class EditorLightPanel {
             </div>
 
             <div class="editor-actions">
-                <button class="editor-btn blue" id="btn-export-scene">scene-config</button>
+                <button class="editor-btn red" id="btn-delete">Licht löschen</button>
+            </div>
+
+            <div class="delete-popup" id="delete-popup">
+                <div class="delete-popup-content">
+                    <h3>Licht Löschen ?</h3>
+                    <p id="delete-popup-text">Wollen sie das Licht wirklich löschen?</p>
+                    <div class="delete-popup-actions">
+                        <button class="editor-btn" id="btn-cancel">Abbrechen</button>
+                        <button class="editor-btn red" id="btn-confirm-delete">Löschen</button>
+                    </div>
+                </div>
             </div>
         `;
 
@@ -119,11 +130,40 @@ export class EditorLightPanel {
         this.inputs.rotY.addEventListener('change', () => this._onInputChange());
         this.inputs.rotZ.addEventListener('change', () => this._onInputChange());
 
-        this.element.querySelector('#btn-export-scene').addEventListener('click', () => {
-            if (this.callbacks.onExport) {
-                this.callbacks.onExport();
+        this.element.querySelector('#btn-delete').addEventListener('click', () => {
+            this._showDeletePopup();
+        });
+
+        this.element.querySelector('#btn-cancel').addEventListener('click', () => {
+            this._hideDeletePopup();
+        });
+
+        this.element.querySelector('#btn-confirm-delete').addEventListener('click', () => {
+            this._hideDeletePopup();
+            if (this.callbacks.onDelete) {
+                this.callbacks.onDelete(this.currentLight, this.currentConfigKey);
             }
         });
+    }
+
+    _showDeletePopup() {
+        const popup = this.element.querySelector('#delete-popup');
+        const popupText = this.element.querySelector('#delete-popup-text');
+
+        if (popup) {
+            if (popupText) {
+                const lightName = this.currentConfigKey || this.currentLight?.name || 'Light';
+                popupText.textContent = `Wollen sie das Licht "${lightName}" wirklich löschen?`;
+            }
+            popup.classList.add('visible');
+        }
+    }
+
+    _hideDeletePopup() {
+        const popup = this.element.querySelector('#delete-popup');
+        if (popup) {
+            popup.classList.remove('visible');
+        }
     }
 
     setCallbacks(callbacks) {
