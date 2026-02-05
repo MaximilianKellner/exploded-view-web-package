@@ -1,9 +1,11 @@
 import * as THREE from 'three';
 import { EditorPanel } from './editor-anim-panel.js';
+import { EditorLightPanel } from './editor-light-panel.js';
 import { EditorTimeline } from './editor-timeline.js';
 import { EditorSidebarPanel } from './editor-sidebar-panel.js';
 import '../../css/editor-anim-panel.css';
 import '../../css/editor-sidebar-panel.css';
+import '../../css/editor-light-panel.css';
 
 export class EditorController {
     constructor({ scene, camera, renderer, clickHandler, animationHandler, explosionConfigPath, config }) {
@@ -28,6 +30,7 @@ export class EditorController {
         this._onTransformChange = this._onTransformChange.bind(this);
         this._onPanelChange = this._onPanelChange.bind(this);
         this._onExportConfig = this._onExportConfig.bind(this);
+        this._onExportSceneConfig = this._onExportSceneConfig.bind(this);
         this._onDeleteAnimation = this._onDeleteAnimation.bind(this);
         this._onKeyframeChange = this._onKeyframeChange.bind(this);
         this._onPanelTimelineChange = this._onPanelTimelineChange.bind(this);
@@ -41,14 +44,22 @@ export class EditorController {
             onDelete: this._onDeleteAnimation
         });
 
+        // Light Panel initialisieren
+        this.lightPanel = new EditorLightPanel(container, {
+            config: this.config
+        });
+        this.lightPanel.setCallbacks({
+            onExport: this._onExportSceneConfig
+        });
+
         // Sidebar Panel initialisieren --> Tab-Komponenten
         this.editorSidebarPanel = new EditorSidebarPanel(container, {
             scene: this.scene,
             renderer: this.renderer,
             config: this.config,
             animationHandler: this.animationHandler,
-
-            onLightSelect: this._onLightSelected
+            onLightSelect: this._onLightSelected,
+            onExportSceneConfig: this._onExportSceneConfig
         });
 
         // Editor Timeline initialisieren
@@ -119,6 +130,9 @@ export class EditorController {
 
         // Sidebar verstecken
         this.editorSidebarPanel?.hide();
+
+        // Light Panel verstecken
+        this.lightPanel?.hide();
 
         // ClickHandler zurück in Viewer-Mode
         this.clickHandler?.setEditMode(false);
@@ -217,6 +231,8 @@ export class EditorController {
                 end: item.end
             });
         }
+
+        this.lightPanel?.hide();
         
         console.log('EditorController: Objekt ausgewählt, PreviewObject erstellt:', object.name);
     }
@@ -237,8 +253,24 @@ export class EditorController {
 
     //Event Handler für Licht-Auswahl aus der Sidebar
     _onLightSelected(light) {
-        console.log('EditorController: Licht ausgewählt:', light.name);
-        // TODO: Gizmo für Lichter, Eigenschaften-Panel, etc.
+        if (!light) return;
+
+        const lightKey = light.name || light.uuid;
+        if (this.config && this.config.sceneConfig && !this.config.sceneConfig.lights) {
+            this.config.sceneConfig.lights = {};
+        }
+        const lightsConfig = this.config?.sceneConfig?.lights || {};
+        let configEntry = lightsConfig[lightKey];
+
+        if (!configEntry) {
+            configEntry = this._createLightConfigFromObject(light);
+            lightsConfig[lightKey] = configEntry;
+            light.name = lightKey;
+        }
+
+        this.editorPanel.hide();
+        this.lightPanel.show(light, lightKey, configEntry);
+        console.log('EditorController: Licht ausgewählt:', lightKey);
     }
 
     // Temporäres Objekt zur visualisierung der Transformation erstellen
@@ -341,6 +373,20 @@ export class EditorController {
         this.animationHandler.exportConfig();
     }
 
+    // Callback für Export der Szenen-Konfiguration
+    _onExportSceneConfig() {
+        const sceneConfig = this.config?.sceneConfig;
+        if (!sceneConfig) return;
+
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(sceneConfig, null, 2));
+        const downloadAnchorNode = document.createElement('a');
+        downloadAnchorNode.setAttribute("href", dataStr);
+        downloadAnchorNode.setAttribute("download", "scene-config.json");
+        document.body.appendChild(downloadAnchorNode);
+        downloadAnchorNode.click();
+        downloadAnchorNode.remove();
+    }
+
     // Callback für Delete Button
     _onDeleteAnimation() {
         if (!this.selectedObject) return;
@@ -365,6 +411,37 @@ export class EditorController {
         this.selectedObject = null;
 
         console.log('Animation gelöscht und UI aktualisiert');
+    }
+
+    _createLightConfigFromObject(light) {
+        const config = {
+            type: 'ambient',
+            enabled: light.visible ?? true,
+            color: light.color ? `#${light.color.getHexString()}` : '#ffffff',
+            intensity: light.intensity ?? 1
+        };
+
+        if (light.isDirectionalLight) {
+            config.type = 'directional';
+            config.position = {
+                x: light.position?.x ?? 0,
+                y: light.position?.y ?? 0,
+                z: light.position?.z ?? 0
+            };
+            config.rotation = {
+                x: light.rotation?.x ?? 0,
+                y: light.rotation?.y ?? 0,
+                z: light.rotation?.z ?? 0
+            };
+        } else if (light.isAmbientLight) {
+            config.type = 'ambient';
+        } else if (light.isPointLight) {
+            config.type = 'point';
+        } else if (light.isSpotLight) {
+            config.type = 'spot';
+        }
+
+        return config;
     }
 
     // Event Handler für Transform-Änderungen (Verschieben/Rotieren/Skalieren)

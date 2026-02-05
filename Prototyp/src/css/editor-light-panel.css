@@ -1,0 +1,71 @@
+.editor-light-panel {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    background-color: var(--c-lighter);
+    color: #fff;
+    z-index: 1000;
+    display: none;
+    flex-direction: column;
+    max-width: 380px;
+    border-bottom-left-radius: 10px;
+    overflow: hidden;
+    border-left: 2px solid var(--c-border);
+    border-bottom: 2px solid var(--c-border);
+
+    &.visible {
+        display: flex;
+    }
+
+    #light-title {
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .editor-value-display {
+        width: 100%;
+        max-width: 160px;
+        box-sizing: border-box;
+        font-size: .85rem;
+        text-align: center;
+        background-color: var(--c-dark);
+        padding: var(--xxs);
+        outline: 2px solid var(--c-border);
+        border-radius: 5px;
+        font-family: monospace;
+    }
+
+    .editor-row {
+        margin-top: var(--xxs);
+        margin-bottom: var(--xxs);
+        gap: var(--xxxl);
+    }
+
+    .editor-input-group {
+        max-width: 160px;
+    }
+
+    .editor-vector-input {
+        padding: 0;
+    }
+
+    .editor-checkbox {
+        width: 18px;
+        height: 18px;
+        margin: 0 auto;
+        border-radius: 4px;
+    }
+
+    .editor-row[data-section="position"].hidden {
+        display: none;
+    }
+
+    .editor-row[data-section="rotation"].hidden {
+        display: none;
+    }
+
+    .editor-actions {
+        display: flex;
+        outline: 2px solid var(--c-border);
+    }
+}

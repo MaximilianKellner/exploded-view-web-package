@@ -40,50 +40,6 @@ export class TabScene {
                     </div>
                 </details>
 
-                <details class="editor-details" open>
-                    <summary>Sun / Hauptlicht</summary>
-                    <div class="editor-row">
-                        <span class="editor-label">Farbe</span>
-                        <div class="custom-picker-wrapper" data-picker="sunColor">
-                            <div class="picker-trigger">
-                                <div class="color-preview-box"></div>
-                                <div class="color-hex-label"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="editor-row">
-                        <span class="editor-label">Stärke</span>
-                        <div class="slider-container">
-                            <div class="slider-value" id="sun-intensity-value">60</div>
-                            <div class="slider-wrapper">
-                                <input type="range" class="editor-slider" id="sun-intensity" min="0" max="100" value="60" />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="editor-row">
-                        <span class="editor-label">Position</span>
-                        <div class="editor-input-group bordered">
-                            <input type="number" step="0.1" class="editor-input editor-vector-input" id="dir-x" placeholder="X" value="1">
-                            <span class="vertical-divider"></span>
-                            <input type="number" step="0.1" class="editor-input editor-vector-input" id="dir-y" placeholder="Y" value="1">
-                            <span class="vertical-divider"></span>
-                            <input type="number" step="0.1" class="editor-input editor-vector-input" id="dir-z" placeholder="Z" value="1">
-                        </div>
-                    </div>
-
-                    <div class="editor-row">
-                        <span class="editor-label">Rotation</span>
-                        <div class="editor-input-group bordered">
-                            <input type="number" step="0.1" class="editor-input editor-vector-input" id="rot-x" placeholder="X" value="45°">
-                            <span class="vertical-divider"></span>
-                            <input type="number" step="0.1" class="editor-input editor-vector-input" id="rot-y" placeholder="Y" value="90°">
-                            <span class="vertical-divider"></span>
-                            <input type="number" step="0.1" class="editor-input editor-vector-input" id="rot-z" placeholder="Z" value="0°">
-                        </div>
-                    </div>
-                </details>
         `;
 
         // ColorPicker initialisieren
@@ -92,33 +48,11 @@ export class TabScene {
                        (this.scene?.background?.isColor ? '#' + this.scene.background.getHexString() : '#1e1e1e');
 
         const backgroundWrapper = this.element.querySelector('[data-picker="background"]');
-        const sunColorWrapper = this.element.querySelector('[data-picker="sunColor"]');
-
         this.colorPickers.background = new EditorColorPicker(
             backgroundWrapper,
             bgColor,
             (color) => this._onBackgroundChange(color)
         );
-
-        this.colorPickers.sunColor = new EditorColorPicker(
-            sunColorWrapper,
-            '#ffffff',
-            (color) => this._onSunColorChange(color)
-        );
-
-        // Input-Referenzen
-        this.inputs = {
-            sunIntensity: this.element.querySelector('#sun-intensity'),
-            sunIntensityValue: this.element.querySelector('#sun-intensity-value'),
-            dirX: this.element.querySelector('#dir-x'),
-            dirY: this.element.querySelector('#dir-y'),
-            dirZ: this.element.querySelector('#dir-z'),
-        };
-
-        // Event Listener
-        this.inputs.sunIntensity.addEventListener('input', (e) => {
-            this.inputs.sunIntensityValue.textContent = `${e.target.value}`;
-        });
     }
 
     // Gibt das Root-Element zum Einhängen in Sidebar zurück
@@ -144,8 +78,4 @@ export class TabScene {
         this.scene?.background?.set(color);
     }
 
-    _onSunColorChange(color) {
-        console.log('Sun Color changed:', color);
-        // TODO: Sun Light Farbe in der Szene aktualisieren
-    }
 }

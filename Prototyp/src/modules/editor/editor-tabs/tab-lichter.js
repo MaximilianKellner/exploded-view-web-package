@@ -3,9 +3,10 @@
  * Mit Suchfunktion und Einstellungsmöglichkeiten
  */
 export class TabLichter {
-    constructor({ scene, onLightSelect }) {
+    constructor({ scene, onLightSelect, onExportSceneConfig }) {
         this.scene = scene;
         this.onLightSelect = onLightSelect; // Callback wenn Licht ausgewählt
+        this.onExportSceneConfig = onExportSceneConfig;
 
         this.element = null;
         this.searchInput = null;
@@ -58,7 +59,9 @@ export class TabLichter {
 
         // Export Button
         exportBtn.addEventListener('click', () => {
-            this._exportLights();
+            if (this.onExportSceneConfig) {
+                this.onExportSceneConfig();
+            }
         });
     }
 
@@ -144,26 +147,7 @@ export class TabLichter {
         return this.element;
     }
 
-    // Exportiert die Lichter-Konfiguration
-    _exportLights() {
-        const lightsConfig = this.allLights.map(light => ({
-            name: light.name,
-            type: light.constructor.name,
-            color: light.color ? light.color.getHexString() : '#ffffff',
-            intensity: light.intensity ?? 1,
-            position: light.position ? { x: light.position.x, y: light.position.y, z: light.position.z } : null,
-            target: light.target ? { x: light.target.position.x, y: light.target.position.y, z: light.target.position.z } : null,
-        }));
 
-        const json = JSON.stringify(lightsConfig, null, 2);
-        const blob = new Blob([json], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `lights-config-${Date.now()}.json`;
-        a.click();
-        URL.revokeObjectURL(url);
-    }
 
     // Aktualisiert die Lichtliste
     refresh() {

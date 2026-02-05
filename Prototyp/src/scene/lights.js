@@ -32,6 +32,7 @@ function setupLights(mainConfig, scene, lightsObject) {
         }
 
         if (light) {
+            light.name = lightName;
             lightsObject[lightName] = light; // Licht im globalen Objekt speichern
             scene.add(light);
         }

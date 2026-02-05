@@ -5,13 +5,14 @@ import { TabObjekte } from './editor-tabs/tab-objekte.js';
 import { TabLichter } from './editor-tabs/tab-lichter.js';
 
 export class EditorSidebarPanel {
-    constructor(container, { scene, renderer, config, animationHandler, onLightSelect } = {}) {
+    constructor(container, { scene, renderer, config, animationHandler, onLightSelect, onExportSceneConfig } = {}) {
         this.container = container;
         this.scene = scene;
         this.renderer = renderer;
         this.config = config;
         this.animationHandler = animationHandler;
         this.onLightSelect = onLightSelect;
+        this.onExportSceneConfig = onExportSceneConfig;
 
         this.sidebarContent = null;
         this.tabButtons = {};
@@ -85,7 +86,8 @@ export class EditorSidebarPanel {
             } else if (tabId === 'lights') {
                 this.tabs.lights = new TabLichter({
                     scene: this.scene,
-                    onLightSelect: this.onLightSelect
+                    onLightSelect: this.onLightSelect,
+                    onExportSceneConfig: this.onExportSceneConfig
                 });
                 content.appendChild(this.tabs.lights.getElement());
             }
