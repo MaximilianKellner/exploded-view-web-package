@@ -96,6 +96,11 @@ export class TabObjekte {
         this.objectList.innerHTML = '';
         this.objectItems = {};
 
+        if (objects.length === 0) {
+            this.objectList.innerHTML = '<li class="tab-list-empty">Keine Objekte gefunden</li>';
+            return;
+        }
+
         objects.forEach((obj) => {
             const li = document.createElement('li');
             li.className = 'tab-list-item';
