@@ -22,6 +22,21 @@ function setupLights(mainConfig, scene, lightsObject) {
                 }
                 light.position.set(config.position.x, config.position.y, config.position.z);
 
+                if (config.rotation) {
+                    light.rotation.set(config.rotation.x, config.rotation.y, config.rotation.z);
+                }
+
+                if (!light.target.parent) {
+                    scene.add(light.target);
+                }
+
+                if (config.lookAtEnabled === false) {
+                    const direction = new THREE.Vector3(0, 0, -1).applyEuler(light.rotation);
+                    light.target.position.copy(light.position.clone().add(direction));
+                } else {
+                    light.target.position.set(0, 0, 0);
+                }
+
                 light.shadow.mapSize.width = 2048; // Höhere Auflösung für schärfere Schatten
                 light.shadow.mapSize.height = 2048;
                 light.shadow.camera.near = 0.5;

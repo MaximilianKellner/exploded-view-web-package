@@ -66,14 +66,16 @@ export const defaultOptions = {
                 "enabled": true,
                 "color": "#ffffff",
                 "intensity": 1.5,
-                "position": { "x": 5, "y": 10, "z": 7.5 }
+                "position": { "x": 5, "y": 10, "z": 7.5 },
+                "lookAtEnabled": true
             },
             "secondDirectional": {
                 "type": "directional",
                 "enabled": true,
                 "color": "#ffffff",
                 "intensity": 1.0,
-                "position": { "x": -5, "y": 10, "z": -5 }
+                "position": { "x": -5, "y": 10, "z": -5 },
+                "lookAtEnabled": true
             },
         }
     }

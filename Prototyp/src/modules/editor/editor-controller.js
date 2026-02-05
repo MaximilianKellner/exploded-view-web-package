@@ -300,6 +300,8 @@ export class EditorController {
         this.selectedLightKey = lightKey;
         this.transformHandler?.attach(light);
         this.transformHandler?.setMode('translate');
+        this.transformHandler?.controls?.setSpace('world');
+        this._applyLightLookAt(light, configEntry);
         this._updateLightHelper(light);
         console.log('EditorController: Licht ausgewählt:', lightKey);
     }
@@ -374,6 +376,27 @@ export class EditorController {
         const helper = this.lightHelpers.get(light.uuid);
         if (helper && helper.update) {
             helper.update();
+        }
+    }
+
+    _applyLightLookAt(light, configEntry) {
+        if (!(light && configEntry)) return;
+
+        if (light.isDirectionalLight || light.isSpotLight) {
+            const lookAtEnabled = configEntry.lookAtEnabled !== false;
+            if (!light.target.parent) {
+                this.scene.add(light.target);
+            }
+
+            if (lookAtEnabled) {
+                light.target.position.set(0, 0, 0);
+            } else {
+                const worldQuat = new THREE.Quaternion();
+                light.getWorldQuaternion(worldQuat);
+                const direction = new THREE.Vector3(0, 0, -1).applyQuaternion(worldQuat);
+                const targetPosition = light.getWorldPosition(new THREE.Vector3()).add(direction);
+                light.target.position.copy(targetPosition);
+            }
         }
     }
 
@@ -549,6 +572,11 @@ export class EditorController {
 
     _onLightPanelChange(light) {
         if (!light) return;
+        const lightsConfig = this.config?.sceneConfig?.lights;
+        const configEntry = lightsConfig?.[this.selectedLightKey];
+        if (configEntry) {
+            this._applyLightLookAt(light, configEntry);
+        }
         this._updateLightHelper(light);
     }
 
@@ -556,13 +584,19 @@ export class EditorController {
         if (!this.selectedLight || !this.transformHandler) return;
 
         if (mode === 'rotate') {
-            if (!(this.selectedLight.isDirectionalLight || this.selectedLight.isSpotLight)) {
+            const lightsConfig = this.config?.sceneConfig?.lights;
+            const configEntry = lightsConfig?.[this.selectedLightKey];
+            const allowRotate = (this.selectedLight.isDirectionalLight || this.selectedLight.isSpotLight)
+                && (configEntry?.lookAtEnabled === false);
+
+            if (!allowRotate) {
                 this.transformHandler.setMode('translate');
                 return;
             }
         }
 
         this.transformHandler.setMode(mode);
+        this.transformHandler.controls?.setSpace('world');
     }
 
     _createLightConfigFromObject(light) {
@@ -585,6 +619,7 @@ export class EditorController {
                 y: light.rotation?.y ?? 0,
                 z: light.rotation?.z ?? 0
             };
+            config.lookAtEnabled = true;
         } else if (light.isAmbientLight) {
             config.type = 'ambient';
         } else if (light.isPointLight) {
@@ -606,6 +641,7 @@ export class EditorController {
                 y: light.rotation?.y ?? 0,
                 z: light.rotation?.z ?? 0
             };
+            config.lookAtEnabled = true;
         }
 
         return config;
@@ -628,13 +664,17 @@ export class EditorController {
                 }
 
                 if (this.selectedLight.isDirectionalLight || this.selectedLight.isSpotLight) {
+                    const worldQuat = new THREE.Quaternion();
+                    this.selectedLight.getWorldQuaternion(worldQuat);
+                    const worldEuler = new THREE.Euler().setFromQuaternion(worldQuat, this.selectedLight.rotation.order || 'XYZ');
                     configEntry.rotation = {
-                        x: this.selectedLight.rotation.x,
-                        y: this.selectedLight.rotation.y,
-                        z: this.selectedLight.rotation.z
+                        x: worldEuler.x,
+                        y: worldEuler.y,
+                        z: worldEuler.z
                     };
                 }
 
+                this._applyLightLookAt(this.selectedLight, configEntry);
                 this.lightPanel?.update(this.selectedLight, this.selectedLightKey, configEntry);
                 this._updateLightHelper(this.selectedLight);
             }

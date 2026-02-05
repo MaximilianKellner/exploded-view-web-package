@@ -1,3 +1,4 @@
+import * as THREE from 'three';
 import { EditorColorPicker } from './editor-colorpicker.js';
 import '../../css/editor-colorpicker.css';
 import '../../css/editor-components.css';
@@ -81,6 +82,13 @@ export class EditorLightPanel {
                     </div>
                 </div>
 
+                <div class="editor-row" data-section="look-at">
+                    <span class="editor-label">Look At</span>
+                    <div class="editor-input-group">
+                        <input type="checkbox" class="editor-checkbox" id="light-look-at" />
+                    </div>
+                </div>
+
                 <div class="editor-row" data-section="gizmo">
                     <span class="editor-label">Gizmo</span>
                     <div class="editor-input-group light-mode-toggle">
@@ -120,10 +128,12 @@ export class EditorLightPanel {
             rotX: this.element.querySelector('#rot-x'),
             rotY: this.element.querySelector('#rot-y'),
             rotZ: this.element.querySelector('#rot-z'),
+            lookAt: this.element.querySelector('#light-look-at'),
             modeTranslate: this.element.querySelector('#btn-mode-translate'),
             modeRotate: this.element.querySelector('#btn-mode-rotate'),
             positionRow: this.element.querySelector('[data-section="position"]'),
-            rotationRow: this.element.querySelector('[data-section="rotation"]')
+            rotationRow: this.element.querySelector('[data-section="rotation"]'),
+            lookAtRow: this.element.querySelector('[data-section="look-at"]')
         };
 
         const colorWrapper = this.element.querySelector('[data-picker="lightColor"]');
@@ -139,6 +149,7 @@ export class EditorLightPanel {
         this.inputs.rotX.addEventListener('change', () => this._onInputChange());
         this.inputs.rotY.addEventListener('change', () => this._onInputChange());
         this.inputs.rotZ.addEventListener('change', () => this._onInputChange());
+        this.inputs.lookAt.addEventListener('change', () => this._onInputChange());
 
         this.inputs.modeTranslate.addEventListener('click', () => {
             this._setMode('translate');
@@ -226,11 +237,13 @@ export class EditorLightPanel {
             this.inputs.posZ.value = Number(position.z ?? 0).toFixed(2);
             this.inputs.positionRow.classList.remove('hidden');
             const rotation = configEntry.rotation || light.rotation || { x: 0, y: 0, z: 0 };
-            this.inputs.rotX.value = Number(rotation.x ?? 0).toFixed(2);
-            this.inputs.rotY.value = Number(rotation.y ?? 0).toFixed(2);
-            this.inputs.rotZ.value = Number(rotation.z ?? 0).toFixed(2);
+            this.inputs.rotX.value = this._radToDeg(rotation.x ?? 0).toFixed(1);
+            this.inputs.rotY.value = this._radToDeg(rotation.y ?? 0).toFixed(1);
+            this.inputs.rotZ.value = this._radToDeg(rotation.z ?? 0).toFixed(1);
             this.inputs.rotationRow.classList.remove('hidden');
-            this._setRotateAvailable(true);
+            this.inputs.lookAtRow.classList.remove('hidden');
+            this.inputs.lookAt.checked = configEntry.lookAtEnabled !== false;
+            this._setRotateAvailable(!this.inputs.lookAt.checked);
         } else if (light.isPointLight || light.isSpotLight) {
             const position = configEntry.position || light.position || { x: 0, y: 0, z: 0 };
             this.inputs.posX.value = Number(position.x ?? 0).toFixed(2);
@@ -240,18 +253,22 @@ export class EditorLightPanel {
 
             if (light.isSpotLight) {
                 const rotation = configEntry.rotation || light.rotation || { x: 0, y: 0, z: 0 };
-                this.inputs.rotX.value = Number(rotation.x ?? 0).toFixed(2);
-                this.inputs.rotY.value = Number(rotation.y ?? 0).toFixed(2);
-                this.inputs.rotZ.value = Number(rotation.z ?? 0).toFixed(2);
+                this.inputs.rotX.value = this._radToDeg(rotation.x ?? 0).toFixed(1);
+                this.inputs.rotY.value = this._radToDeg(rotation.y ?? 0).toFixed(1);
+                this.inputs.rotZ.value = this._radToDeg(rotation.z ?? 0).toFixed(1);
                 this.inputs.rotationRow.classList.remove('hidden');
-                this._setRotateAvailable(true);
+                this.inputs.lookAtRow.classList.remove('hidden');
+                this.inputs.lookAt.checked = configEntry.lookAtEnabled !== false;
+                this._setRotateAvailable(!this.inputs.lookAt.checked);
             } else {
                 this.inputs.rotationRow.classList.add('hidden');
+                this.inputs.lookAtRow.classList.add('hidden');
                 this._setRotateAvailable(false);
             }
         } else {
             this.inputs.positionRow.classList.add('hidden');
             this.inputs.rotationRow.classList.add('hidden');
+            this.inputs.lookAtRow.classList.add('hidden');
             this._setRotateAvailable(false);
         }
     }
@@ -301,12 +318,14 @@ export class EditorLightPanel {
         }
 
         if (this.currentLight.isDirectionalLight || this.currentLight.isSpotLight) {
-            const rotX = Number.parseFloat(this.inputs.rotX.value || '0');
-            const rotY = Number.parseFloat(this.inputs.rotY.value || '0');
-            const rotZ = Number.parseFloat(this.inputs.rotZ.value || '0');
+            configEntry.lookAtEnabled = this.inputs.lookAt.checked;
+            this._setRotateAvailable(!this.inputs.lookAt.checked);
+            const rotX = this._degToRad(Number.parseFloat(this.inputs.rotX.value || '0'));
+            const rotY = this._degToRad(Number.parseFloat(this.inputs.rotY.value || '0'));
+            const rotZ = this._degToRad(Number.parseFloat(this.inputs.rotZ.value || '0'));
 
             configEntry.rotation = { x: rotX, y: rotY, z: rotZ };
-            this.currentLight.rotation.set(rotX, rotY, rotZ);
+            this._setWorldRotation(this.currentLight, rotX, rotY, rotZ);
         }
 
         if (this.callbacks.onChange) {
@@ -329,5 +348,27 @@ export class EditorLightPanel {
         if (this.callbacks.onChange) {
             this.callbacks.onChange(this.currentLight, configEntry);
         }
+    }
+
+    _setWorldRotation(light, rotX, rotY, rotZ) {
+        const euler = new THREE.Euler(rotX, rotY, rotZ, light.rotation.order || 'XYZ');
+        const worldQuat = new THREE.Quaternion().setFromEuler(euler);
+
+        if (light.parent) {
+            const parentQuat = new THREE.Quaternion();
+            light.parent.getWorldQuaternion(parentQuat);
+            parentQuat.invert();
+            worldQuat.premultiply(parentQuat);
+        }
+
+        light.quaternion.copy(worldQuat);
+    }
+
+    _radToDeg(value) {
+        return value * (180 / Math.PI);
+    }
+
+    _degToRad(value) {
+        return value * (Math.PI / 180);
     }
 }
