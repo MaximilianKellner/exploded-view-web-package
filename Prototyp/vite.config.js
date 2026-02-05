@@ -11,10 +11,8 @@ export default defineConfig({
   },
   build: {
     lib: {
-      // Multi-Entry Build: Separate Bundles für Viewer und Editor
       entry: {
-        'exploded-viewer': resolve(__dirname, 'src/index.js'),
-        'editor': resolve(__dirname, 'src/editor/onboarding-editor.js')
+          'exploded-viewer': resolve(__dirname, 'src/index.js')
       },
       name: 'ExplodedViewer',
       // the proper extensions will be added

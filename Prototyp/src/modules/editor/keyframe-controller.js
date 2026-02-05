@@ -167,7 +167,7 @@ export class KeyframeController {
 
         const handles = this.timelineElement.querySelectorAll('.keyframe-handle');
         // Keine zusätzliche Initialisierung nötig - Event-Delegation läuft über _setupEventListeners
-        console.log(`✓ KeyframeController: ${handles.length} Keyframe-Handles initialisiert`);
+        console.log(`KeyframeController: ${handles.length} Keyframe-Handles initialisiert`);
     }
 
     /**
@@ -181,7 +181,7 @@ export class KeyframeController {
         if (!rowItem) return;
         
         const handles = rowItem.querySelectorAll('.keyframe-handle');
-        console.log(`✓ KeyframeController: ${handles.length} Keyframe-Handles für "${objectId}" initialisiert`);
+        console.log(`KeyframeController: ${handles.length} Keyframe-Handles für "${objectId}" initialisiert`);
     }
 
     // Aktualisiert Keyframe-Bar visuell (z.B. nach Daten-Änderung)

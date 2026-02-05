@@ -78,7 +78,7 @@ export class ScrubberController {
                 const newDuration = parseInt(e.target.value) || this.dataManager.getAnimationDuration();
                 this.animationHandler.setAnimationDuration(newDuration);
                 this.dataManager.setAnimationDuration(newDuration);
-                console.log('✓ Animation-Dauer aktualisiert:', newDuration + 'ms');
+                console.log('Animation-Dauer aktualisiert:', newDuration + 'ms');
             });
         }
     }
