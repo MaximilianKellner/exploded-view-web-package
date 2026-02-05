@@ -20,19 +20,25 @@ export class EditorController {
         this.enabled = false;
         this.transformHandler = null;
         this.selectedObject = null;
+        this.selectedLight = null;
+        this.selectedLightKey = null;
         this.previewObject = null;
         this.cameraHandler = null;
+        this.lightHelpers = new Map();
 
         // Event handlers
         this._onObjectSelected = this._onObjectSelected.bind(this);
         this._onObjectDeselected = this._onObjectDeselected.bind(this);
         this._onLightSelected = this._onLightSelected.bind(this);
+        this._onLightSelectedEvent = this._onLightSelectedEvent.bind(this);
         this._onTransformChange = this._onTransformChange.bind(this);
         this._onPanelChange = this._onPanelChange.bind(this);
         this._onExportConfig = this._onExportConfig.bind(this);
         this._onExportSceneConfig = this._onExportSceneConfig.bind(this);
         this._onDeleteAnimation = this._onDeleteAnimation.bind(this);
         this._onDeleteLight = this._onDeleteLight.bind(this);
+        this._onLightPanelChange = this._onLightPanelChange.bind(this);
+        this._onLightModeChange = this._onLightModeChange.bind(this);
         this._onKeyframeChange = this._onKeyframeChange.bind(this);
         this._onPanelTimelineChange = this._onPanelTimelineChange.bind(this);
 
@@ -50,7 +56,9 @@ export class EditorController {
             config: this.config
         });
         this.lightPanel.setCallbacks({
-            onDelete: this._onDeleteLight
+            onDelete: this._onDeleteLight,
+            onChange: this._onLightPanelChange,
+            onModeChange: this._onLightModeChange
         });
 
         // Sidebar Panel initialisieren --> Tab-Komponenten
@@ -93,6 +101,7 @@ export class EditorController {
         // Object Selection Event Listener aktivieren
         window.addEventListener('ev:objectSelected', this._onObjectSelected);
         window.addEventListener('ev:objectDeselected', this._onObjectDeselected);
+        window.addEventListener('ev:lightSelected', this._onLightSelectedEvent);
 
         // CameraHandler an TransformHandler übergeben für Gizmo-Interaktion
         if (this.transformHandler) {
@@ -106,6 +115,8 @@ export class EditorController {
                 this.transformHandler.controls.addEventListener('change', this._onTransformChange);
             }
         }
+
+        this._initLightHelpers();
         
         // Keyframe-Callbacks registrieren (Timeline <-> EditorPanel Synchronisation)
         this.editorTimeline?.setKeyframeCallbacks({
@@ -141,6 +152,7 @@ export class EditorController {
         // Object Selection Event Listener deaktivieren
         window.removeEventListener('ev:objectSelected', this._onObjectSelected);
         window.removeEventListener('ev:objectDeselected', this._onObjectDeselected);
+        window.removeEventListener('ev:lightSelected', this._onLightSelectedEvent);
 
         // Listener für Transform-Änderungen entfernen
         if (this.transformHandler && this.transformHandler.controls) {
@@ -152,6 +164,16 @@ export class EditorController {
             this.transformHandler?.detach();
             this._removePreviewObject();
             this.selectedObject = null;
+        }
+
+        this._clearLightSelection();
+        this._clearLightHelpers();
+    }
+
+    _onLightSelectedEvent(event) {
+        const light = event?.detail?.light;
+        if (light) {
+            this._onLightSelected(light);
         }
     }
 
@@ -182,6 +204,8 @@ export class EditorController {
                 return;
             }
         }
+
+        this._clearLightSelection();
         
         // Wenn dasselbe Objekt nochmal geklickt wird, nichts tun
         if (this.selectedObject === object) {
@@ -256,6 +280,8 @@ export class EditorController {
     _onLightSelected(light) {
         if (!light) return;
 
+        this._clearObjectSelection();
+
         const lightKey = light.name || light.uuid;
         if (this.config && this.config.sceneConfig && !this.config.sceneConfig.lights) {
             this.config.sceneConfig.lights = {};
@@ -268,10 +294,87 @@ export class EditorController {
             lightsConfig[lightKey] = configEntry;
             light.name = lightKey;
         }
-
         this.editorPanel.hide();
         this.lightPanel.show(light, lightKey, configEntry);
+        this.selectedLight = light;
+        this.selectedLightKey = lightKey;
+        this.transformHandler?.attach(light);
+        this.transformHandler?.setMode('translate');
+        this._updateLightHelper(light);
         console.log('EditorController: Licht ausgewählt:', lightKey);
+    }
+
+    _clearObjectSelection() {
+        if (this.selectedObject) {
+            this.transformHandler?.detach();
+            this._removePreviewObject();
+            this.selectedObject = null;
+            this.editorPanel.hide();
+        }
+    }
+
+    _clearLightSelection() {
+        if (this.selectedLight) {
+            this.transformHandler?.detach();
+            this.selectedLight = null;
+            this.selectedLightKey = null;
+            this.lightPanel?.hide();
+        }
+    }
+
+    _initLightHelpers() {
+        this._clearLightHelpers();
+        this.scene?.traverse((node) => {
+            if (node.isDirectionalLight || node.isPointLight || node.isSpotLight) {
+                const helper = this._createLightHelper(node);
+                if (helper) {
+                    this.lightHelpers.set(node.uuid, helper);
+                    this.scene.add(helper);
+                }
+            }
+        });
+    }
+
+    _clearLightHelpers() {
+        this.lightHelpers.forEach((helper) => {
+            if (helper.parent) {
+                helper.parent.remove(helper);
+            }
+        });
+        this.lightHelpers.clear();
+    }
+
+    _createLightHelper(light) {
+        let helper = null;
+
+        if (light.isDirectionalLight) {
+            helper = new THREE.DirectionalLightHelper(light, 1);
+        } else if (light.isPointLight) {
+            helper = new THREE.PointLightHelper(light, 0.5);
+        } else if (light.isSpotLight) {
+            helper = new THREE.SpotLightHelper(light);
+        }
+
+        if (!helper) return null;
+
+        helper.traverse((node) => {
+            node.userData = node.userData || {};
+            node.userData.lightHelper = true;
+            node.userData.lightRef = light;
+        });
+
+        helper.userData = helper.userData || {};
+        helper.userData.lightHelper = true;
+        helper.userData.lightRef = light;
+
+        return helper;
+    }
+
+    _updateLightHelper(light) {
+        const helper = this.lightHelpers.get(light.uuid);
+        if (helper && helper.update) {
+            helper.update();
+        }
     }
 
     // Temporäres Objekt zur visualisierung der Transformation erstellen
@@ -428,8 +531,38 @@ export class EditorController {
             delete lightsConfig[configKey];
         }
 
+        const helper = this.lightHelpers.get(light.uuid);
+        if (helper && helper.parent) {
+            helper.parent.remove(helper);
+        }
+        this.lightHelpers.delete(light.uuid);
+
+        if (this.selectedLight === light) {
+            this.selectedLight = null;
+            this.selectedLightKey = null;
+            this.transformHandler?.detach();
+        }
+
         this.lightPanel?.hide();
         this.editorSidebarPanel?.getTab('lights')?.refresh();
+    }
+
+    _onLightPanelChange(light) {
+        if (!light) return;
+        this._updateLightHelper(light);
+    }
+
+    _onLightModeChange(mode) {
+        if (!this.selectedLight || !this.transformHandler) return;
+
+        if (mode === 'rotate') {
+            if (!(this.selectedLight.isDirectionalLight || this.selectedLight.isSpotLight)) {
+                this.transformHandler.setMode('translate');
+                return;
+            }
+        }
+
+        this.transformHandler.setMode(mode);
     }
 
     _createLightConfigFromObject(light) {
@@ -456,8 +589,23 @@ export class EditorController {
             config.type = 'ambient';
         } else if (light.isPointLight) {
             config.type = 'point';
+            config.position = {
+                x: light.position?.x ?? 0,
+                y: light.position?.y ?? 0,
+                z: light.position?.z ?? 0
+            };
         } else if (light.isSpotLight) {
             config.type = 'spot';
+            config.position = {
+                x: light.position?.x ?? 0,
+                y: light.position?.y ?? 0,
+                z: light.position?.z ?? 0
+            };
+            config.rotation = {
+                x: light.rotation?.x ?? 0,
+                y: light.rotation?.y ?? 0,
+                z: light.rotation?.z ?? 0
+            };
         }
 
         return config;
@@ -466,6 +614,34 @@ export class EditorController {
     // Event Handler für Transform-Änderungen (Verschieben/Rotieren/Skalieren)
     // Wird aufgerufen, wenn der Nutzer ein Objekt mit dem Gizmo manipuliert.
     _onTransformChange() {
+        if (this.selectedLight && this.transformHandler?.controls?.object === this.selectedLight) {
+            const lightsConfig = this.config?.sceneConfig?.lights;
+            const configEntry = lightsConfig?.[this.selectedLightKey];
+
+            if (configEntry) {
+                if (this.selectedLight.isDirectionalLight || this.selectedLight.isPointLight || this.selectedLight.isSpotLight) {
+                    configEntry.position = {
+                        x: this.selectedLight.position.x,
+                        y: this.selectedLight.position.y,
+                        z: this.selectedLight.position.z
+                    };
+                }
+
+                if (this.selectedLight.isDirectionalLight || this.selectedLight.isSpotLight) {
+                    configEntry.rotation = {
+                        x: this.selectedLight.rotation.x,
+                        y: this.selectedLight.rotation.y,
+                        z: this.selectedLight.rotation.z
+                    };
+                }
+
+                this.lightPanel?.update(this.selectedLight, this.selectedLightKey, configEntry);
+                this._updateLightHelper(this.selectedLight);
+            }
+
+            return;
+        }
+
         if (this.previewObject && this.selectedObject && this.animationHandler) {
             const item = this.animationHandler.getExplodableItem(this.selectedObject);
             if (!item) return;

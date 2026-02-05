@@ -80,6 +80,14 @@ export class EditorLightPanel {
                         <input type="number" step="0.1" class="editor-input editor-vector-input" id="rot-z" placeholder="Z">
                     </div>
                 </div>
+
+                <div class="editor-row" data-section="gizmo">
+                    <span class="editor-label">Gizmo</span>
+                    <div class="editor-input-group light-mode-toggle">
+                        <button class="editor-btn" id="btn-mode-translate" type="button">Position</button>
+                        <button class="editor-btn" id="btn-mode-rotate" type="button">Rotation</button>
+                    </div>
+                </div>
             </div>
 
             <div class="editor-actions">
@@ -112,6 +120,8 @@ export class EditorLightPanel {
             rotX: this.element.querySelector('#rot-x'),
             rotY: this.element.querySelector('#rot-y'),
             rotZ: this.element.querySelector('#rot-z'),
+            modeTranslate: this.element.querySelector('#btn-mode-translate'),
+            modeRotate: this.element.querySelector('#btn-mode-rotate'),
             positionRow: this.element.querySelector('[data-section="position"]'),
             rotationRow: this.element.querySelector('[data-section="rotation"]')
         };
@@ -130,6 +140,14 @@ export class EditorLightPanel {
         this.inputs.rotY.addEventListener('change', () => this._onInputChange());
         this.inputs.rotZ.addEventListener('change', () => this._onInputChange());
 
+        this.inputs.modeTranslate.addEventListener('click', () => {
+            this._setMode('translate');
+        });
+
+        this.inputs.modeRotate.addEventListener('click', () => {
+            this._setMode('rotate');
+        });
+
         this.element.querySelector('#btn-delete').addEventListener('click', () => {
             this._showDeletePopup();
         });
@@ -144,6 +162,9 @@ export class EditorLightPanel {
                 this.callbacks.onDelete(this.currentLight, this.currentConfigKey);
             }
         });
+
+        this._setMode('translate', false);
+        this._setRotateAvailable(false);
     }
 
     _showDeletePopup() {
@@ -172,6 +193,7 @@ export class EditorLightPanel {
 
     show(light, configKey, configEntry) {
         this.element.classList.add('visible');
+        this._setMode('translate', false);
         this.update(light, configKey, configEntry);
     }
 
@@ -208,9 +230,46 @@ export class EditorLightPanel {
             this.inputs.rotY.value = Number(rotation.y ?? 0).toFixed(2);
             this.inputs.rotZ.value = Number(rotation.z ?? 0).toFixed(2);
             this.inputs.rotationRow.classList.remove('hidden');
+            this._setRotateAvailable(true);
+        } else if (light.isPointLight || light.isSpotLight) {
+            const position = configEntry.position || light.position || { x: 0, y: 0, z: 0 };
+            this.inputs.posX.value = Number(position.x ?? 0).toFixed(2);
+            this.inputs.posY.value = Number(position.y ?? 0).toFixed(2);
+            this.inputs.posZ.value = Number(position.z ?? 0).toFixed(2);
+            this.inputs.positionRow.classList.remove('hidden');
+
+            if (light.isSpotLight) {
+                const rotation = configEntry.rotation || light.rotation || { x: 0, y: 0, z: 0 };
+                this.inputs.rotX.value = Number(rotation.x ?? 0).toFixed(2);
+                this.inputs.rotY.value = Number(rotation.y ?? 0).toFixed(2);
+                this.inputs.rotZ.value = Number(rotation.z ?? 0).toFixed(2);
+                this.inputs.rotationRow.classList.remove('hidden');
+                this._setRotateAvailable(true);
+            } else {
+                this.inputs.rotationRow.classList.add('hidden');
+                this._setRotateAvailable(false);
+            }
         } else {
             this.inputs.positionRow.classList.add('hidden');
             this.inputs.rotationRow.classList.add('hidden');
+            this._setRotateAvailable(false);
+        }
+    }
+
+    _setMode(mode, notify = true) {
+        this.inputs.modeTranslate.classList.toggle('active', mode === 'translate');
+        this.inputs.modeRotate.classList.toggle('active', mode === 'rotate');
+
+        if (notify && this.callbacks.onModeChange) {
+            this.callbacks.onModeChange(mode);
+        }
+    }
+
+    _setRotateAvailable(isAvailable) {
+        this.inputs.modeRotate.classList.toggle('disabled', !isAvailable);
+        this.inputs.modeRotate.disabled = !isAvailable;
+        if (!isAvailable) {
+            this._setMode('translate', false);
         }
     }
 
@@ -232,14 +291,16 @@ export class EditorLightPanel {
 
         this.inputs.intensityValue.textContent = Number(intensity).toFixed(2);
 
-        if (this.currentLight.isDirectionalLight) {
+        if (this.currentLight.isDirectionalLight || this.currentLight.isPointLight || this.currentLight.isSpotLight) {
             const posX = Number.parseFloat(this.inputs.posX.value || '0');
             const posY = Number.parseFloat(this.inputs.posY.value || '0');
             const posZ = Number.parseFloat(this.inputs.posZ.value || '0');
 
             configEntry.position = { x: posX, y: posY, z: posZ };
             this.currentLight.position.set(posX, posY, posZ);
+        }
 
+        if (this.currentLight.isDirectionalLight || this.currentLight.isSpotLight) {
             const rotX = Number.parseFloat(this.inputs.rotX.value || '0');
             const rotY = Number.parseFloat(this.inputs.rotY.value || '0');
             const rotZ = Number.parseFloat(this.inputs.rotZ.value || '0');

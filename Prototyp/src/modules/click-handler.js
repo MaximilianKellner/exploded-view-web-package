@@ -57,6 +57,19 @@ export class ClickHandler {
             const clickedObject = intersects[0].object;
             console.log('Objekt geklickt:', clickedObject.name);
 
+            if (this.editMode) {
+                const lightFromHelper = this._findLightFromHelper(clickedObject);
+                if (lightFromHelper) {
+                    window.dispatchEvent(new CustomEvent('ev:lightSelected', {
+                        detail: {
+                            light: lightFromHelper
+                        }
+                    }));
+                    this.lastSelectedObject = null;
+                    return;
+                }
+            }
+
             let topLevelObject = this._findTopLevelObject(clickedObject);
 
             // === EDIT MODE ===
@@ -110,11 +123,22 @@ export class ClickHandler {
 
             // Markierte Helfer (z.B. TransformControls, Koordinatensystem) und Nicht-Meshes ignorieren
             if (obj.userData?.nonSelectable) return false;
-            if (!obj.isMesh) return false;
+            if (!obj.isMesh && !obj.userData?.lightHelper) return false;
 
             return !(obj instanceof THREE.AxesHelper || 
                 obj instanceof THREE.GridHelper || (obj.parent && obj.parent.name === 'Coordinatesystem'));
         });
+    }
+
+    _findLightFromHelper(object) {
+        let current = object;
+        while (current) {
+            if (current.userData?.lightHelper && current.userData?.lightRef) {
+                return current.userData.lightRef;
+            }
+            current = current.parent;
+        }
+        return null;
     }
 
     // Das Parent Objekt wird gefunden. dies ist wichig um die richige Beschrifung zu finden.

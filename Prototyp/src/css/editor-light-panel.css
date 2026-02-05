@@ -69,6 +69,25 @@
         outline: 2px solid var(--c-border);
     }
 
+    .light-mode-toggle {
+        max-width: none;
+    }
+
+    .light-mode-toggle .editor-btn {
+        flex: 1;
+        border: none;
+        font-size: 0.8rem;
+    }
+
+    .light-mode-toggle .editor-btn.active {
+        background-color: var(--c-accent);
+    }
+
+    .light-mode-toggle .editor-btn.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
     .delete-popup {
         position: absolute;
         top: 0;
