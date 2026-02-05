@@ -25,7 +25,9 @@ export class ClickHandler {
     }
 
     initialize() {
-        window.addEventListener('click', this._onObjectClick);
+        if (this.renderer?.domElement) {
+            this.renderer.domElement.addEventListener('click', this._onObjectClick);
+        }
     }
 
     // --- Verarbeitung vom click Event ---
@@ -191,7 +193,9 @@ export class ClickHandler {
 
     destroy() {
         // Event-Listener entfernen
-        window.removeEventListener('click', this._onObjectClick);
+        if (this.renderer?.domElement) {
+            this.renderer.domElement.removeEventListener('click', this._onObjectClick);
+        }
         if (this._cardClosedListener) {
             window.removeEventListener('cardClosed', this._cardClosedListener);
             this._cardClosedListener = null;
