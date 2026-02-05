@@ -240,6 +240,25 @@ export class EditorTimeline {
         const timelineColumn = this.element.querySelector('.timeline-column');
         
         if (objectsColumn && timelineColumn) {
+            const objectIds = new Set(objects.map(obj => obj.name));
+
+            // Veraltete Objekt-Zeilen entfernen
+            const objectItems = objectsColumn.querySelectorAll('.object-item');
+            objectItems.forEach(item => {
+                const objectId = item.getAttribute('data-object-id');
+                if (objectId && !objectIds.has(objectId)) {
+                    item.remove();
+                }
+            });
+
+            const timelineItems = timelineColumn.querySelectorAll('.timeline-row-item');
+            timelineItems.forEach(item => {
+                const objectId = item.getAttribute('data-object-id');
+                if (objectId && !objectIds.has(objectId)) {
+                    item.remove();
+                }
+            });
+
             objects.forEach(obj => {
                 // Prüfen, ob Objekt bereits in Timeline vorhanden ist
                 const existingItem = objectsColumn.querySelector(`[data-object-id="${obj.name}"]`);
