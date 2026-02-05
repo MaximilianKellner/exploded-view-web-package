@@ -286,7 +286,7 @@ export class EditorLightPanel {
         this.inputs.modeRotate.classList.toggle('disabled', !isAvailable);
         this.inputs.modeRotate.disabled = !isAvailable;
         if (!isAvailable) {
-            this._setMode('translate', false);
+            this._setMode('translate', true);
         }
     }
 
