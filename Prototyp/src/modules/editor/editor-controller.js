@@ -537,6 +537,7 @@ export class EditorController {
         this.editorTimeline?.updateObjectCount();
 
         // Selektion zurücksetzen
+        this.clickHandler?.clearSelectedObject(this.selectedObject);
         this.selectedObject = null;
 
         console.log('Animation gelöscht und UI aktualisiert');

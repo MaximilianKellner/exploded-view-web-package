@@ -187,6 +187,12 @@ export class ClickHandler {
         }
     }
 
+    clearSelectedObject(object) {
+        if (!object || this.lastSelectedObject === object) {
+            this.lastSelectedObject = null;
+        }
+    }
+
     setTransformHandler(transformHandler) {
         this.transformHandler = transformHandler;
     }
