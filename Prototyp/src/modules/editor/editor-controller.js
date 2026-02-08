@@ -222,6 +222,8 @@ export class EditorController {
         
         // PreviewObject erstellen und Gizmo anhängen
         this._createPreviewObject(object);
+        this.transformHandler?.setMode('translate');
+        this.transformHandler?.controls?.setSpace('world');
         
         // Panel anzeigen und mit Daten füllen
         let item = this.animationHandler.getExplodableItem(object);
