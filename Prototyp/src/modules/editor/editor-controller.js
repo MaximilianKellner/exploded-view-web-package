@@ -3,9 +3,6 @@ import { EditorPanel } from './editor-anim-panel.js';
 import { EditorLightPanel } from './editor-light-panel.js';
 import { EditorTimeline } from './editor-timeline.js';
 import { EditorSidebarPanel } from './editor-sidebar-panel.js';
-import '../../css/editor-anim-panel.css';
-import '../../css/editor-sidebar-panel.css';
-import '../../css/editor-light-panel.css';
 
 export class EditorController {
     constructor({ scene, camera, renderer, clickHandler, animationHandler, explosionConfigPath, config }) {

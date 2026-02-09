@@ -10,9 +10,12 @@ export default defineConfig({
     host: true // Erlaubt den Zugriff aus dem lokalen Netzwerk
   },
   build: {
+    cssCodeSplit: true,
     lib: {
       entry: {
-          'exploded-viewer': resolve(__dirname, 'src/index.js')
+          'exploded-viewer': resolve(__dirname, 'src/index.js'),
+          'exploded-viewer-editor': resolve(__dirname, 'src/editor-style-entry.js'),
+          'default-card-style': resolve(__dirname, 'src/default-card-style-entry.js')
       },
       name: 'ExplodedViewer',
       // the proper extensions will be added
@@ -22,6 +25,7 @@ export default defineConfig({
         } else if (format === 'es') {
           return `${entryName}.js`;
         }
+        return `${entryName}.${format}.js`;
       }
     },
     rollupOptions: {

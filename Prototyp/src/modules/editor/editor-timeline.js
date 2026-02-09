@@ -1,8 +1,12 @@
-import '../../css/editor-timeline.css';
-import '../../css/editor-components.css';
 import { TimelineDataManager } from './timeline-data-manager.js';
 import { ScrubberController } from './scrubber-controller.js';
 import { KeyframeController } from './keyframe-controller.js';
+
+const iconStartUrl = new URL('../../assets/editor/start.svg', import.meta.url).href;
+const iconPlayUrl = new URL('../../assets/editor/play.svg', import.meta.url).href;
+const iconEndUrl = new URL('../../assets/editor/end.svg', import.meta.url).href;
+const iconTimerUrl = new URL('../../assets/editor/timer.svg', import.meta.url).href;
+const iconCollapseUrl = new URL('../../assets/editor/einklappen.svg', import.meta.url).href;
 
 export class EditorTimeline {
     constructor(container, animationHandler, explosionConfigPath) {
@@ -74,25 +78,25 @@ export class EditorTimeline {
             <div class="top-bar">
         <div class="anim-btn-group">
             <button id="timeline-start" title="Start der Animation">
-                <img src="/icon/editor/start.svg" alt="start icon">
+                <img src="${iconStartUrl}" alt="start icon">
             </button>
             <button id="timeline-play-pause" title="Abspielen/Pause">
-                <img src="/icon/editor/play.svg" alt="play icon">
+                <img src="${iconPlayUrl}" alt="play icon">
             </button>
             <button id="timeline-end" title="Ende der Timeline">
-                <img src="/icon/editor/end.svg" alt="end icon">
+                <img src="${iconEndUrl}" alt="end icon">
             </button>
         </div>
 
         <div class="time-control">
-            <img src="/icon/editor/timer.svg" alt="timer icon">
+            <img src="${iconTimerUrl}" alt="timer icon">
             <span>
                 <input type="number" id="time-input" value="${duration}" max="99999" min="1">
                 <span class="unit">ms</span>
             </span>
 
             <button id="einklappen-timeline" title="Ein-/Ausklappen der Timeline">
-                <img src="/icon/editor/einklappen.svg" alt="einklappen">
+                <img src="${iconCollapseUrl}" alt="einklappen">
             </button>
         </div>
     </div>

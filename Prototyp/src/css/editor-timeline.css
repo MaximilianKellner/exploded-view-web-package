@@ -68,10 +68,10 @@
     }
 
     #timeline-play-pause {
-        content: url(../../public/icon/editor/play.svg);
+        content: url(../assets/editor/play.svg);
         
         &.playing {
-            content: url(../../public/icon/editor/pause.svg);
+            content: url(../assets/editor/pause.svg);
         }
     }
 

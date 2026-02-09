@@ -39,8 +39,8 @@ bearbeiten sie ihre `main.js`
 ```js
 import ExplodedViewer from '@maximiliankellner/exploded-views';
 
-//(optional) Import card Styling
-import '@maximiliankellner/exploded-views/style.css';
+// (optional) Import default card styling
+import '@maximiliankellner/exploded-views/default-card-style.css';
 
 
 // Container element

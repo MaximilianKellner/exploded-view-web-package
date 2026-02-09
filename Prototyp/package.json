@@ -1,7 +1,7 @@
 {
   "name": "@maximiliankellner/exploded-views",
   "private": false,
-  "version": "3.0.2",
+  "version": "3.0.10",
   "description": "Eine Komponente um interaktive 3D exploded views zu erstellen und integriertem Editor",
   "type": "module",
   "main": "./dist/exploded-viewer.umd.cjs",
@@ -12,11 +12,23 @@
       "import": "./dist/exploded-viewer.js",
       "require": "./dist/exploded-viewer.umd.cjs"
     },
+    "./editor.css": {
+      "default": "./dist/exploded-viewer-editor.css"
+    },
+    "./dist/editor.css": {
+      "default": "./dist/exploded-viewer-editor.css"
+    },
+    "./default-card-style.css": {
+      "default": "./dist/default-card-style.css"
+    },
     "./style.css": {
       "default": "./dist/exploded-viewer.css"
     },
     "./dist/style.css": {
       "default": "./dist/exploded-viewer.css"
+    },
+    "./dist/default-card-style.css": {
+      "default": "./dist/default-card-style.css"
     }
   },
   "files": [

@@ -2,6 +2,10 @@
  * Lichter-Tab: Listet alle Lichter der Szene auf
  * Mit Suchfunktion und Einstellungsmöglichkeiten
  */
+const iconSearchUrl = new URL('../../../assets/editor/search.svg', import.meta.url).href;
+const iconAddUrl = new URL('../../../assets/editor/add.svg', import.meta.url).href;
+const iconDownloadUrl = new URL('../../../assets/editor/download.svg', import.meta.url).href;
+
 export class TabLichter {
     constructor({ scene, onLightSelect, onExportSceneConfig }) {
         this.scene = scene;
@@ -29,7 +33,7 @@ export class TabLichter {
                     <input type="text" class="tab-search-input" placeholder="Lichter durchsuchen" />
 
                     <button>
-                        <img src="../icon/editor/search.svg" class="tab-search-icon" alt="Suche" />
+                        <img src="${iconSearchUrl}" class="tab-search-icon" alt="Suche" />
                     </button>
             </div>
             <div class="tab-list-section">
@@ -37,13 +41,13 @@ export class TabLichter {
             </div>
             <div class="tab-footer">
                 <button class="editor-btn" id="add-light-btn">
-                    <img src="../icon/editor/add.svg" alt="add light icon" />
+                    <img src="${iconAddUrl}" alt="add light icon" />
 
                     Licht
                 </button>
 
                 <button class="editor-btn blue" id="export-lights-btn">
-                    <img src="../icon/editor/download.svg" alt="download icon" />
+                    <img src="${iconDownloadUrl}" alt="download icon" />
                     scene-config
                 </button>
             </div>

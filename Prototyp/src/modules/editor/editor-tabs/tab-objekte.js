@@ -3,6 +3,10 @@
  * Mit Suchfunktion und Möglichkeit zur Auswahl/Bearbeitung
  * Nutzt das gleiche Event System wie der ClickHandler zur Auswahl und Vorschau
  */
+const iconSearchUrl = new URL('../../../assets/editor/search.svg', import.meta.url).href;
+const iconDownloadUrl = new URL('../../../assets/editor/download.svg', import.meta.url).href;
+const iconAnimatedUrl = new URL('../../../assets/editor/animated.svg', import.meta.url).href;
+
 export class TabObjekte {
     constructor({ scene, animationHandler }) {
         this.scene = scene;
@@ -29,7 +33,7 @@ export class TabObjekte {
                     <input type="text" class="tab-search-input" placeholder="Objekte durchsuchen" />
 
                     <button>
-                        <img src="../icon/editor/search.svg" class="tab-search-icon" alt="Suche" />
+                        <img src="${iconSearchUrl}" class="tab-search-icon" alt="Suche" />
                     </button>
             </div>
             <div class="tab-list-section">
@@ -37,7 +41,7 @@ export class TabObjekte {
             </div>
             <div class="tab-footer">
                 <button class="editor-btn blue" id="export-exp-config-btn">
-                    <img src="../icon/editor/download.svg" alt="download icon" />        
+                    <img src="${iconDownloadUrl}" alt="download icon" />        
                     exp-config
                 </button>
             </div>
@@ -108,7 +112,7 @@ export class TabObjekte {
             // Prüfen, ob das Objekt animiert ist
             const isAnimated = this._isObjectAnimated(obj);
             const animatedIconHTML = isAnimated 
-                ? '<img src="../icon/editor/animated.svg" alt="animated icon" />' 
+                ? `<img src="${iconAnimatedUrl}" alt="animated icon" />` 
                 : '';
             
             li.innerHTML = `
@@ -178,7 +182,7 @@ export class TabObjekte {
         
         const isAnimated = this._isObjectAnimated(object);
         const animatedIconHTML = isAnimated 
-            ? '<img src="../icon/editor/animated.svg" alt="animated icon" />' 
+            ? `<img src="${iconAnimatedUrl}" alt="animated icon" />` 
             : '';
         
         listItem.innerHTML = `

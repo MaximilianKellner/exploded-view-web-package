@@ -1,8 +1,8 @@
-import '../../css/editor-sidebar-panel.css';
-import '../../css/editor-tabs.css';
 import { TabScene } from './editor-tabs/tab-szene.js';
 import { TabObjekte } from './editor-tabs/tab-objekte.js';
 import { TabLichter } from './editor-tabs/tab-lichter.js';
+
+const logoUrl = new URL('../../assets/logo-block.svg', import.meta.url).href;
 
 export class EditorSidebarPanel {
     constructor(container, { scene, renderer, config, animationHandler, onLightSelect, onExportSceneConfig } = {}) {
@@ -31,7 +31,7 @@ export class EditorSidebarPanel {
         sidebarHeader.className = 'editor-sidebar-header';
         sidebarHeader.id = 'editor-sidebar-header';
         sidebarHeader.innerHTML = `
-            <img src="../logo-block.svg" alt="Logo">
+            <img src="${logoUrl}" alt="Logo">
         `;
         
         this.sidebarContent.appendChild(sidebarHeader);

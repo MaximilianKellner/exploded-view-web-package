@@ -1,7 +1,4 @@
 import { EditorColorPicker } from '../editor-colorpicker.js';
-import '../../../css/editor-colorpicker.css';
-import '../../../css/editor-components.css';
-import '../../../css/tabs/editor-scene-tab.css';
 
 /**
  * Szene-Tab: Verwaltet Szenen-Einstellungen (Hintergrund, Beleuchtung, etc.)

@@ -1,8 +1,5 @@
 import * as THREE from 'three';
 import { EditorColorPicker } from './editor-colorpicker.js';
-import '../../css/editor-colorpicker.css';
-import '../../css/editor-components.css';
-import '../../css/editor-light-panel.css';
 
 export class EditorLightPanel {
     constructor(container, { config }) {

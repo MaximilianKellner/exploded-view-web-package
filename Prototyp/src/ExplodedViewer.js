@@ -35,6 +35,7 @@ class ExplodedViewer {
         this.highlightHandler = null;
         this.cardHandler = null;
         this.statsHandler = null;
+        this._editorStylesLoaded = false;
     }
     
     async init() {
@@ -273,6 +274,22 @@ class ExplodedViewer {
         this.editor.transformHandler = new TransformControlsHandler(this.camera, this.renderer, this.scene);
     }
 
+    async _ensureEditorStylesLoaded() {
+        if (this._editorStylesLoaded) {
+            return;
+        }
+
+        // Inline-loader für das automatische importieren in bundled environments ohne Pfadprobleme
+        try {
+            const { loadEditorCss } = await import('./utils/editor-style-loader.js');
+            loadEditorCss();
+        } catch (error) {
+            console.warn('ExplodedViewer: Could not load editor styles.', error);
+        }
+
+        this._editorStylesLoaded = true;
+    }
+
 
     // Handler-Zugriff
     getAnimationHandler() {
@@ -342,6 +359,8 @@ class ExplodedViewer {
 
     // Edit-Mode Helpers
     async enableEditmode() {
+        // Css für Edit-Mode laden
+        await this._ensureEditorStylesLoaded();
         if (!this.editor) {
             await this._setupEditor();
         }

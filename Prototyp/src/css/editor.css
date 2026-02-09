@@ -1,0 +1,9 @@
+@import url('@simonwep/pickr/dist/themes/nano.min.css');
+@import url('./editor-components.css');
+@import url('./editor-colorpicker.css');
+@import url('./editor-anim-panel.css');
+@import url('./editor-light-panel.css');
+@import url('./editor-timeline.css');
+@import url('./editor-sidebar-panel.css');
+@import url('./editor-tabs.css');
+@import url('./tabs/editor-scene-tab.css');
