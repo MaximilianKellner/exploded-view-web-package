@@ -23,20 +23,6 @@
         text-overflow: ellipsis;
     }
 
-    .editor-value-display {
-        width: 100%;
-        max-width: 160px;
-        box-sizing: border-box;
-        font-size: .85rem;
-        text-align: center;
-        background-color: var(--c-dark);
-        padding: var(--xxs);
-        outline: 2px solid var(--c-border);
-        border-radius: 5px;
-        font-family: monospace;
-
-    }
-
     .editor-row {
         margin-top: var(--xxs);
         margin-bottom: var(--xxs);
