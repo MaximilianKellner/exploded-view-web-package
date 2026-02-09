@@ -388,7 +388,8 @@ export class EditorController {
             }
 
             if (lookAtEnabled) {
-                light.target.position.set(0, 0, 0);
+                const target = configEntry.lookAtTarget || { x: 0, y: 0, z: 0 };
+                light.target.position.set(target.x ?? 0, target.y ?? 0, target.z ?? 0);
             } else {
                 const worldQuat = new THREE.Quaternion();
                 light.getWorldQuaternion(worldQuat);
@@ -620,6 +621,11 @@ export class EditorController {
                 z: light.rotation?.z ?? 0
             };
             config.lookAtEnabled = true;
+            config.lookAtTarget = {
+                x: light.target?.position?.x ?? 0,
+                y: light.target?.position?.y ?? 0,
+                z: light.target?.position?.z ?? 0
+            };
         } else if (light.isAmbientLight) {
             config.type = 'ambient';
         } else if (light.isPointLight) {
@@ -642,6 +648,11 @@ export class EditorController {
                 z: light.rotation?.z ?? 0
             };
             config.lookAtEnabled = true;
+            config.lookAtTarget = {
+                x: light.target?.position?.x ?? 0,
+                y: light.target?.position?.y ?? 0,
+                z: light.target?.position?.z ?? 0
+            };
         }
 
         return config;

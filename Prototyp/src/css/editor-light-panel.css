@@ -64,6 +64,10 @@
         display: none;
     }
 
+    .editor-row[data-section="look-at-position"].hidden {
+        display: none;
+    }
+
     .editor-actions {
         display: flex;
         outline: 2px solid var(--c-border);

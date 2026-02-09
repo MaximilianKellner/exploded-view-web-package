@@ -34,7 +34,8 @@ function setupLights(mainConfig, scene, lightsObject) {
                     const direction = new THREE.Vector3(0, 0, -1).applyEuler(light.rotation);
                     light.target.position.copy(light.position.clone().add(direction));
                 } else {
-                    light.target.position.set(0, 0, 0);
+                    const target = config.lookAtTarget || { x: 0, y: 0, z: 0 };
+                    light.target.position.set(target.x ?? 0, target.y ?? 0, target.z ?? 0);
                 }
 
                 light.shadow.mapSize.width = 2048; // Höhere Auflösung für schärfere Schatten
