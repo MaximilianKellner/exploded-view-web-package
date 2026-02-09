@@ -74,26 +74,33 @@
     }
 
     .light-mode-toggle {
-        max-width: none;
+        width: 160px;
+        box-sizing: border-box;
         border: 2px solid var(--c-border-light);
-    }
+    
+        .editor-btn:nth-child(2) {
+            border-left: 2px solid var(--c-border-light);
+        }
 
-    .light-mode-toggle .editor-btn:nth-child(2) {
-        border-left: 2px solid var(--c-border-light);
-    }
+        .editor-btn {
+            flex: 1;
+            padding: 0;
+            height: 24px;
+            width: 100%;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            display: flex;
+            font-size: 0.8rem;
 
-    .light-mode-toggle .editor-btn {
-        border: none;
-        display: flex;
-        font-size: 0.8rem;
-    }
+            &.active {
+                background-color: var(--c-accent);
+            }
 
-    .light-mode-toggle .editor-btn.active {
-        background-color: var(--c-accent);
-    }
-
-    .light-mode-toggle .editor-btn.disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
+            &.disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+        }
     }
 }

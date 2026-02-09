@@ -45,6 +45,7 @@
 
     .editor-input-group {
         max-width: 160px;
+        box-sizing: border-box;
     }
 
     .editor-vector-input {

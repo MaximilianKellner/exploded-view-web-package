@@ -170,7 +170,8 @@ input[type="number"] {
     align-items: center;
     gap: 3px;
     height: 20px;
-    max-width: 106px;
+    margin: 2px 0;
+    max-width: 160px;
     box-sizing: border-box;
 }
 
