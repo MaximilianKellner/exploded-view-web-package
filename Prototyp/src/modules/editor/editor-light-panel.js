@@ -48,7 +48,7 @@ export class EditorLightPanel {
                 </div>
 
                 <div class="editor-row">
-                    <span class="editor-label">Starke</span>
+                    <span class="editor-label">Stärke</span>
                     <div class="slider-container">
                         <div class="slider-value" id="light-intensity-value">1.0</div>
                         <div class="slider-wrapper">

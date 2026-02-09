@@ -177,7 +177,7 @@ input[type="number"] {
 /* Slider Value Display */
 .slider-value {
     color: #ffffff;
-    width: 20px;
+    width: 40px;
     height: 100%;
     display: flex;
     align-items: center;
@@ -258,4 +258,62 @@ input[type="number"] {
 
 .editor-slider:focus::-moz-range-thumb {
     box-shadow: -400px 0 0 400px #fdfd96;
+}
+
+/* Delete Popup */
+.delete-popup {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+
+    &.visible {
+        display: flex;
+    }
+}
+
+.delete-popup-content {
+    background-color: var(--c-lighter);
+    padding: var(--l);
+    border-radius: 10px;
+    border: 2px solid var(--c-border);
+    box-sizing: border-box;
+
+    h3 {
+        margin: 0 0 var(--s) 0;
+        color: #ffffff;
+    }
+
+    p {
+        margin: 0 0 var(--m) 0;
+        color: var(--c-body-text);
+    }
+}
+
+.delete-popup-actions {
+    display: flex;
+    gap: var(--xs);
+
+    .editor-btn {
+        flex: 1;
+        border: none;
+        border-radius: 5px;
+        transition: background-color 0.2s;
+        font-weight: 500;
+
+        &.red {
+            background-color: var(--c-red);
+            color: #ffffff;
+
+            &:hover {
+                background-color: var(--c-red-border);
+            }
+        }
+    }
 }
