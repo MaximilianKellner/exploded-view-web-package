@@ -125,6 +125,47 @@ input {
     }
 }
 
+/* Checkbox Styling */
+.editor-checkbox {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 5px;
+    cursor: pointer;
+    position: relative;
+    outline: none;
+    margin: 0 auto;
+    padding: 0;
+    border: 2px solid var(--c-border-light);
+    background-color: var(--c-button);
+}
+
+.editor-checkbox:checked {
+    border-color: var(--c-accent-border);
+    background-color: var(--c-accent);
+}
+
+/* check "icon" in der Mitte */
+.editor-checkbox:checked::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 10px;
+    height: 10px;
+    background-color: var(--c-body-text);
+    border-radius: 2px;
+}
+
+.editor-checkbox:checked:hover {
+    &::after {
+        background-color: #ffffff;
+    }
+}
+
 /* Spezielle Styles für Vektor-Inputs (X, Y, Z) */
 .editor-vector-input {
     flex: 1;

@@ -49,13 +49,6 @@
         padding: 0;
     }
 
-    .editor-checkbox {
-        width: 18px;
-        height: 18px;
-        margin: 0 auto;
-        border-radius: 4px;
-    }
-
     .editor-row[data-section="position"].hidden {
         display: none;
     }

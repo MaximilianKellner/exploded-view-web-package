@@ -52,7 +52,7 @@ export class EditorLightPanel {
                     <div class="slider-container">
                         <div class="slider-value" id="light-intensity-value">1.0</div>
                         <div class="slider-wrapper">
-                            <input type="range" class="editor-slider" id="light-intensity" min="0" max="5" step="0.1" value="1" />
+                            <input type="range" class="editor-slider" id="light-intensity" min="0" max="10" step="0.1" value="1" />
                         </div>
                     </div>
                 </div>
