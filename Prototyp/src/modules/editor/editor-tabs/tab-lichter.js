@@ -107,6 +107,11 @@ export class TabLichter {
             const lightType = light.constructor.name;
             const intensity = (light.intensity ?? 1).toFixed(2);
             const color = light.color ? '#' + light.color.getHexString() : '#ffffff';
+            const isEnabled = light.visible !== false;
+
+            if (!isEnabled) {
+                li.classList.add('light-disabled');
+            }
 
             li.innerHTML = `
                 <div class="light-item-content">
@@ -128,6 +133,30 @@ export class TabLichter {
             this.lightList.appendChild(li);
             this.lightItems[light.name || light.uuid] = li;
         });
+    }
+
+    // Aktualisiert Live-Daten (Farbe/Intensität/Aktiv) in der Liste
+    updateLightItem(light) {
+        if (!light) return;
+
+        const key = light.name || light.uuid;
+        const listItem = this.lightItems[key];
+        if (!listItem) return;
+
+        const intensityEl = listItem.querySelector('.light-intensity');
+        const colorEl = listItem.querySelector('.light-color');
+
+        if (intensityEl) {
+            const intensity = (light.intensity ?? 1).toFixed(2);
+            intensityEl.textContent = `Intensität: ${intensity}`;
+        }
+
+        if (colorEl && light.color) {
+            colorEl.style.backgroundColor = `#${light.color.getHexString()}`;
+        }
+
+        const isEnabled = light.visible !== false;
+        listItem.classList.toggle('light-disabled', !isEnabled);
     }
 
     //Selektiert ein Licht und triggert Callback

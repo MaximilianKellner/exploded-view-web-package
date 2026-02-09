@@ -67,6 +67,8 @@
 .tab-list-item {
     background-color: var(--c-lighter);
     padding: var(--xxs);
+    padding: var(--xs);
+
     border-bottom: 2px solid var(--c-border);
 
     /*
@@ -139,7 +141,7 @@
 .light-item-details {
     display: flex;
     align-items: center;
-    gap: var(--s);
+    gap: var(--xs);
     font-size: 0.8rem;
     color: var(--c-l-accent);
 }
@@ -148,11 +150,23 @@
     color: rgba(255, 255, 255, 0.8);
 }
 
+.tab-list-item.light-disabled,
+.tab-list-item.light-disabled.active {
+    color: var(--c-l-accent);
+}
+
+.tab-list-item.light-disabled .item-name,
+.tab-list-item.light-disabled .item-type,
+.tab-list-item.light-disabled .light-item-details {
+    color: var(--c-l-accent);
+    opacity: 0.6;
+}
+
 .light-color {
     width: 16px;
     height: 16px;
-    border-radius: 2px;
-    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    border: 2px solid var(--c-border-light);
     flex-shrink: 0;
 }
 

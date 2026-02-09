@@ -579,6 +579,7 @@ export class EditorController {
             this._applyLightLookAt(light, configEntry);
         }
         this._updateLightHelper(light);
+        this.editorSidebarPanel?.getTab('lights')?.updateLightItem(light);
     }
 
     _onLightModeChange(mode) {
