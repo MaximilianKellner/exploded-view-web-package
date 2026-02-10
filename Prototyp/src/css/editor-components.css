@@ -219,6 +219,96 @@ input[type="number"] {
     user-select: none;
 }
 
+/* Dropdown */
+.editor-dropdown {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    max-width: 160px;
+    position: relative;
+    cursor: pointer;
+
+    &.is-open .editor-dropdown-icon {
+        transform: rotate(180deg);
+    }
+}
+
+.editor-dropdown-toggle {
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--c-button);
+    border: 2px solid var(--c-border-light);
+    border-radius: 5px 0 0 5px;
+    cursor: pointer;
+}
+
+.editor-dropdown-toggle:hover {
+    background-color: var(--c-button-highlight);
+}
+
+.editor-dropdown-value {
+    flex: 1;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    padding: 0 var(--xxs);
+    background-color: var(--c-button);
+    border: 2px solid var(--c-border-light);
+    border-radius: 0 5px 5px 0;
+    box-sizing: border-box;
+    font-size: 0.9rem;
+    user-select: none;
+    color: var(--c-body-text);
+    min-width: 75.6px;
+}
+
+.editor-dropdown:hover .editor-dropdown-value {
+    background-color: var(--c-button-highlight);
+}
+
+.editor-dropdown-icon {
+    width: 12px;
+    height: 12px;
+    display: block;
+    color: var(--c-body-text);
+    background-image: url(../assets/editor/down.svg);
+    transition: transform 0.2s ease;
+    
+}
+
+.editor-dropdown-menu {
+    display: none;
+    position: absolute;
+    top: calc(100% + 4px);
+    right: 0;
+    left: 0;
+    margin: 0;
+    padding: 4px 0;
+    list-style: none;
+    background-color: var(--c-button);
+    border: 2px solid var(--c-border-light);
+    border-radius: 5px;
+    z-index: 99;
+}
+
+.editor-dropdown.is-open .editor-dropdown-menu {
+    display: block;
+}
+
+.editor-dropdown-option {
+    padding: 6px var(--s);
+    cursor: pointer;
+    color: var(--c-body-text);
+}
+
+.editor-dropdown-option:hover {
+    background-color: var(--c-button-highlight);
+}
+
 /* Slider Container */
 .slider-container {
     display: flex;
@@ -232,7 +322,6 @@ input[type="number"] {
 
 /* Slider Value Display */
 .slider-value {
-    color: #ffffff;
     width: 45px;
     height: 100%;
     display: flex;

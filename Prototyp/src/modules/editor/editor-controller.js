@@ -1,4 +1,3 @@
-import * as THREE from 'three';
 import { EditorLightController } from './editor-light-controller.js';
 import { EditorAnimationController } from './editor-animation-controller.js';
 import { EditorSidebarPanel } from './editor-sidebar-panel.js';
