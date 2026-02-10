@@ -7,10 +7,11 @@ const iconAddUrl = new URL('../../../assets/editor/add.svg', import.meta.url).hr
 const iconDownloadUrl = new URL('../../../assets/editor/download.svg', import.meta.url).href;
 
 export class TabLichter {
-    constructor({ scene, onLightSelect, onExportSceneConfig }) {
+    constructor({ scene, onLightSelect, onExportSceneConfig, onAddLight }) {
         this.scene = scene;
         this.onLightSelect = onLightSelect; // Callback wenn Licht ausgewählt
         this.onExportSceneConfig = onExportSceneConfig;
+        this.onAddLight = onAddLight;
 
         this.element = null;
         this.searchInput = null;
@@ -42,7 +43,6 @@ export class TabLichter {
             <div class="tab-footer">
                 <button class="editor-btn" id="add-light-btn">
                     <img src="${iconAddUrl}" alt="add light icon" />
-
                     Licht
                 </button>
 
@@ -57,6 +57,7 @@ export class TabLichter {
         this.searchInput = this.element.querySelector('.tab-search-input');
         this.lightList = this.element.querySelector('.tab-light-list');
         const exportBtn = this.element.querySelector('#export-lights-btn');
+        const addBtn = this.element.querySelector('#add-light-btn');
 
         // Event Listener für Suche
         this.searchInput.addEventListener('input', (e) => this._filterLights(e.target.value));
@@ -65,6 +66,13 @@ export class TabLichter {
         exportBtn.addEventListener('click', () => {
             if (this.onExportSceneConfig) {
                 this.onExportSceneConfig();
+            }
+        });
+
+        // Add Button
+        addBtn.addEventListener('click', () => {
+            if (this.onAddLight) {
+                this.onAddLight();
             }
         });
     }

@@ -34,6 +34,7 @@ export class EditorController {
         this._onExportSceneConfig = this._onExportSceneConfig.bind(this);
         this._onDeleteAnimation = this._onDeleteAnimation.bind(this);
         this._onDeleteLight = this._onDeleteLight.bind(this);
+        this._onAddLight = this._onAddLight.bind(this);
         this._onLightPanelChange = this._onLightPanelChange.bind(this);
         this._onLightModeChange = this._onLightModeChange.bind(this);
         this._onKeyframeChange = this._onKeyframeChange.bind(this);
@@ -65,7 +66,8 @@ export class EditorController {
             config: this.config,
             animationHandler: this.animationHandler,
             onLightSelect: this._onLightSelected,
-            onExportSceneConfig: this._onExportSceneConfig
+            onExportSceneConfig: this._onExportSceneConfig,
+            onAddLight: this._onAddLight
         });
 
         // Editor Timeline initialisieren
@@ -528,7 +530,7 @@ export class EditorController {
         this.transformHandler?.detach();
         this._removePreviewObject();
 
-        // Objektliste im Sidebar aktualisieren (animated icon entfernen)
+        // Objektliste in der Sidebar aktualisieren (animated icon entfernen)
         this.editorSidebarPanel?.getTab('objects')?.updateObjectIcon(this.selectedObject.name);
 
         // Timeline aktualisieren - Keyframe entfernen
@@ -539,6 +541,60 @@ export class EditorController {
         this.selectedObject = null;
 
         console.log('Animation gelöscht und UI aktualisiert');
+    }
+
+    _onAddLight() {
+        let index = 1;
+        let lightName;
+        
+        // Möglichen Namen finden (DirectionalLight-XXX)
+        do {
+            lightName = `DirectionalLight-${String(index).padStart(3, '0')}`;
+            index++;
+        } while (this.config.sceneConfig.lights && this.config.sceneConfig.lights[lightName]);
+        
+        // Default Config vom neuen Licht
+        const lightConfig = {
+            type: 'directional',
+            enabled: true,
+            color: '#ffffff',
+            intensity: 1.0,
+            position: { x: 0, y: 5, z: 0 },
+            rotation: { x: 0, y: 0, z: 0 },
+            lookAtEnabled: true,
+            lookAtTarget: { x: 0, y: 0, z: 0 }
+        };
+
+        // in die Config einfügen
+        if (!this.config.sceneConfig.lights) {
+            this.config.sceneConfig.lights = {};
+        }
+        this.config.sceneConfig.lights[lightName] = lightConfig;
+
+        // Light Object
+        const light = new THREE.DirectionalLight(lightConfig.color, lightConfig.intensity);
+        light.position.set(lightConfig.position.x, lightConfig.position.y, lightConfig.position.z);
+        light.name = lightName;
+        
+        this.scene.add(light);
+        if (light.target) {
+            this.scene.add(light.target);
+        }
+
+        // Helper hinzufügen und verbinden 
+        const helper = this._createLightHelper(light);
+        if (helper) {
+            this.lightHelpers.set(light.uuid, helper);
+            this.scene.add(helper);
+        }
+        
+        // UI Liste aktualisieren
+        if (this.editorSidebarPanel && this.editorSidebarPanel.tabs.lights) {
+            this.editorSidebarPanel.tabs.lights.refresh();
+        }
+        
+        // Neues Licht auswählen
+        this._onLightSelected(light);
     }
 
     _onDeleteLight(light, configKey) {
