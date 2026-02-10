@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { EditorPanel } from './editor-anim-panel.js';
-import { EditorLightPanel } from './editor-light-panel.js';
+import { EditorLightController } from './editor-light-controller.js';
 import { EditorTimeline } from './editor-timeline.js';
 import { EditorSidebarPanel } from './editor-sidebar-panel.js';
 
@@ -17,28 +17,26 @@ export class EditorController {
         this.enabled = false;
         this.transformHandler = null;
         this.selectedObject = null;
-        this.selectedLight = null;
-        this.selectedLightKey = null;
         this.previewObject = null;
         this.cameraHandler = null;
-        this.lightHelpers = new Map();
+
+        // Light Controller initialisieren
+        this.lightController = new EditorLightController({
+            scene: this.scene,
+            renderer: this.renderer,
+            config: this.config
+        });
 
         // Event handlers
         this._onObjectSelected = this._onObjectSelected.bind(this);
         this._onObjectDeselected = this._onObjectDeselected.bind(this);
-        this._onLightSelected = this._onLightSelected.bind(this);
         this._onLightSelectedEvent = this._onLightSelectedEvent.bind(this);
         this._onTransformChange = this._onTransformChange.bind(this);
         this._onPanelChange = this._onPanelChange.bind(this);
         this._onExportConfig = this._onExportConfig.bind(this);
         this._onExportSceneConfig = this._onExportSceneConfig.bind(this);
         this._onDeleteAnimation = this._onDeleteAnimation.bind(this);
-        this._onDeleteLight = this._onDeleteLight.bind(this);
-        this._onAddLight = this._onAddLight.bind(this);
-        this._onLightPanelChange = this._onLightPanelChange.bind(this);
-        this._onLightModeChange = this._onLightModeChange.bind(this);
         this._onKeyframeChange = this._onKeyframeChange.bind(this);
-        this._onPanelTimelineChange = this._onPanelTimelineChange.bind(this);
 
         // Editor Panel initialisieren
         const container = this.renderer.domElement.parentElement;
@@ -49,25 +47,21 @@ export class EditorController {
             onDelete: this._onDeleteAnimation
         });
 
-        // Light Panel initialisieren
-        this.lightPanel = new EditorLightPanel(container, {
-            config: this.config
-        });
-        this.lightPanel.setCallbacks({
-            onDelete: this._onDeleteLight,
-            onChange: this._onLightPanelChange,
-            onModeChange: this._onLightModeChange
-        });
-
         // Sidebar Panel initialisieren --> Tab-Komponenten
         this.editorSidebarPanel = new EditorSidebarPanel(container, {
             scene: this.scene,
             renderer: this.renderer,
             config: this.config,
             animationHandler: this.animationHandler,
-            onLightSelect: this._onLightSelected,
+            onLightSelect: (light) => this.lightController.selectLight(light),
             onExportSceneConfig: this._onExportSceneConfig,
-            onAddLight: this._onAddLight
+            onAddLight: () => this.lightController.addLight()
+        });
+        
+        // Callbacks für Sidebar Updates vom LightController
+        this.lightController.setSidebarCallbacks({
+            onRefresh: () => this.editorSidebarPanel?.getTab('lights')?.refresh(),
+            onUpdateItem: (light) => this.editorSidebarPanel?.getTab('lights')?.updateLightItem(light)
         });
 
         // Editor Timeline initialisieren
@@ -113,9 +107,12 @@ export class EditorController {
             if (this.transformHandler.controls) {
                 this.transformHandler.controls.addEventListener('change', this._onTransformChange);
             }
+            
+            // TransformHandler an LightController übergeben
+            this.lightController.setTransformHandler(this.transformHandler);
         }
 
-        this._initLightHelpers();
+        this.lightController.enable();
         
         // Keyframe-Callbacks registrieren (Timeline <-> EditorPanel Synchronisation)
         this.editorTimeline?.setKeyframeCallbacks({
@@ -142,8 +139,8 @@ export class EditorController {
         // Sidebar verstecken
         this.editorSidebarPanel?.hide();
 
-        // Light Panel verstecken
-        this.lightPanel?.hide();
+        // Light Controller disablen (Panel verstecken, Gizmo weg)
+        this.lightController.disable();
 
         // ClickHandler zurück in Viewer-Mode
         this.clickHandler?.setEditMode(false);
@@ -164,20 +161,20 @@ export class EditorController {
             this._removePreviewObject();
             this.selectedObject = null;
         }
-
-        this._clearLightSelection();
-        this._clearLightHelpers();
     }
 
     _onLightSelectedEvent(event) {
         const light = event?.detail?.light;
         if (light) {
-            this._onLightSelected(light);
+            this._onObjectDeselected({ detail: { object: this.selectedObject } }); // Objekt deselektieren wird
+            this._clearObjectSelection();
+            this.lightController.selectLight(light);
         }
     }
 
     // Event Handler für Objektauswahl
     _onObjectSelected(event) {
+
         // Wenn event ein Custom Event ist (von window.addEventListener)
         let object, UUID;
         
@@ -277,128 +274,12 @@ export class EditorController {
         }
     }
 
-    //Event Handler für Licht-Auswahl aus der Sidebar
-    _onLightSelected(light) {
-        if (!light) return;
-
-        this._clearObjectSelection();
-
-        const lightKey = light.name || light.uuid;
-        if (this.config && this.config.sceneConfig && !this.config.sceneConfig.lights) {
-            this.config.sceneConfig.lights = {};
-        }
-        const lightsConfig = this.config?.sceneConfig?.lights || {};
-        let configEntry = lightsConfig[lightKey];
-
-        if (!configEntry) {
-            configEntry = this._createLightConfigFromObject(light);
-            lightsConfig[lightKey] = configEntry;
-            light.name = lightKey;
-        }
-        this.editorPanel.hide();
-        this.lightPanel.show(light, lightKey, configEntry);
-        this.selectedLight = light;
-        this.selectedLightKey = lightKey;
-        this.transformHandler?.attach(light);
-        this.transformHandler?.setMode('translate');
-        this.transformHandler?.controls?.setSpace('world');
-        this._applyLightLookAt(light, configEntry);
-        this._updateLightHelper(light);
-        console.log('EditorController: Licht ausgewählt:', lightKey);
-    }
-
     _clearObjectSelection() {
         if (this.selectedObject) {
             this.transformHandler?.detach();
             this._removePreviewObject();
             this.selectedObject = null;
             this.editorPanel.hide();
-        }
-    }
-
-    _clearLightSelection() {
-        if (this.selectedLight) {
-            this.transformHandler?.detach();
-            this.selectedLight = null;
-            this.selectedLightKey = null;
-            this.lightPanel?.hide();
-        }
-    }
-
-    _initLightHelpers() {
-        this._clearLightHelpers();
-        this.scene?.traverse((node) => {
-            if (node.isDirectionalLight || node.isPointLight || node.isSpotLight) {
-                const helper = this._createLightHelper(node);
-                if (helper) {
-                    this.lightHelpers.set(node.uuid, helper);
-                    this.scene.add(helper);
-                }
-            }
-        });
-    }
-
-    _clearLightHelpers() {
-        this.lightHelpers.forEach((helper) => {
-            if (helper.parent) {
-                helper.parent.remove(helper);
-            }
-        });
-        this.lightHelpers.clear();
-    }
-
-    _createLightHelper(light) {
-        let helper = null;
-
-        if (light.isDirectionalLight) {
-            helper = new THREE.DirectionalLightHelper(light, 1);
-        } else if (light.isPointLight) {
-            helper = new THREE.PointLightHelper(light, 0.5);
-        } else if (light.isSpotLight) {
-            helper = new THREE.SpotLightHelper(light);
-        }
-
-        if (!helper) return null;
-
-        helper.traverse((node) => {
-            node.userData = node.userData || {};
-            node.userData.lightHelper = true;
-            node.userData.lightRef = light;
-        });
-
-        helper.userData = helper.userData || {};
-        helper.userData.lightHelper = true;
-        helper.userData.lightRef = light;
-
-        return helper;
-    }
-
-    _updateLightHelper(light) {
-        const helper = this.lightHelpers.get(light.uuid);
-        if (helper && helper.update) {
-            helper.update();
-        }
-    }
-
-    _applyLightLookAt(light, configEntry) {
-        if (!(light && configEntry)) return;
-
-        if (light.isDirectionalLight || light.isSpotLight) {
-            const lookAtEnabled = configEntry.lookAtEnabled !== false;
-            if (!light.target.parent) {
-                this.scene.add(light.target);
-            }
-
-            if (lookAtEnabled) {
-                const target = configEntry.lookAtTarget || { x: 0, y: 0, z: 0 };
-                light.target.position.set(target.x ?? 0, target.y ?? 0, target.z ?? 0);
-            } else {
-                const worldQuat = new THREE.Quaternion();
-                light.getWorldQuaternion(worldQuat);
-                const direction = new THREE.Vector3(0, 0, -1).applyQuaternion(worldQuat);
-                const targetPosition = light.getWorldPosition(new THREE.Vector3()).add(direction);
-                light.target.position.copy(targetPosition);
-            }
         }
     }
 
@@ -543,210 +424,11 @@ export class EditorController {
         console.log('Animation gelöscht und UI aktualisiert');
     }
 
-    _onAddLight() {
-        let index = 1;
-        let lightName;
-        
-        // Möglichen Namen finden (DirectionalLight-XXX)
-        do {
-            lightName = `DirectionalLight-${String(index).padStart(3, '0')}`;
-            index++;
-        } while (this.config.sceneConfig.lights && this.config.sceneConfig.lights[lightName]);
-        
-        // Default Config vom neuen Licht
-        const lightConfig = {
-            type: 'directional',
-            enabled: true,
-            color: '#ffffff',
-            intensity: 1.0,
-            position: { x: 0, y: 5, z: 0 },
-            rotation: { x: 0, y: 0, z: 0 },
-            lookAtEnabled: true,
-            lookAtTarget: { x: 0, y: 0, z: 0 }
-        };
-
-        // in die Config einfügen
-        if (!this.config.sceneConfig.lights) {
-            this.config.sceneConfig.lights = {};
-        }
-        this.config.sceneConfig.lights[lightName] = lightConfig;
-
-        // Light Object
-        const light = new THREE.DirectionalLight(lightConfig.color, lightConfig.intensity);
-        light.position.set(lightConfig.position.x, lightConfig.position.y, lightConfig.position.z);
-        light.name = lightName;
-        
-        this.scene.add(light);
-        if (light.target) {
-            this.scene.add(light.target);
-        }
-
-        // Helper hinzufügen und verbinden 
-        const helper = this._createLightHelper(light);
-        if (helper) {
-            this.lightHelpers.set(light.uuid, helper);
-            this.scene.add(helper);
-        }
-        
-        // UI Liste aktualisieren
-        if (this.editorSidebarPanel && this.editorSidebarPanel.tabs.lights) {
-            this.editorSidebarPanel.tabs.lights.refresh();
-        }
-        
-        // Neues Licht auswählen
-        this._onLightSelected(light);
-    }
-
-    _onDeleteLight(light, configKey) {
-        if (!light) return;
-
-        if (light.parent) {
-            light.parent.remove(light);
-        } else {
-            this.scene.remove(light);
-        }
-
-        const lightsConfig = this.config?.sceneConfig?.lights;
-        if (lightsConfig && configKey && lightsConfig[configKey]) {
-            delete lightsConfig[configKey];
-        }
-
-        const helper = this.lightHelpers.get(light.uuid);
-        if (helper && helper.parent) {
-            helper.parent.remove(helper);
-        }
-        this.lightHelpers.delete(light.uuid);
-
-        if (this.selectedLight === light) {
-            this.selectedLight = null;
-            this.selectedLightKey = null;
-            this.transformHandler?.detach();
-        }
-
-        this.lightPanel?.hide();
-        this.editorSidebarPanel?.getTab('lights')?.refresh();
-    }
-
-    _onLightPanelChange(light) {
-        if (!light) return;
-        const lightsConfig = this.config?.sceneConfig?.lights;
-        const configEntry = lightsConfig?.[this.selectedLightKey];
-        if (configEntry) {
-            this._applyLightLookAt(light, configEntry);
-        }
-        this._updateLightHelper(light);
-        this.editorSidebarPanel?.getTab('lights')?.updateLightItem(light);
-    }
-
-    _onLightModeChange(mode) {
-        if (!this.selectedLight || !this.transformHandler) return;
-
-        if (mode === 'rotate') {
-            const lightsConfig = this.config?.sceneConfig?.lights;
-            const configEntry = lightsConfig?.[this.selectedLightKey];
-            const allowRotate = (this.selectedLight.isDirectionalLight || this.selectedLight.isSpotLight)
-                && (configEntry?.lookAtEnabled === false);
-
-            if (!allowRotate) {
-                this.transformHandler.setMode('translate');
-                return;
-            }
-        }
-
-        this.transformHandler.setMode(mode);
-        this.transformHandler.controls?.setSpace('world');
-    }
-
-    _createLightConfigFromObject(light) {
-        const config = {
-            type: 'ambient',
-            enabled: light.visible ?? true,
-            color: light.color ? `#${light.color.getHexString()}` : '#ffffff',
-            intensity: light.intensity ?? 1
-        };
-
-        if (light.isDirectionalLight) {
-            config.type = 'directional';
-            config.position = {
-                x: light.position?.x ?? 0,
-                y: light.position?.y ?? 0,
-                z: light.position?.z ?? 0
-            };
-            config.rotation = {
-                x: light.rotation?.x ?? 0,
-                y: light.rotation?.y ?? 0,
-                z: light.rotation?.z ?? 0
-            };
-            config.lookAtEnabled = true;
-            config.lookAtTarget = {
-                x: light.target?.position?.x ?? 0,
-                y: light.target?.position?.y ?? 0,
-                z: light.target?.position?.z ?? 0
-            };
-        } else if (light.isAmbientLight) {
-            config.type = 'ambient';
-        } else if (light.isPointLight) {
-            config.type = 'point';
-            config.position = {
-                x: light.position?.x ?? 0,
-                y: light.position?.y ?? 0,
-                z: light.position?.z ?? 0
-            };
-        } else if (light.isSpotLight) {
-            config.type = 'spot';
-            config.position = {
-                x: light.position?.x ?? 0,
-                y: light.position?.y ?? 0,
-                z: light.position?.z ?? 0
-            };
-            config.rotation = {
-                x: light.rotation?.x ?? 0,
-                y: light.rotation?.y ?? 0,
-                z: light.rotation?.z ?? 0
-            };
-            config.lookAtEnabled = true;
-            config.lookAtTarget = {
-                x: light.target?.position?.x ?? 0,
-                y: light.target?.position?.y ?? 0,
-                z: light.target?.position?.z ?? 0
-            };
-        }
-
-        return config;
-    }
-
     // Event Handler für Transform-Änderungen (Verschieben/Rotieren/Skalieren)
     // Wird aufgerufen, wenn der Nutzer ein Objekt mit dem Gizmo manipuliert.
     _onTransformChange() {
-        if (this.selectedLight && this.transformHandler?.controls?.object === this.selectedLight) {
-            const lightsConfig = this.config?.sceneConfig?.lights;
-            const configEntry = lightsConfig?.[this.selectedLightKey];
-
-            if (configEntry) {
-                if (this.selectedLight.isDirectionalLight || this.selectedLight.isPointLight || this.selectedLight.isSpotLight) {
-                    configEntry.position = {
-                        x: this.selectedLight.position.x,
-                        y: this.selectedLight.position.y,
-                        z: this.selectedLight.position.z
-                    };
-                }
-
-                if (this.selectedLight.isDirectionalLight || this.selectedLight.isSpotLight) {
-                    const worldQuat = new THREE.Quaternion();
-                    this.selectedLight.getWorldQuaternion(worldQuat);
-                    const worldEuler = new THREE.Euler().setFromQuaternion(worldQuat, this.selectedLight.rotation.order || 'XYZ');
-                    configEntry.rotation = {
-                        x: worldEuler.x,
-                        y: worldEuler.y,
-                        z: worldEuler.z
-                    };
-                }
-
-                this._applyLightLookAt(this.selectedLight, configEntry);
-                this.lightPanel?.update(this.selectedLight, this.selectedLightKey, configEntry);
-                this._updateLightHelper(this.selectedLight);
-            }
-
+        if (this.lightController && this.transformHandler?.controls?.object === this.lightController.selectedLight) {
+            this.lightController.updateFromTransform();
             return;
         }
 
@@ -795,25 +477,4 @@ export class EditorController {
             this.editorPanel.updateStartEnd(normalizedStart, normalizedEnd);
         }
     }
-
-    /**
-     * Callback wenn start/end im EditorPanel geändert werden
-     * Aktualisiert die Timeline mit neuen Keyframe-Werten
-     */
-    _onPanelTimelineChange(start, end) {
-        if (!this.selectedObject) return;
-        
-        // Timeline aktualisieren
-        const dataManager = this.editorTimeline?.dataManager;
-        if (dataManager) {
-            const startPercent = dataManager.normalizedToPercent(start);
-            const endPercent = dataManager.normalizedToPercent(end);
-            
-            const keyframeController = this.editorTimeline?.keyframeController;
-            if (keyframeController) {
-                keyframeController.updateKeyframeBar(this.selectedObject.name, startPercent, endPercent);
-            }
-        }
-    }
 }
-
