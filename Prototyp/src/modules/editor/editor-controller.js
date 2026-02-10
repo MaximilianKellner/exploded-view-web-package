@@ -1,7 +1,6 @@
 import * as THREE from 'three';
-import { EditorPanel } from './editor-anim-panel.js';
 import { EditorLightController } from './editor-light-controller.js';
-import { EditorTimeline } from './editor-timeline.js';
+import { EditorAnimationController } from './editor-animation-controller.js';
 import { EditorSidebarPanel } from './editor-sidebar-panel.js';
 
 export class EditorController {
@@ -16,8 +15,6 @@ export class EditorController {
 
         this.enabled = false;
         this.transformHandler = null;
-        this.selectedObject = null;
-        this.previewObject = null;
         this.cameraHandler = null;
 
         // Light Controller initialisieren
@@ -27,35 +24,40 @@ export class EditorController {
             config: this.config
         });
 
+        // Animation Controller initialisieren
+        this.animController = new EditorAnimationController({
+            scene: this.scene,
+            renderer: this.renderer,
+            config: this.config,
+            animationHandler: this.animationHandler,
+            explosionConfigPath: this.explosionConfigPath,
+            clickHandler: this.clickHandler
+        });
+
         // Event handlers
         this._onObjectSelected = this._onObjectSelected.bind(this);
         this._onObjectDeselected = this._onObjectDeselected.bind(this);
         this._onLightSelectedEvent = this._onLightSelectedEvent.bind(this);
         this._onTransformChange = this._onTransformChange.bind(this);
-        this._onPanelChange = this._onPanelChange.bind(this);
-        this._onExportConfig = this._onExportConfig.bind(this);
         this._onExportSceneConfig = this._onExportSceneConfig.bind(this);
-        this._onDeleteAnimation = this._onDeleteAnimation.bind(this);
-        this._onKeyframeChange = this._onKeyframeChange.bind(this);
-
-        // Editor Panel initialisieren
-        const container = this.renderer.domElement.parentElement;
-        this.editorPanel = new EditorPanel(container);
-        this.editorPanel.setCallbacks({
-            onChange: this._onPanelChange,
-            onExport: this._onExportConfig,
-            onDelete: this._onDeleteAnimation
-        });
 
         // Sidebar Panel initialisieren --> Tab-Komponenten
+        const container = this.renderer.domElement.parentElement;
         this.editorSidebarPanel = new EditorSidebarPanel(container, {
             scene: this.scene,
             renderer: this.renderer,
             config: this.config,
             animationHandler: this.animationHandler,
-            onLightSelect: (light) => this.lightController.selectLight(light),
+            onLightSelect: (light) => {
+                this.animController.deselectObject();
+                this.lightController.selectLight(light);
+            },
             onExportSceneConfig: this._onExportSceneConfig,
-            onAddLight: () => this.lightController.addLight()
+            onAddLight: () => {
+                // Bei neuem Licht auch Object Selection entfernen
+                this.animController.deselectObject();
+                this.lightController.addLight();
+            }
         });
         
         // Callbacks für Sidebar Updates vom LightController
@@ -64,9 +66,10 @@ export class EditorController {
             onUpdateItem: (light) => this.editorSidebarPanel?.getTab('lights')?.updateLightItem(light)
         });
 
-        // Editor Timeline initialisieren
-        this.editorTimeline = new EditorTimeline(container, animationHandler, this.explosionConfigPath);
-        this.editorTimeline.hide(); // Initial versteckt
+        // Callbacks für Sidebar Updates vom AnimationController
+        this.animController.setSidebarCallbacks({
+             onUpdateIcon: (name) => this.editorSidebarPanel?.getTab('objects')?.updateObjectIcon(name)
+        });
     }
 
     enable() {
@@ -81,9 +84,10 @@ export class EditorController {
         
         // UI-Handler (Tweakpane) ausblenden
         this.uiHandler?.hide();
-        
-        // Timeline anzeigen
-        this.editorTimeline?.show();
+
+        // Sub-Controllers aktivieren
+        this.animController.enable();
+        this.lightController.enable();
 
         // Sidebar anzeigen
         this.editorSidebarPanel?.show();
@@ -108,16 +112,10 @@ export class EditorController {
                 this.transformHandler.controls.addEventListener('change', this._onTransformChange);
             }
             
-            // TransformHandler an LightController übergeben
+            // TransformHandler an Sub-Controllers übergeben
             this.lightController.setTransformHandler(this.transformHandler);
+            this.animController.setTransformHandler(this.transformHandler);
         }
-
-        this.lightController.enable();
-        
-        // Keyframe-Callbacks registrieren (Timeline <-> EditorPanel Synchronisation)
-        this.editorTimeline?.setKeyframeCallbacks({
-            onKeyframeChange: this._onKeyframeChange
-        });
     }
 
     disable() {
@@ -133,14 +131,12 @@ export class EditorController {
         // UI-Handler wieder anzeigen
         this.uiHandler?.show();
         
-        // Timeline verstecken
-        this.editorTimeline?.hide();
+        // Sub-Controllers deaktivieren
+        this.animController.disable();
+        this.lightController.disable();
 
         // Sidebar verstecken
         this.editorSidebarPanel?.hide();
-
-        // Light Controller disablen (Panel verstecken, Gizmo weg)
-        this.lightController.disable();
 
         // ClickHandler zurück in Viewer-Mode
         this.clickHandler?.setEditMode(false);
@@ -156,189 +152,59 @@ export class EditorController {
         }
 
         // Gizmo von ausgewähltem Objekt entfernen
-        if (this.selectedObject) {
-            this.transformHandler?.detach();
-            this._removePreviewObject();
-            this.selectedObject = null;
-        }
+        this.transformHandler?.detach();
     }
 
     _onLightSelectedEvent(event) {
         const light = event?.detail?.light;
         if (light) {
-            this._onObjectDeselected({ detail: { object: this.selectedObject } }); // Objekt deselektieren wird
-            this._clearObjectSelection();
+            this.animController.deselectObject();
             this.lightController.selectLight(light);
         }
     }
 
     // Event Handler für Objektauswahl
     _onObjectSelected(event) {
-
-        // Wenn event ein Custom Event ist (von window.addEventListener)
-        let object, UUID;
+        let object;
         
         if (event.detail) {
             // Custom Event vom Click Handler
             object = event.detail.object;
-            UUID = event.detail.UUID;
         } else {
             // Direkter Aufruf von der Objektliste in der Sidebar
             object = event;
         }
 
         // Prüfen, ob das geklickte Objekt PreviewObject ist --> dann ignorieren
-        if (this.previewObject) {
+        if (this.animController.previewObject) {
             let isPreview = false;
-            if (object === this.previewObject) isPreview = true;
-            object.traverseAncestors((ancestor) => {
-                if (ancestor === this.previewObject) isPreview = true;
-            });
+            // Einfacher Check zuerst
+            if (object === this.animController.previewObject) isPreview = true;
+            
+            // Parent Check für Teile des PreviewObjects
+            if (!isPreview) {
+                object.traverseAncestors((ancestor) => {
+                    if (ancestor === this.animController.previewObject) isPreview = true;
+                });
+            }
             
             if (isPreview) {
                 console.log('EditorController: Klick auf Preview ignoriert.');
                 return;
             }
         }
-
-        this._clearLightSelection();
         
-        // Wenn dasselbe Objekt nochmal geklickt wird, nichts tun
-        if (this.selectedObject === object) {
-            console.log('EditorController: Objekt bereits ausgewählt:', object.name);
-            return;
-        }
-        
-        // Vorheriges Objekt deselektieren - Preview immer entfernen
-        this.transformHandler?.detach();
-        this._removePreviewObject();
-
-        // Neues Objekt selektieren
-        this.selectedObject = object;
-        
-        // PreviewObject erstellen und Gizmo anhängen
-        this._createPreviewObject(object);
-        this.transformHandler?.setMode('translate');
-        this.transformHandler?.controls?.setSpace('world');
-        
-        // Panel anzeigen und mit Daten füllen
-        let item = this.animationHandler.getExplodableItem(object);
-        
-        // Wenn keine Config existiert, Standardwerte verwenden und Config erstellen
-        if (!item) {
-            const defaultConfig = {
-                expDirection: new THREE.Vector3(0, 1, 0),
-                targetLevel: 1,
-                start: 0,
-                end: 1
-            };
-            
-            // Neue Config im AnimationHandler erstellen
-            this.animationHandler.updateObjectConfig(object, defaultConfig);
-            item = this.animationHandler.getExplodableItem(object);
-            
-            // Timeline aktualisieren - objectCount und ggf. neue Items hinzufügen
-            this.editorTimeline?.updateObjectCount();
-            
-            // Objektliste im Sidebar aktualisieren --> animated icon hinzufügen
-            this.editorSidebarPanel?.getTab('objects')?.updateObjectIcon(object.name);
-        }
-        
-        // Panel mit Daten anzeigen
-        if (item) {
-            this.editorPanel.show({
-                name: object.name,
-                expDirection: item.expDirection,
-                targetLevel: item.targetLevel,
-                start: item.start,
-                end: item.end
-            });
-        }
-
-        this.lightPanel?.hide();
-        
-        console.log('EditorController: Objekt ausgewählt, PreviewObject erstellt:', object.name);
+        this.lightController.clearSelection();
+        this.animController.selectObject(object);
     }
 
     // Event Handler für Objektdeselection
     _onObjectDeselected(event) {
-        const { object, UUID } = event.detail;
-        
-        // Gizmo entfernen wenn es das ausgewählte Objekt ist
-        if (this.selectedObject === object) {
-            this.transformHandler?.detach();
-            this._removePreviewObject();
-            this.selectedObject = null;
-            this.editorPanel.hide();
-            console.log('EditorController: Objekt deselektiert:', object.name);
-        }
+        this.animController.deselectObject();
     }
-
+    
     _clearObjectSelection() {
-        if (this.selectedObject) {
-            this.transformHandler?.detach();
-            this._removePreviewObject();
-            this.selectedObject = null;
-            this.editorPanel.hide();
-        }
-    }
-
-    // Temporäres Objekt zur visualisierung der Transformation erstellen
-    _createPreviewObject(originalObject) {
-        // Preview erstellen (Klonen)
-        this.previewObject = originalObject.clone();
-        
-        // Editor-Material erstellen (Weiß, Wireframe)
-        const ghostMaterial = new THREE.MeshBasicMaterial({
-            color: 0xffffff,
-            wireframe: true,
-            transparent: true,
-            opacity: 0.5
-        });
-
-        // Material auf alle Meshes im PreviewObject anwenden
-        this.previewObject.traverse((node) => {
-            // Raycasting deaktivieren
-            node.raycast = () => {};
-            
-            if (node.isMesh) {
-                node.material = ghostMaterial;
-            }
-        });
-
-        // PreviewObject an der Endposition platzieren
-        const item = this.animationHandler.getExplodableItem(originalObject);
-        if (item) {
-            const layerDist = this.animationHandler.config.animationConfig.layerDistance || 1;
-            const offset = item.expDirection.clone().multiplyScalar(item.targetLevel * layerDist);
-            this.previewObject.position.copy(item.originalPosition).add(offset);
-        } else {
-            // Fallback: Original-Position verwenden, wenn keine Config existiert
-            this.previewObject.position.copy(originalObject.position);
-        }
-
-        // PreviewObject als Sibling hinzufügen (gleicher Parent)
-        if (originalObject.parent) {
-            originalObject.parent.add(this.previewObject);
-        } else {
-            this.scene.add(this.previewObject);
-        }
-
-        // Gizmo an PreviewObject hängen
-        this.transformHandler?.attach(this.previewObject);
-    }
-
-    _removePreviewObject() {
-        if (this.previewObject) {
-            // Gizmo entfernen
-            this.transformHandler?.detach();
-            
-            // Aus Szene entfernen
-            if (this.previewObject.parent) {
-                this.previewObject.parent.remove(this.previewObject);
-            }
-            this.previewObject = null;
-        }
+        this.animController.deselectObject();
     }
 
     setInfoElementHandler(handler) {
@@ -347,40 +213,6 @@ export class EditorController {
 
     setUIHandler(handler) {
         this.uiHandler = handler;
-    }
-
-    // Callback wenn Werte im Panel geändert werden
-    _onPanelChange(data) {
-        if (!this.selectedObject || !this.previewObject) return;
-
-        // AnimationHandler updaten (alle Werte)
-        this.animationHandler.updateObjectConfig(this.selectedObject, data);
-
-        // PreviewObject Position aktualisieren
-        const item = this.animationHandler.getExplodableItem(this.selectedObject);
-        if (item) {
-            const layerDist = this.animationHandler.config.animationConfig.layerDistance || 1;
-            const offset = item.expDirection.clone().multiplyScalar(item.targetLevel * layerDist);
-            this.previewObject.position.copy(item.originalPosition).add(offset);
-        }
-        
-        // Timeline aktualisieren wenn start/end geändert wurden
-        if (data.start !== undefined || data.end !== undefined) {
-            const startPercent = this.editorTimeline?.dataManager?.normalizedToPercent(data.start);
-            const endPercent = this.editorTimeline?.dataManager?.normalizedToPercent(data.end);
-            
-            if (startPercent !== undefined && endPercent !== undefined) {
-                const keyframeController = this.editorTimeline?.keyframeController;
-                if (keyframeController) {
-                    keyframeController.updateKeyframeBar(this.selectedObject.name, startPercent, endPercent);
-                }
-            }
-        }
-    }
-
-    // Callback für Export Button
-    _onExportConfig() {
-        this.animationHandler.exportConfig();
     }
 
     // Callback für Export der Szenen-Konfiguration
@@ -397,84 +229,18 @@ export class EditorController {
         downloadAnchorNode.remove();
     }
 
-    // Callback für Delete Button
-    _onDeleteAnimation() {
-        if (!this.selectedObject) return;
-
-        // Animation im AnimationHandler löschen
-        this.animationHandler.deleteAnimation(this.selectedObject);
-
-        // Panel ausblenden
-        this.editorPanel.hide();
-
-        // Preview-Objekt und Gizmo entfernen
-        this.transformHandler?.detach();
-        this._removePreviewObject();
-
-        // Objektliste in der Sidebar aktualisieren (animated icon entfernen)
-        this.editorSidebarPanel?.getTab('objects')?.updateObjectIcon(this.selectedObject.name);
-
-        // Timeline aktualisieren - Keyframe entfernen
-        this.editorTimeline?.updateObjectCount();
-
-        // Selektion zurücksetzen
-        this.clickHandler?.clearSelectedObject(this.selectedObject);
-        this.selectedObject = null;
-
-        console.log('Animation gelöscht und UI aktualisiert');
-    }
-
     // Event Handler für Transform-Änderungen (Verschieben/Rotieren/Skalieren)
     // Wird aufgerufen, wenn der Nutzer ein Objekt mit dem Gizmo manipuliert.
     _onTransformChange() {
+        // Check Light Controller
         if (this.lightController && this.transformHandler?.controls?.object === this.lightController.selectedLight) {
             this.lightController.updateFromTransform();
             return;
         }
 
-        if (this.previewObject && this.selectedObject && this.animationHandler) {
-            const item = this.animationHandler.getExplodableItem(this.selectedObject);
-            if (!item) return;
-
-            // Vektor von Start (Original) zu PreviewObject berechnen
-            const vector = new THREE.Vector3().subVectors(this.previewObject.position, item.originalPosition);
-            
-            const distance = vector.length();
-            const layerDist = this.animationHandler.config.animationConfig.layerDistance || 1;
-            
-            // Richtung normalisieren (nur wenn Distanz > 0)
-            const direction = distance > 0.000001 ? vector.normalize() : new THREE.Vector3(0, 1, 0); // Fallback Up-Vector
-
-            // AnimationHandler updaten
-            this.animationHandler.updateExplosionTarget(
-                this.selectedObject, 
-                direction, 
-                distance / layerDist
-            );
-
-            // Panel updaten
-            const updatedItem = this.animationHandler.getExplodableItem(this.selectedObject);
-            if (updatedItem) {
-                this.editorPanel.update({
-                    name: this.selectedObject.name,
-                    expDirection: updatedItem.expDirection,
-                    targetLevel: updatedItem.targetLevel,
-                    start: updatedItem.start,
-                    end: updatedItem.end
-                });
-            }
-        }
-    }
-
-    /**
-     * Callback wenn Keyframes in der Timeline geändert werden
-     * Aktualisiert das EditorPanel mit neuen start/end Werten
-     */
-    _onKeyframeChange(objectId, normalizedStart, normalizedEnd) {
-        // Prüfen, ob das geänderte Objekt das aktuell ausgewählte ist
-        if (this.selectedObject && this.selectedObject.name === objectId) {
-            // Falls ja offenees EditorPanel mit neuen Werten aktualisieren
-            this.editorPanel.updateStartEnd(normalizedStart, normalizedEnd);
+        // Check Animation Controller
+        if (this.animController.previewObject && this.transformHandler?.controls?.object === this.animController.previewObject) {
+             this.animController.updateFromTransform();
         }
     }
 }

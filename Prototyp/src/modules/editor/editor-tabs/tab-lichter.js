@@ -177,10 +177,12 @@ export class TabLichter {
         // Neues Item hervorheben
         listItem.classList.add('active');
 
-        // Callback aufrufen
-        if (this.onLightSelect) {
-            this.onLightSelect(light);
-        }
+        // Event dispatchen damit EditorController die Koordination übernehmen kann
+        window.dispatchEvent(new CustomEvent('ev:lightSelected', { 
+            detail: { 
+                light: light 
+            } 
+        }));
     }
 
     // Gibt das Root-Element zurück
