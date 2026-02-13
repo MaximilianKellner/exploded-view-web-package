@@ -186,6 +186,7 @@ input {
     text-align: center;
     min-width: 0;
     border: none;
+    padding: 0;
 
     &:focus {
         outline: none;
@@ -244,6 +245,7 @@ input[type="number"] {
     border: 2px solid var(--c-border-light);
     border-radius: 5px 0 0 5px;
     cursor: pointer;
+    box-sizing: border-box;
 }
 
 .editor-dropdown-toggle:hover {
@@ -264,6 +266,7 @@ input[type="number"] {
     user-select: none;
     color: var(--c-body-text);
     min-width: 75.6px;
+    box-sizing: border-box;
 }
 
 .editor-dropdown:hover .editor-dropdown-value {
@@ -300,7 +303,7 @@ input[type="number"] {
 }
 
 .editor-dropdown-option {
-    padding: 6px var(--s);
+    padding: var(--xxs);
     cursor: pointer;
     color: var(--c-body-text);
 }

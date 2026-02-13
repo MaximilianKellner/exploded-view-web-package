@@ -34,10 +34,6 @@
         box-sizing: border-box;
     }
 
-    .editor-vector-input {
-        padding: 0;
-    }
-
     .editor-row:nth-of-type(1) {
         margin-top: var(--s);
         margin-bottom: var(--m);

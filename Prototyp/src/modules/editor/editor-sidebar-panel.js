@@ -5,12 +5,15 @@ import { TabLichter } from './editor-tabs/tab-lichter.js';
 const logoUrl = new URL('../../assets/logo-block.svg', import.meta.url).href;
 
 export class EditorSidebarPanel {
-    constructor(container, { scene, renderer, config, animationHandler, onLightSelect, onExportSceneConfig, onAddLight } = {}) {
+    constructor(container, { scene, renderer, config, animationHandler, controls, cameraHandler, highlightHandler, onLightSelect, onExportSceneConfig, onAddLight } = {}) {
         this.container = container;
         this.scene = scene;
         this.renderer = renderer;
         this.config = config;
         this.animationHandler = animationHandler;
+        this.controls = controls;
+        this.cameraHandler = cameraHandler;
+        this.highlightHandler = highlightHandler;
         this.onLightSelect = onLightSelect;
         this.onExportSceneConfig = onExportSceneConfig;
         this.onAddLight = onAddLight;
@@ -75,7 +78,11 @@ export class EditorSidebarPanel {
                 this.tabs.scene = new TabScene({
                     scene: this.scene,
                     renderer: this.renderer,
-                    config: this.config
+                    config: this.config,
+                    animationHandler: this.animationHandler,
+                    controls: this.controls,
+                    cameraHandler: this.cameraHandler,
+                    highlightHandler: this.highlightHandler
                 });
                 content.appendChild(this.tabs.scene.getElement());
             } else if (tabId === 'objects') {

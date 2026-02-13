@@ -3,7 +3,7 @@ import { EditorAnimationController } from './editor-animation-controller.js';
 import { EditorSidebarPanel } from './editor-sidebar-panel.js';
 
 export class EditorController {
-    constructor({ scene, camera, renderer, clickHandler, animationHandler, explosionConfigPath, config }) {
+    constructor({ scene, camera, renderer, clickHandler, animationHandler, explosionConfigPath, config, controls, cameraHandler, highlightHandler }) {
         this.scene = scene;
         this.camera = camera;
         this.renderer = renderer;
@@ -11,11 +11,12 @@ export class EditorController {
         this.animationHandler = animationHandler;
         this.explosionConfigPath = explosionConfigPath;
         this.config = config;
+        this.controls = controls;
+        this.cameraHandler = cameraHandler;
+        this.highlightHandler = highlightHandler;
 
         this.enabled = false;
         this.transformHandler = null;
-        this.cameraHandler = null;
-
         // Light Controller initialisieren
         this.lightController = new EditorLightController({
             scene: this.scene,
@@ -47,6 +48,9 @@ export class EditorController {
             renderer: this.renderer,
             config: this.config,
             animationHandler: this.animationHandler,
+            controls: this.controls,
+            cameraHandler: this.cameraHandler,
+            highlightHandler: this.highlightHandler,
             onLightSelect: (light) => {
                 this.animController.deselectObject();
                 this.lightController.selectLight(light);
