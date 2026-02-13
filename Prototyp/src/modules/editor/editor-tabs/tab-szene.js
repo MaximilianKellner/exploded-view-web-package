@@ -1,12 +1,14 @@
 import { EditorColorPicker } from '../editor-colorpicker.js';
 import { toggleDarkMode } from '../../theme-handler.js';
 
+const iconDownloadUrl = new URL('../../../assets/editor/download.svg', import.meta.url).href;
+
 /**
  * Szene-Tab: Verwaltet Szenen-Einstellungen (Hintergrund, Beleuchtung, etc.)
  * Kappselt UI und Logik, liefert ein Root-Element zur Integration in Editor-Sidebar.
  */
 export class TabScene {
-    constructor({ scene, renderer, config, animationHandler, controls, cameraHandler, highlightHandler }) {
+    constructor({ scene, renderer, config, animationHandler, controls, cameraHandler, highlightHandler, onExportSceneConfig }) {
         this.scene = scene;
         this.renderer = renderer;
         this.config = config;
@@ -14,6 +16,7 @@ export class TabScene {
         this.controls = controls;
         this.cameraHandler = cameraHandler;
         this.highlightHandler = highlightHandler;
+        this.onExportSceneConfig = onExportSceneConfig;
 
         this.element = null;
         this.inputs = {};
@@ -255,9 +258,16 @@ export class TabScene {
                 </div>
             </details>
 
+            <div class="tab-footer">
+                <button class="editor-btn blue" id="export-scene-config-btn">
+                    <img src="${iconDownloadUrl}" alt="download icon" />        
+                    scene-config
+                </button>
+            </div>
         `;
 
         this.inputs = {
+            exportSceneConfig: this.element.querySelector('#export-scene-config-btn'),
             animationScroll: this.element.querySelector('#animation-scroll'),
             animationSequence: this.element.querySelector('#animation-sequence'),
             sceneShadows: this.element.querySelector('#scene-shadows'),
@@ -419,6 +429,14 @@ export class TabScene {
     }
 
     _bindInputs() {
+        if (this.inputs.exportSceneConfig) {
+            this.inputs.exportSceneConfig.addEventListener('click', () => {
+                if (this.onExportSceneConfig) {
+                    this.onExportSceneConfig();
+                }
+            });
+        }
+
         if (this.inputs.animationScroll) {
             this.inputs.animationScroll.addEventListener('change', () => {
                 if (!this.config?.animationConfig) return;

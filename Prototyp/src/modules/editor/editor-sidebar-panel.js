@@ -82,7 +82,8 @@ export class EditorSidebarPanel {
                     animationHandler: this.animationHandler,
                     controls: this.controls,
                     cameraHandler: this.cameraHandler,
-                    highlightHandler: this.highlightHandler
+                    highlightHandler: this.highlightHandler,
+                    onExportSceneConfig: this.onExportSceneConfig
                 });
                 content.appendChild(this.tabs.scene.getElement());
             } else if (tabId === 'objects') {
