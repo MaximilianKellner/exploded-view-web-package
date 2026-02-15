@@ -49,6 +49,11 @@ export class KeyframeController {
             return;
         }
 
+        // Nur linke Maustaste
+        if (e.button !== 0) {
+            return;
+        }
+
         this.isDraggingHandle = true;
         this.activeHandle = e.target;
         this.activeBar = this.activeHandle.closest('.keyframe-bar');
@@ -59,6 +64,8 @@ export class KeyframeController {
         this.handleType = parseFloat(this.activeHandle.style.left) === 0 ? 'left' : 'right';
 
         // Visuelles Feedback
+        this._setUserSelectDisabled(true);
+        e.preventDefault();
         document.body.style.cursor = 'ew-resize';
         this.activeBar.classList.add('dragging');
     }
@@ -69,6 +76,7 @@ export class KeyframeController {
             return;
         }
 
+        e.preventDefault();
         this._moveHandleToMouse(e);
     }
 
@@ -155,6 +163,7 @@ export class KeyframeController {
 
         // Cleanup
         document.body.style.cursor = '';
+        this._setUserSelectDisabled(false);
         this.activeBar.classList.remove('dragging');
         this.activeHandle = null;
         this.activeBar = null;
@@ -234,5 +243,13 @@ export class KeyframeController {
         this.activeBar = null;
         this.timelineElement = null;
         this.dataManager = null;
+    }
+
+    _setUserSelectDisabled(isDisabled) {
+        if (!document?.body) {
+            return;
+        }
+
+        document.body.classList.toggle('no-user-select', isDisabled);
     }
 }

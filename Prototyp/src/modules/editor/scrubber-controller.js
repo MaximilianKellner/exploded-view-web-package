@@ -85,7 +85,15 @@ export class ScrubberController {
 
     // Scrubber Dragging: Mouse Down
     _onScrubberMouseDown(e) {
+
+        // Nur linke Maustaste
+        if (e.button !== 0) {
+            return;
+        }
+
         this.isDraggingScrubber = true;
+        this._setUserSelectDisabled(true);
+        e.preventDefault();
         // Pause während Drag
         if (this.animationHandler.isAnimating) {
             this.animationHandler.pauseAnimation();
@@ -96,13 +104,19 @@ export class ScrubberController {
     // Scrubber Dragging: Mouse Move
     _onScrubberMouseMove(e) {
         if (this.isDraggingScrubber) {
+            e.preventDefault();
             this._moveScrubberToMouse(e);
         }
     }
 
     // Scrubber Dragging: Mouse Up
     _onScrubberMouseUp() {
+        if (!this.isDraggingScrubber) {
+            return;
+        }
+
         this.isDraggingScrubber = false;
+        this._setUserSelectDisabled(false);
     }
 
     // Bewegt Scrubber zu Maus-Position und aktualisiert AnimationHandler
@@ -189,6 +203,15 @@ export class ScrubberController {
         this._updateScrubberPosition(percent);
         
         console.log(`Seek zu ${Math.round(percent)}%`);
+    }
+
+    // Hilfsfunktion: User-Select während Dragging deaktivieren/aktivieren
+    _setUserSelectDisabled(isDisabled) {
+        if (!document?.body) {
+            return;
+        }
+
+        document.body.classList.toggle('no-user-select', isDisabled);
     }
 
     // Gibt aktuellen Progress zurück (0-100)

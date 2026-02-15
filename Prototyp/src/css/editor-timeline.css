@@ -322,3 +322,9 @@
 .keyframe-handle:hover {
     transform: translate(-50%, -50%) rotate(45deg) scale(1.3);
 }
+
+/* Deaktiviert Textauswahl während Drag-Aktionen für alle Elemente */
+body.no-user-select,
+body.no-user-select * {
+    user-select: none;
+}
