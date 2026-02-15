@@ -257,7 +257,8 @@ export class TabScene {
                     </div>
                 </div>
             </details>
-
+            <!--Fix: Überlagerung wird verhjindert-->
+            <div style="height: 39px;"></div>
             <div class="tab-footer">
                 <button class="editor-btn blue" id="export-scene-config-btn">
                     <img src="${iconDownloadUrl}" alt="download icon" />        
