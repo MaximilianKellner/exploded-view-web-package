@@ -97,13 +97,19 @@ export class AnimationHandler {
                 }
 
                 // Explodierbares Objekt mit relevanten Informationen speichern
+                const rotation = Array.isArray(objectConfig.rotation)
+                    ? objectConfig.rotation
+                    : [0, 0, 0];
+
                 this.explodableObjects.push({
                     object: child,
                     originalPosition: child.position.clone(),
+                    originalQuaternion: child.quaternion.clone(),
                     targetLevel: objectConfig.level !== undefined ? objectConfig.level : 0,
                     start: start,
                     end: end,
-                    expDirection: new THREE.Vector3().fromArray(expDirection).normalize()
+                    expDirection: new THREE.Vector3().fromArray(expDirection).normalize(),
+                    rotation: new THREE.Vector3().fromArray(rotation)
                 });
             }
         });
@@ -153,6 +159,62 @@ export class AnimationHandler {
         const distance = item.targetLevel * layerDistance * progress;
 
         return new THREE.Vector3().copy(item.expDirection).multiplyScalar(distance);
+    }
+
+    // Helper Methode zur Berechnung von Rotation für beliebigen Progress (0-1)
+    _calculateRotationQuaternion(item, progress) {
+        if (!item.originalQuaternion) {
+            return new THREE.Quaternion();
+        }
+
+        const resultQuat = new THREE.Quaternion().copy(item.originalQuaternion);
+
+        if (item.rotation && item.rotation.lengthSq() > 0.000001) {
+            const angleX = THREE.MathUtils.degToRad(item.rotation.x) * progress;
+            const angleY = THREE.MathUtils.degToRad(item.rotation.y) * progress;
+            const angleZ = THREE.MathUtils.degToRad(item.rotation.z) * progress;
+
+            const qx = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), angleX);
+            const qy = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), angleY);
+            const qz = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), angleZ);
+
+            const worldRotation = new THREE.Quaternion();
+            worldRotation.premultiply(qx);
+            worldRotation.premultiply(qy);
+            worldRotation.premultiply(qz);
+
+            resultQuat.premultiply(worldRotation);
+        }
+
+        return resultQuat;
+    }
+
+    // Rotation basierend auf Fortschritt anwenden
+    _applyRotation(item, progress) {
+        if (!item.object) return;
+        item.object.quaternion.copy(this._calculateRotationQuaternion(item, progress));
+    }
+
+    // Berechnet Position und Rotation für ein Item bei beliebigem Progress (0-1)
+    // Gibt Objekt mit position (Vector3) und quaternion zurück
+    calculateItemTransform(item, progress) {
+        if (!item) return null;
+
+        const { layerDistance } = this.animationConfig;
+        progress = THREE.MathUtils.clamp(progress, 0, 1);
+
+        // Position berechnen
+        let distance = 0;
+        if (item.targetLevel !== 0) {
+            distance = item.targetLevel * layerDistance * progress;
+        }
+        const offset = new THREE.Vector3().copy(item.expDirection).multiplyScalar(distance);
+        const position = new THREE.Vector3().copy(item.originalPosition).add(offset);
+
+        // Rotation berechnen
+        const quaternion = this._calculateRotationQuaternion(item, progress);
+
+        return { position, quaternion };
     }
 
     // --- Endposition aktualisieren (Editor Mode) ---
@@ -205,6 +267,8 @@ export class AnimationHandler {
         this.explodableObjects.forEach(item => {
             const offset = this._calculateOffset(item);
             item.object.position.copy(item.originalPosition).add(offset);
+            const progress = this._calculateItemProgress(item);
+            this._applyRotation(item, progress);
         });
     }
 
@@ -347,6 +411,8 @@ export class AnimationHandler {
             if (!this.isAnimating) {
                 const offset = this._calculateOffset(item);
                 item.object.position.copy(item.originalPosition).add(offset);
+                const progress = this._calculateItemProgress(item);
+                this._applyRotation(item, progress);
             }
         }
     }
@@ -359,10 +425,12 @@ export class AnimationHandler {
             item = {
                 object: object,
                 originalPosition: object.position.clone(),
+                originalQuaternion: object.quaternion.clone(),
                 targetLevel: 0,
                 start: 0,
                 end: 1,
-                expDirection: new THREE.Vector3(0, 1, 0)
+                expDirection: new THREE.Vector3(0, 1, 0),
+                rotation: new THREE.Vector3(0, 0, 0)
             };
             this.explodableObjects.push(item);
         }
@@ -371,6 +439,7 @@ export class AnimationHandler {
         if (newConfig.targetLevel !== undefined) item.targetLevel = newConfig.targetLevel;
         if (newConfig.start !== undefined) item.start = newConfig.start;
         if (newConfig.end !== undefined) item.end = newConfig.end;
+        if (newConfig.rotation) item.rotation.copy(newConfig.rotation);
 
         // Internes Config-Objekt erstellen oder aktualisieren
         if (this.explosionConfig) {
@@ -386,6 +455,7 @@ export class AnimationHandler {
             const configObj = this.explosionConfig.objects[object.name];
             configObj.level = item.targetLevel;
             configObj.expDirection = item.expDirection.toArray();
+            configObj.rotation = item.rotation.toArray();
             if (item.start !== undefined) {
                 configObj.start = item.start;
             }
@@ -403,6 +473,9 @@ export class AnimationHandler {
             
             // Objekt zurück zur Originalposition setzen
             object.position.copy(item.originalPosition);
+            if (item.originalQuaternion) {
+                object.quaternion.copy(item.originalQuaternion);
+            }
             
             // Aus Array entfernen
             this.explodableObjects.splice(index, 1);

@@ -44,6 +44,17 @@ export class EditorPanel {
                 </div>
 
                 <div class="editor-row">
+                    <span class="editor-label">Rotation</span>
+                    <div class="editor-input-group bordered">
+                        <input type="number" step="0.1" class="editor-input editor-vector-input" id="rot-x" placeholder="X">
+                        <span class="vertical-divider"></span>
+                        <input type="number" step="0.1" class="editor-input editor-vector-input" id="rot-y" placeholder="Y">
+                        <span class="vertical-divider"></span>
+                        <input type="number" step="0.1" class="editor-input editor-vector-input" id="rot-z" placeholder="Z">
+                    </div>
+                </div>
+
+                <div class="editor-row">
                     <span class="editor-label">Start</span>
                     <div class="editor-input-group">
                         <input type="number" class="editor-input" step="0.01" id="start">
@@ -83,6 +94,9 @@ export class EditorPanel {
             dirY: this.element.querySelector('#dir-y'),
             dirZ: this.element.querySelector('#dir-z'),
             layer: this.element.querySelector('#layer'),
+            rotX: this.element.querySelector('#rot-x'),
+            rotY: this.element.querySelector('#rot-y'),
+            rotZ: this.element.querySelector('#rot-z'),
             start: this.element.querySelector('#start'),
             end: this.element.querySelector('#end'),
             title: this.element.querySelector('#editor-title'),
@@ -96,6 +110,9 @@ export class EditorPanel {
         this.inputs.dirY.addEventListener('change', handleChange);
         this.inputs.dirZ.addEventListener('change', handleChange);
         this.inputs.layer.addEventListener('change', handleChange);
+        this.inputs.rotX.addEventListener('change', handleChange);
+        this.inputs.rotY.addEventListener('change', handleChange);
+        this.inputs.rotZ.addEventListener('change', handleChange);
         this.inputs.start.addEventListener('change', handleChange);
         this.inputs.end.addEventListener('change', handleChange);
 
@@ -168,6 +185,9 @@ export class EditorPanel {
         this.inputs.dirZ.value = parseFloat(data.expDirection.z).toFixed(2);
         
         this.inputs.layer.value = parseFloat(data.targetLevel).toFixed(2);
+        this.inputs.rotX.value = parseFloat(data.rotation?.x ?? 0).toFixed(2);
+        this.inputs.rotY.value = parseFloat(data.rotation?.y ?? 0).toFixed(2);
+        this.inputs.rotZ.value = parseFloat(data.rotation?.z ?? 0).toFixed(2);
         this.inputs.start.value = parseFloat(data.start).toFixed(2);
         this.inputs.end.value = parseFloat(data.end).toFixed(2);
 
@@ -188,10 +208,14 @@ export class EditorPanel {
         
         // Normalisierten Vektor mit Layer multiplizieren
         const vec = dir.multiplyScalar(level);
-        this.inputs.vectorDisplay.textContent = `${vec.x.toFixed(1)} | ${vec.y.toFixed(1)} | ${vec.z.toFixed(1)}`;
+        this.inputs.vectorDisplay.textContent = `${vec.x.toFixed(2)} | ${vec.y.toFixed(2)} | ${vec.z.toFixed(2)}`;
     }
 
     _onInputChange() {
+        const rotX = parseFloat(this.inputs.rotX.value) || 0;
+        const rotY = parseFloat(this.inputs.rotY.value) || 0;
+        const rotZ = parseFloat(this.inputs.rotZ.value) || 0;
+
         const data = {
             expDirection: new THREE.Vector3(
                 parseFloat(this.inputs.dirX.value),
@@ -199,6 +223,7 @@ export class EditorPanel {
                 parseFloat(this.inputs.dirZ.value)
             ).normalize(),
             targetLevel: parseFloat(this.inputs.layer.value),
+            rotation: new THREE.Vector3(rotX, rotY, rotZ),
             start: parseFloat(this.inputs.start.value),
             end: parseFloat(this.inputs.end.value)
         };

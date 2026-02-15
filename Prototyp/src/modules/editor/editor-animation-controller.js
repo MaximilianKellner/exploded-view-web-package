@@ -90,6 +90,7 @@ export class EditorAnimationController {
             const defaultConfig = {
                 expDirection: new THREE.Vector3(0, 1, 0),
                 targetLevel: 0, 
+                rotation: new THREE.Vector3(0, 0, 0),
                 start: 0,
                 end: 1
             };
@@ -113,6 +114,7 @@ export class EditorAnimationController {
                 name: object.name,
                 expDirection: item.expDirection,
                 targetLevel: item.targetLevel,
+                rotation: item.rotation,
                 start: item.start,
                 end: item.end
             });
@@ -158,6 +160,7 @@ export class EditorAnimationController {
                 name: this.selectedObject.name,
                 expDirection: updatedItem.expDirection,
                 targetLevel: updatedItem.targetLevel,
+                rotation: updatedItem.rotation,
                 start: updatedItem.start,
                 end: updatedItem.end
             });
@@ -190,9 +193,7 @@ export class EditorAnimationController {
         // PreviewObject an der Endposition platzieren
         const item = this.animationHandler.getExplodableItem(originalObject);
         if (item) {
-            const layerDist = this.config.animationConfig.layerDistance || 1;
-            const offset = item.expDirection.clone().multiplyScalar(item.targetLevel * layerDist);
-            this.previewObject.position.copy(item.originalPosition).add(offset);
+            this._updatePreviewTransform(item, 1);
         } else {
             // Fallback: Original-Position verwenden, wenn keine Config existiert
             this.previewObject.position.copy(originalObject.position);
@@ -207,6 +208,17 @@ export class EditorAnimationController {
 
         // Gizmo an PreviewObject hängen
         this.transformHandler?.attach(this.previewObject);
+    }
+
+    // Aktualisiert Position und Rotation des Preview-Objekts basierend auf Item und Progress
+    _updatePreviewTransform(item, progress = 1) {
+        if (!this.previewObject || !item) return;
+
+        const transform = this.animationHandler.calculateItemTransform(item, progress);
+        if (transform) {
+            this.previewObject.position.copy(transform.position);
+            this.previewObject.quaternion.copy(transform.quaternion);
+        }
     }
 
     _removePreviewObject() {
@@ -229,12 +241,10 @@ export class EditorAnimationController {
         // AnimationHandler updaten (alle Werte)
         this.animationHandler.updateObjectConfig(this.selectedObject, data);
 
-        // PreviewObject Position aktualisieren
+        // PreviewObject Transformation aktualisieren
         const item = this.animationHandler.getExplodableItem(this.selectedObject);
         if (item) {
-            const layerDist = this.config.animationConfig.layerDistance || 1;
-            const offset = item.expDirection.clone().multiplyScalar(item.targetLevel * layerDist);
-            this.previewObject.position.copy(item.originalPosition).add(offset);
+            this._updatePreviewTransform(item, 1);
         }
         
         // Timeline aktualisieren wenn start/end geändert wurden

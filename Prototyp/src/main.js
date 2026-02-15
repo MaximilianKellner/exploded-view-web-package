@@ -10,7 +10,7 @@ const sportwagen = {
     sceneConfigPath: '/car/scene-config.json', // Pfad zur Szenenkonfiguration
     modelPath: '/car/911.glb', // Pfad zum explodierbaren .glb Modell
     modelPath: '/car/911-with-ground.glb', // Pfad zum explodierbaren .glb Modell
-    explosionConfigPath: '/car/911-exp-config.json', // Pfad zur Explosions-Konfiguration
+    explosionConfigPath: '/car/exp-rotate-import-test.json', // Pfad zur Explosions-Konfiguration
     cardDataPath: '/car/911-cards.json', // Pfad zu den Card-Inhalten
     showDebugUI: true,
     showStats: true,

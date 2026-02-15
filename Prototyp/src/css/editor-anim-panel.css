@@ -44,21 +44,26 @@
         border-bottom-right-radius: 0;
     }
 
-    .editor-row:nth-of-type(3) {
+    .editor-row:nth-of-type(3) .editor-input-group {
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+    }
+
+    .editor-row:nth-of-type(4) {
+        margin-top: var(--m);
         margin-bottom: var(--m);
     
         .editor-input-group {
-            border-top-left-radius: 0;
-            border-top-right-radius: 0;
+            border-radius: 5px;
         }
     }
 
-    .editor-row:nth-of-type(4) .editor-input-group {
+    .editor-row:nth-of-type(5) .editor-input-group {
         border-bottom-left-radius: 0;
         border-bottom-right-radius: 0;
     }
 
-    .editor-row:nth-of-type(5) .editor-input-group {
+    .editor-row:nth-of-type(6) .editor-input-group {
         border-top-left-radius: 0;
         border-top-right-radius: 0;
     }
