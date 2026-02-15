@@ -26,6 +26,7 @@ export class EditorTimeline {
         this.scrubberHead = null;
         this.timeInput = null;
         this.objectsColumn = null;
+        this.contentWrapper = null;
         this.playPauseBtn = null;
         this.startBtn = null;
         this.endBtn = null;
@@ -205,12 +206,63 @@ export class EditorTimeline {
         this.scrubberHead = this.element.querySelector('#scrubber-head');
         this.timeInput = this.element.querySelector('#time-input');
         this.objectsColumn = this.element.querySelector('.objects-column');
+        this.contentWrapper = this.element.querySelector('.grid-content-wrapper');
         
         // Buttons
         this.playPauseBtn = this.element.querySelector('#timeline-play-pause');
         this.startBtn = this.element.querySelector('#timeline-start');
         this.endBtn = this.element.querySelector('#timeline-end');
         this.einklappenBtn = this.element.querySelector('#einklappen-timeline');
+    }
+
+    // Scrollt die Timeline zum entsprechenden Objekt und hebt es kurz hervor
+    scrollToObject(objectOrName, behavior = 'smooth') {
+        const objectId = typeof objectOrName === 'string' ? objectOrName : objectOrName?.name;
+        if (!objectId || !this.contentWrapper) return;
+
+        const timelineRows = this.timelineColumn?.querySelectorAll('.timeline-row-item') || [];
+        let targetRow = null;
+
+        timelineRows.forEach(row => {
+            if (row.getAttribute('data-object-id') === objectId) {
+                targetRow = row;
+            }
+        });
+
+        if (!targetRow) return;
+
+        const wrapperRect = this.contentWrapper.getBoundingClientRect();
+        const rowRect = targetRow.getBoundingClientRect();
+
+        const offsetTop = rowRect.top - wrapperRect.top;
+        const centerOffset = (wrapperRect.height / 2) - (rowRect.height / 2);
+        const targetTop = this.contentWrapper.scrollTop + offsetTop - centerOffset;
+
+        this.contentWrapper.scrollTo({
+            top: Math.max(0, targetTop),
+            behavior
+        });
+
+        const objectItem = this.objectsColumn?.querySelector(`[data-object-id="${objectId}"]`);
+        this._flashHighlight(targetRow, 'is-highlighted');
+        if (objectItem) {
+            this._flashHighlight(objectItem, 'is-highlighted');
+        }
+    }
+
+    // Highlight animation für Timeline-Row und Objekt-Item
+    _flashHighlight(element, className) {
+        if (!element) return;
+
+        element.classList.remove(className);
+        void element.offsetWidth;
+        element.classList.add(className);
+
+        const onEnd = () => {
+            element.classList.remove(className);
+        };
+
+        element.addEventListener('animationend', onEnd, { once: true });
     }
 
     /**

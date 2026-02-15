@@ -205,6 +205,9 @@ export class EditorController {
         // UI auf Objekte-Tab umschalten und Licht-Highlight entfernen
         this.editorSidebarPanel?.switchTab('objects');
         this.editorSidebarPanel?.getTab('lights')?.clearSelection();
+
+        // Bei Objekt-Selektion in der Timeline zum Objekt scrollen (UI + 3D-Click)
+        this.animController?.editorTimeline?.scrollToObject(object?.name);
     }
 
     // Event Handler für Objektdeselection
