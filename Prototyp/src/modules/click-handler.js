@@ -62,9 +62,11 @@ export class ClickHandler {
             if (this.editMode) {
                 const lightFromHelper = this._findLightFromHelper(clickedObject);
                 if (lightFromHelper) {
+                    // Quelle der Selektion markieren --> Für select und deselect in der UI
                     window.dispatchEvent(new CustomEvent('ev:lightSelected', {
                         detail: {
-                            light: lightFromHelper
+                            light: lightFromHelper,
+                            source: 'click-handler'
                         }
                     }));
                     this.lastSelectedObject = null;
@@ -78,10 +80,12 @@ export class ClickHandler {
             if (this.editMode) {
                 // Beim 2. Klick auf das gleiche Objekt wird die Selektion aufgehoben
                 if (this.lastSelectedObject && topLevelObject === this.lastSelectedObject) {
+                    // Quelle der Deselektion markieren (3D-Click)
                     window.dispatchEvent(new CustomEvent('ev:objectDeselected', {
                         detail: {
                             object: topLevelObject,
-                            UUID: topLevelObject.uuid
+                            UUID: topLevelObject.uuid,
+                            source: 'click-handler'
                         }
                     }));
                     this.lastSelectedObject = null;
@@ -159,12 +163,14 @@ export class ClickHandler {
         const isMultiSelect = event.ctrlKey || event.metaKey; // Ctrl/Cmd für Multi-Selection
         
         // Custom Event für Editor dispatchen
+        // Quelle der Selektion markieren (3D-Click)
         window.dispatchEvent(new CustomEvent('ev:objectSelected', { 
             detail: { 
                 object: object,
                 UUID: object.uuid,
                 position: object.position.clone(),  // Vektor
-                isMultiSelect: isMultiSelect
+                isMultiSelect: isMultiSelect,
+                source: 'click-handler'
             } 
         }));
 

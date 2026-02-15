@@ -163,6 +163,9 @@ export class EditorController {
         if (light) {
             this.animController.deselectObject();
             this.lightController.selectLight(light);
+            // UI auf Lichter-Tab umschalten und Objekt-Highlight entfernen
+            this.editorSidebarPanel?.switchTab('lights');
+            this.editorSidebarPanel?.getTab('objects')?.clearSelection();
         }
     }
 
@@ -199,11 +202,16 @@ export class EditorController {
         
         this.lightController.clearSelection();
         this.animController.selectObject(object);
+        // UI auf Objekte-Tab umschalten und Licht-Highlight entfernen
+        this.editorSidebarPanel?.switchTab('objects');
+        this.editorSidebarPanel?.getTab('lights')?.clearSelection();
     }
 
     // Event Handler für Objektdeselection
     _onObjectDeselected(event) {
         this.animController.deselectObject();
+        // Objekt-Highlight in der UI entfernen
+        this.editorSidebarPanel?.getTab('objects')?.clearSelection();
     }
     
     _clearObjectSelection() {

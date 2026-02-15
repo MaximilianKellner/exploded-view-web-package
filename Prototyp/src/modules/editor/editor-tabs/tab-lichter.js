@@ -20,6 +20,8 @@ export class TabLichter {
         this.filteredLights = [];
         this.allLights = [];
 
+        this._onExternalLightSelected = this._onExternalLightSelected.bind(this);
+
         this._init();
         this._collectLights();
     }
@@ -75,6 +77,9 @@ export class TabLichter {
                 this.onAddLight();
             }
         });
+
+        // Externe Selektion aus der 3D-Ansicht spiegeln
+        window.addEventListener('ev:lightSelected', this._onExternalLightSelected);
     }
 
     // Sammelt alle Lichter aus der Szene
@@ -170,19 +175,51 @@ export class TabLichter {
     //Selektiert ein Licht und triggert Callback
     _selectLight(light, listItem) {
         // Highlight entfernen
-        Object.values(this.lightItems).forEach(item => {
-            item.classList.remove('active');
-        });
+        this._clearActiveSelection();
 
         // Neues Item hervorheben
         listItem.classList.add('active');
 
         // Event dispatchen damit EditorController die Koordination übernehmen kann
+        // Quelle der Selektion markieren (UI)
         window.dispatchEvent(new CustomEvent('ev:lightSelected', { 
             detail: { 
-                light: light 
+                light: light,
+                source: 'ui'
             } 
         }));
+    }
+
+    _onExternalLightSelected(event) {
+        // Nur 3D-Clicks sollen die UI steuern
+        if (event?.detail?.source !== 'click-handler') return;
+        const light = event.detail.light;
+        if (!light) return;
+
+        this._setActiveByLight(light);
+    }
+
+    _setActiveByLight(light) {
+        const key = light.name || light.uuid;
+        const listItem = this.lightItems[key];
+        if (!listItem) return;
+
+        this._clearActiveSelection();
+        listItem.classList.add('active');
+    }
+
+    _clearActiveSelection() {
+        Object.values(this.lightItems).forEach(item => {
+            item.classList.remove('active');
+        });
+    }
+
+    setActiveByLight(light) {
+        this._setActiveByLight(light);
+    }
+
+    clearSelection() {
+        this._clearActiveSelection();
     }
 
     // Gibt das Root-Element zurück

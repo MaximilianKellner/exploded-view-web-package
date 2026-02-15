@@ -127,6 +127,11 @@ export class EditorSidebarPanel {
         this.tabContents[tabId].classList.add('active');
     }
 
+    // Funktuion zum externen Umschalten der Tabs (z.B. durch klick auswahl in der Szene getriggert)
+    switchTab(tabId) {
+        this._switchTab(tabId);
+    }
+
     //Setzt den Inhalt eines Tabs (wird vom Benutzer aufgerufen)
     setTabContent(tabId, content) {
         if (!this.tabContents[tabId]) return;

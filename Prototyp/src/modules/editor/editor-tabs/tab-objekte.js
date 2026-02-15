@@ -19,6 +19,9 @@ export class TabObjekte {
         this.filteredObjects = [];
         this.allObjects = [];
 
+        this._onExternalObjectSelected = this._onExternalObjectSelected.bind(this);
+        this._onExternalObjectDeselected = this._onExternalObjectDeselected.bind(this);
+
         this._init();
         this._collectObjects();
     }
@@ -61,6 +64,10 @@ export class TabObjekte {
                 this.animationHandler.exportConfig();
             }
         });
+
+        // Externe Selektion/Deselektion aus der 3D-Ansicht spiegeln
+        window.addEventListener('ev:objectSelected', this._onExternalObjectSelected);
+        window.addEventListener('ev:objectDeselected', this._onExternalObjectDeselected);
     }
 
     //Sammelt alle animierbaren Objekte (model.children) --> explodableObjects und potenzielle explodableObjects
@@ -143,22 +150,62 @@ export class TabObjekte {
     // Selektiert ein Objekt und dispatcht Custom Event (wie ClickHandler)
     _selectObject(object, listItem) {
         // Highlight entfernen
-        Object.values(this.objectItems).forEach(item => {
-            item.classList.remove('active');
-        });
+        this._clearActiveSelection();
 
         // Neues Item hervorheben
         listItem.classList.add('active');
 
         // Custom Event dispatchen (nutzt die bestehende Logik vom ClickHandler)
+        // Quelle der Selektion markieren (UI)
         window.dispatchEvent(new CustomEvent('ev:objectSelected', { 
             detail: { 
                 object: object,
                 UUID: object.uuid,
                 position: object.position.clone(),
-                isMultiSelect: false
+                isMultiSelect: false,
+                source: 'ui'
             } 
         }));
+    }
+
+    _onExternalObjectSelected(event) {
+        // Nur 3D-Clicks sollen die UI steuern
+        if (event?.detail?.source !== 'click-handler') return;
+        const object = event.detail.object;
+        if (!object) return;
+
+        this._setActiveByObject(object);
+    }
+
+    _onExternalObjectDeselected(event) {
+        // Nur 3D-Clicks sollen die UI steuern
+        if (event?.detail?.source !== 'click-handler') return;
+        this._clearActiveSelection();
+    }
+
+    _setActiveByObject(object) {
+        const key = object?.name;
+        if (!key) return;
+
+        const listItem = this.objectItems[key];
+        if (!listItem) return;
+
+        this._clearActiveSelection();
+        listItem.classList.add('active');
+    }
+
+    _clearActiveSelection() {
+        Object.values(this.objectItems).forEach(item => {
+            item.classList.remove('active');
+        });
+    }
+
+    setActiveByObject(object) {
+        this._setActiveByObject(object);
+    }
+
+    clearSelection() {
+        this._clearActiveSelection();
     }
 
     // Gibt das Root-Element zurück
