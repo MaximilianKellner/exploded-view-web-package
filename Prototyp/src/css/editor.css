@@ -5,5 +5,5 @@
 @import url('./editor-light-panel.css');
 @import url('./editor-timeline.css');
 @import url('./editor-sidebar-panel.css');
-@import url('./editor-tabs.css');
+@import url('./tabs/editor-tabs.css');
 @import url('./tabs/editor-scene-tab.css');
