@@ -28,6 +28,22 @@
     margin: 2px 0;
 }
 
+.editor-select {
+    width: 100%;
+    max-width: 160px;
+    font-size: 0.85rem;
+    text-align: center;
+    background-color: var(--c-dark);
+    padding: var(--xxs);
+    outline: 2px solid var(--c-border);
+    border-radius: 5px;
+    font-family: monospace;
+    box-sizing: border-box;
+    margin: 2px 0;
+    color: var(--c-body-text);
+    border: none;
+}
+
 /* Editor Row */
 .editor-row {
     display: flex;

@@ -30,7 +30,11 @@ export class EditorLightPanel {
 
                 <div class="editor-row">
                     <span class="editor-label">Typ</span>
-                    <div class="editor-value-display" id="light-type">-</div>
+                    <select class="editor-select" id="light-type">
+                        <option value="directional">Directional</option>
+                        <option value="point">Point</option>
+                        <option value="ambient">Ambient</option>
+                    </select>
                 </div>
 
                 <div class="editor-row">
@@ -129,7 +133,7 @@ export class EditorLightPanel {
 
         this.inputs = {
             title: this.element.querySelector('#light-title'),
-            type: this.element.querySelector('#light-type'),
+            typeSelect: this.element.querySelector('#light-type'),
             enabled: this.element.querySelector('#light-enabled'),
             intensity: this.element.querySelector('#light-intensity'),
             intensityValue: this.element.querySelector('#light-intensity-value'),
@@ -157,6 +161,7 @@ export class EditorLightPanel {
         });
 
         this.inputs.enabled.addEventListener('change', () => this._onInputChange());
+        this.inputs.typeSelect.addEventListener('change', () => this._onTypeChange());
         this.inputs.intensity.addEventListener('input', () => this._onInputChange());
         this.inputs.posX.addEventListener('change', () => this._onInputChange());
         this.inputs.posY.addEventListener('change', () => this._onInputChange());
@@ -237,7 +242,7 @@ export class EditorLightPanel {
         this.currentConfigKey = configKey;
 
         this.inputs.title.textContent = configKey || light.name || '(Unnamed Light)';
-        this.inputs.type.textContent = light.constructor?.name || 'Light';
+        this.inputs.typeSelect.value = configEntry.type || this._getTypeFromLight(light);
 
         const isEnabled = configEntry.enabled ?? light.visible ?? true;
         const intensity = configEntry.intensity ?? light.intensity ?? 1;
@@ -403,6 +408,19 @@ export class EditorLightPanel {
         }
     }
 
+    _onTypeChange() {
+        if (!this.currentLight || !this.currentConfigKey) return;
+
+        const selectedType = this.inputs.typeSelect.value;
+        const lightsConfig = this.config?.sceneConfig?.lights;
+        const configEntry = lightsConfig?.[this.currentConfigKey];
+        if (!configEntry || configEntry.type === selectedType) return;
+
+        if (this.callbacks.onTypeChange) {
+            this.callbacks.onTypeChange(selectedType);
+        }
+    }
+
     _onColorChange(color) {
         if (!this.currentLight || !this.currentConfigKey) return;
 
@@ -440,5 +458,11 @@ export class EditorLightPanel {
 
     _degToRad(value) {
         return value * (Math.PI / 180);
+    }
+
+    _getTypeFromLight(light) {
+        if (light?.isDirectionalLight) return 'directional';
+        if (light?.isPointLight) return 'point';
+        return 'ambient';
     }
 }

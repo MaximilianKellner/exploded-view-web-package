@@ -45,6 +45,13 @@ function setupLights(mainConfig, scene, lightsObject) {
                 light.shadow.bias = -0.001; // Gegen "shadow acne"
 
                 break;
+            case 'point':
+                light = new THREE.PointLight(config.color, config.intensity);
+                if (mainConfig.sceneConfig.shadowsEnabled) {
+                    light.castShadow = true;
+                }
+                light.position.set(config.position.x, config.position.y, config.position.z);
+                break;
         }
 
         if (light) {

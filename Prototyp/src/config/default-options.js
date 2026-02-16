@@ -14,7 +14,7 @@ export const defaultOptions = {
 
     highlightOptions: {
         highlightComponent: true,
-        mode: 'wireframe', // 'wireframe' oder 'ghost'
+        mode: 'ghost', // 'wireframe' oder 'ghost'
         wireframeColor: '#aaaaaa',
         ghostColor: '#c4c4c4'
     },
@@ -23,7 +23,7 @@ export const defaultOptions = {
         useSequenceAnim: false,
         layerDistance: 0.5,
         animationDuration: 1500,
-        animationEasing: 'inOut(4)',
+        animationEasing: 'inOut(4)', // alle standart Easing-Funktionen von anime.js sind möglich (https://animejs.com/easing-editor/spring/default)
         globalExpDirection: [1, 1, 1],
         allowScrollAnimation: false,
         scrollSensitivity: 0.001

@@ -25,7 +25,8 @@ export class EditorLightController {
         this.panel.setCallbacks({
             onDelete: (light, key) => this.deleteLight(light, key),
             onChange: (light) => this._onPanelChange(light),
-            onModeChange: (mode) => this._onModeChange(mode)
+            onModeChange: (mode) => this._onModeChange(mode),
+            onTypeChange: (type) => this._onTypeChange(type)
         });
     }
 
@@ -33,9 +34,10 @@ export class EditorLightController {
         this.transformHandler = handler;
     }
     
-    setSidebarCallbacks({ onRefresh, onUpdateItem }) {
+    setSidebarCallbacks({ onRefresh, onUpdateItem, onSelect }) {
         this.onSidebarRefresh = onRefresh;
         this.onSidebarUpdateItem = onUpdateItem;
+        this.onSidebarSelect = onSelect;
     }
 
     enable() {
@@ -75,10 +77,7 @@ export class EditorLightController {
 
         const lightKey = light.name || light.uuid;
         // Überprüfen, dass die Lichtkonfiguration existiert
-        if (this.config && this.config.sceneConfig && !this.config.sceneConfig.lights) {
-            this.config.sceneConfig.lights = {};
-        }
-        const lightsConfig = this.config?.sceneConfig?.lights || {};
+        const lightsConfig = this._ensureLightsConfig();
         let configEntry = lightsConfig[lightKey];
 
         if (!configEntry) {
@@ -91,25 +90,17 @@ export class EditorLightController {
         this.selectedLight = light;
         this.selectedLightKey = lightKey;
 
-        if (this.transformHandler) {
-            this.transformHandler.attach(light);
-            this.transformHandler.setMode('translate');
-            if (this.transformHandler.controls) {
-                this.transformHandler.controls.setSpace('world');
-            }
-        }
 
-        this._applyLookAt(light, configEntry);
-        this._updateHelper(light);
+        this._syncTransformHandler(light);
+
+        this._syncLightState(light, configEntry);
         
         console.log('EditorLightController: Light selected:', lightKey);
     }
 
     clearSelection() {
         if (this.selectedLight) {
-            if (this.transformHandler) {
-                this.transformHandler.detach();
-            }
+            this._syncTransformHandler(null);
             this.selectedLight = null;
             this.selectedLightKey = null;
             this.panel.hide();
@@ -117,16 +108,16 @@ export class EditorLightController {
     }
 
     addLight() {
-        if (!this.config.sceneConfig) this.config.sceneConfig = {};
+        const lightsConfig = this._ensureLightsConfig();
         
         let index = 1;
         let lightName;
         
-        // Namen finden --> DirectionalLight-XXX
+        // Namen finden --> Light-XXX
         do {
-            lightName = `DirectionalLight-${String(index).padStart(3, '0')}`;
+            lightName = `Light-${String(index).padStart(3, '0')}`;
             index++;
-        } while (this.config.sceneConfig.lights && this.config.sceneConfig.lights[lightName]);
+        } while (lightsConfig[lightName]);
         
         // Standardkonfiguration für neue Lichter
         const lightConfig = {
@@ -141,10 +132,7 @@ export class EditorLightController {
         };
 
         // Lich in config einfügen
-        if (!this.config.sceneConfig.lights) {
-            this.config.sceneConfig.lights = {};
-        }
-        this.config.sceneConfig.lights[lightName] = lightConfig;
+        lightsConfig[lightName] = lightConfig;
 
         // Objekt erstellen
         const light = new THREE.DirectionalLight(lightConfig.color, lightConfig.intensity);
@@ -233,26 +221,61 @@ export class EditorLightController {
                 };
             }
 
-            this._applyLookAt(this.selectedLight, configEntry);
+            this._syncLightState(this.selectedLight, configEntry);
             this.panel.update(this.selectedLight, this.selectedLightKey, configEntry);
-            this._updateHelper(this.selectedLight);
         }
     }
 
     // --- private methods ---
+
+    _ensureLightsConfig() {
+        if (!this.config) {
+            this.config = {};
+        }
+        if (!this.config.sceneConfig) {
+            this.config.sceneConfig = {};
+        }
+        if (!this.config.sceneConfig.lights) {
+            this.config.sceneConfig.lights = {};
+        }
+
+        return this.config.sceneConfig.lights;
+    }
 
     // Event Handler für Panel Änderungen
     _onPanelChange(light) {
         if (!light) return;
         const lightsConfig = this.config?.sceneConfig?.lights;
         const configEntry = lightsConfig?.[this.selectedLightKey];
-        if (configEntry) {
-            this._applyLookAt(light, configEntry);
-        }
-        this._updateHelper(light);
+        this._syncLightState(light, configEntry);
         
         if (this.onSidebarUpdateItem) {
             this.onSidebarUpdateItem(light);
+        }
+    }
+
+    _onTypeChange(newType) {
+        if (!this.selectedLight || !this.selectedLightKey) return;
+
+        const lightsConfig = this.config?.sceneConfig?.lights;
+        const configEntry = lightsConfig?.[this.selectedLightKey];
+        if (!configEntry || configEntry.type === newType) return;
+
+        this._applyTypeToConfig(configEntry, newType, this.selectedLight);
+
+        const newLight = this._createLightFromConfig(newType, configEntry);
+        if (!newLight) return;
+
+        newLight.name = this.selectedLightKey;
+        this._replaceSelectedLight(newLight);
+        this.panel.show(newLight, this.selectedLightKey, configEntry);
+        this._syncLightState(newLight, configEntry);
+
+        if (this.onSidebarRefresh) {
+            this.onSidebarRefresh();
+        }
+        if (this.onSidebarSelect) {
+            this.onSidebarSelect(newLight);
         }
     }
 
@@ -313,6 +336,118 @@ export class EditorLightController {
         }
     }
 
+    _replaceSelectedLight(newLight) {
+        const oldLight = this.selectedLight;
+        if (!oldLight) return;
+
+        const oldHelper = this.lightHelpers.get(oldLight.uuid);
+        if (oldHelper && oldHelper.parent) {
+            oldHelper.parent.remove(oldHelper);
+        }
+        this.lightHelpers.delete(oldLight.uuid);
+
+        if (oldLight.target && oldLight.target.parent) {
+            oldLight.target.parent.remove(oldLight.target);
+        }
+
+        if (oldLight.parent) {
+            oldLight.parent.remove(oldLight);
+        } else {
+            this.scene.remove(oldLight);
+        }
+
+        this.scene.add(newLight);
+        if (newLight.target && !newLight.target.parent) {
+            this.scene.add(newLight.target);
+        }
+
+        const newHelper = this._createHelper(newLight);
+        if (newHelper) {
+            this.lightHelpers.set(newLight.uuid, newHelper);
+            this.scene.add(newHelper);
+        }
+
+        this.selectedLight = newLight;
+
+        this._syncTransformHandler(newLight);
+    }
+
+    _syncTransformHandler(light) {
+        if (!this.transformHandler) return;
+
+        const canTransform = !!(light && (light.isDirectionalLight || light.isPointLight || light.isSpotLight));
+        if (canTransform) {
+            this.transformHandler.attach(light);
+            this.transformHandler.setMode('translate');
+            if (this.transformHandler.controls) {
+                this.transformHandler.controls.setSpace('world');
+            }
+        } else {
+            this.transformHandler.detach();
+        }
+    }
+
+    _applyTypeToConfig(configEntry, newType, light) {
+        configEntry.type = newType;
+
+        if (configEntry.enabled === undefined) {
+            configEntry.enabled = light?.visible ?? true;
+        }
+
+        if (!configEntry.color) {
+            configEntry.color = light?.color ? `#${light.color.getHexString()}` : '#ffffff';
+        }
+
+        if (typeof configEntry.intensity !== 'number') {
+            configEntry.intensity = light?.intensity ?? 1;
+        }
+
+        if (newType === 'directional') {
+            configEntry.position = configEntry.position || this._buildPosition(light, { x: 0, y: 5, z: 0 });
+            configEntry.rotation = configEntry.rotation || this._buildRotation(light, { x: 0, y: 0, z: 0 });
+            if (configEntry.lookAtEnabled === undefined) {
+                configEntry.lookAtEnabled = true;
+            }
+            configEntry.lookAtTarget = configEntry.lookAtTarget || this._buildLookAtTarget(light, { x: 0, y: 0, z: 0 });
+        } else if (newType === 'point') {
+            configEntry.position = configEntry.position || this._buildPosition(light, { x: 0, y: 5, z: 0 });
+            delete configEntry.rotation;
+            delete configEntry.lookAtEnabled;
+            delete configEntry.lookAtTarget;
+        } else {
+            delete configEntry.position;
+            delete configEntry.rotation;
+            delete configEntry.lookAtEnabled;
+            delete configEntry.lookAtTarget;
+        }
+    }
+
+    _createLightFromConfig(type, configEntry) {
+        const color = configEntry.color || '#ffffff';
+        const intensity = configEntry.intensity ?? 1;
+        let light = null;
+
+        if (type === 'directional') {
+            light = new THREE.DirectionalLight(color, intensity);
+            const position = configEntry.position || { x: 0, y: 5, z: 0 };
+            light.position.set(position.x ?? 0, position.y ?? 0, position.z ?? 0);
+            if (configEntry.rotation) {
+                light.rotation.set(configEntry.rotation.x ?? 0, configEntry.rotation.y ?? 0, configEntry.rotation.z ?? 0);
+            }
+        } else if (type === 'point') {
+            light = new THREE.PointLight(color, intensity);
+            const position = configEntry.position || { x: 0, y: 5, z: 0 };
+            light.position.set(position.x ?? 0, position.y ?? 0, position.z ?? 0);
+        } else if (type === 'ambient') {
+            light = new THREE.AmbientLight(color, intensity);
+        }
+
+        if (!light) return null;
+
+        light.visible = configEntry.enabled ?? true;
+        return light;
+    }
+
     _applyLookAt(light, configEntry) {
         if (!(light && configEntry)) return;
 
@@ -340,6 +475,37 @@ export class EditorLightController {
         }
     }
 
+    _buildPosition(light, fallback) {
+        return {
+            x: light?.position?.x ?? fallback.x,
+            y: light?.position?.y ?? fallback.y,
+            z: light?.position?.z ?? fallback.z
+        };
+    }
+
+    _buildRotation(light, fallback) {
+        return {
+            x: light?.rotation?.x ?? fallback.x,
+            y: light?.rotation?.y ?? fallback.y,
+            z: light?.rotation?.z ?? fallback.z
+        };
+    }
+
+    _buildLookAtTarget(light, fallback) {
+        return {
+            x: light?.target?.position?.x ?? fallback.x,
+            y: light?.target?.position?.y ?? fallback.y,
+            z: light?.target?.position?.z ?? fallback.z
+        };
+    }
+
+    _syncLightState(light, configEntry) {
+        if (!(light && configEntry)) return;
+
+        this._applyLookAt(light, configEntry);
+        this._updateHelper(light);
+    }
+
     _createConfig(light) {
         const config = {
             type: 'ambient',
@@ -350,49 +516,21 @@ export class EditorLightController {
 
         if (light.isDirectionalLight) {
             config.type = 'directional';
-            config.position = {
-                x: light.position?.x ?? 0,
-                y: light.position?.y ?? 0,
-                z: light.position?.z ?? 0
-            };
-            config.rotation = {
-                x: light.rotation?.x ?? 0,
-                y: light.rotation?.y ?? 0,
-                z: light.rotation?.z ?? 0
-            };
+            config.position = this._buildPosition(light, { x: 0, y: 0, z: 0 });
+            config.rotation = this._buildRotation(light, { x: 0, y: 0, z: 0 });
             config.lookAtEnabled = true;
-            config.lookAtTarget = {
-                x: light.target?.position?.x ?? 0,
-                y: light.target?.position?.y ?? 0,
-                z: light.target?.position?.z ?? 0
-            };
+            config.lookAtTarget = this._buildLookAtTarget(light, { x: 0, y: 0, z: 0 });
         } else if (light.isAmbientLight) {
             config.type = 'ambient';
         } else if (light.isPointLight) {
             config.type = 'point';
-            config.position = {
-                x: light.position?.x ?? 0,
-                y: light.position?.y ?? 0,
-                z: light.position?.z ?? 0
-            };
+            config.position = this._buildPosition(light, { x: 0, y: 0, z: 0 });
         } else if (light.isSpotLight) {
             config.type = 'spot';
-            config.position = {
-                x: light.position?.x ?? 0,
-                y: light.position?.y ?? 0,
-                z: light.position?.z ?? 0
-            };
-            config.rotation = {
-                x: light.rotation?.x ?? 0,
-                y: light.rotation?.y ?? 0,
-                z: light.rotation?.z ?? 0
-            };
+            config.position = this._buildPosition(light, { x: 0, y: 0, z: 0 });
+            config.rotation = this._buildRotation(light, { x: 0, y: 0, z: 0 });
             config.lookAtEnabled = true;
-            config.lookAtTarget = {
-                x: light.target?.position?.x ?? 0,
-                y: light.target?.position?.y ?? 0,
-                z: light.target?.position?.z ?? 0
-            };
+            config.lookAtTarget = this._buildLookAtTarget(light, { x: 0, y: 0, z: 0 });
         }
 
         return config;

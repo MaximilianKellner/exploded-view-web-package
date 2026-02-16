@@ -66,7 +66,8 @@ export class EditorController {
         // Callbacks für Sidebar Updates vom LightController
         this.lightController.setSidebarCallbacks({
             onRefresh: () => this.editorSidebarPanel?.getTab('lights')?.refresh(),
-            onUpdateItem: (light) => this.editorSidebarPanel?.getTab('lights')?.updateLightItem(light)
+            onUpdateItem: (light) => this.editorSidebarPanel?.getTab('lights')?.updateLightItem(light),
+            onSelect: (light) => this.editorSidebarPanel?.getTab('lights')?.setActiveByLight(light)
         });
 
         // Callbacks für Sidebar Updates vom AnimationController

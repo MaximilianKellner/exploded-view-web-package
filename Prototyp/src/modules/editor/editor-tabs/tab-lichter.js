@@ -158,6 +158,7 @@ export class TabLichter {
 
         const intensityEl = listItem.querySelector('.light-intensity');
         const colorEl = listItem.querySelector('.light-color');
+        const typeEl = listItem.querySelector('.item-type');
 
         if (intensityEl) {
             const intensity = (light.intensity ?? 1).toFixed(2);
@@ -166,6 +167,10 @@ export class TabLichter {
 
         if (colorEl && light.color) {
             colorEl.style.backgroundColor = `#${light.color.getHexString()}`;
+        }
+
+        if (typeEl) {
+            typeEl.textContent = light.constructor?.name || 'Light';
         }
 
         const isEnabled = light.visible !== false;
