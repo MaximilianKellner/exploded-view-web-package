@@ -38,7 +38,7 @@ function setupLights(mainConfig, scene, lightsObject) {
                     light.target.position.set(target.x ?? 0, target.y ?? 0, target.z ?? 0);
                 }
 
-                light.shadow.mapSize.width = 2048; // Höhere Auflösung für schärfere Schatten
+                light.shadow.mapSize.width = 2048;
                 light.shadow.mapSize.height = 2048;
                 light.shadow.camera.near = 0.5;
                 light.shadow.camera.far = 500;

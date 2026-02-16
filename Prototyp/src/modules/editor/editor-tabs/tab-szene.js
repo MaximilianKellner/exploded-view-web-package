@@ -471,7 +471,7 @@ export class TabScene {
                 }
 
                 this.scene?.traverse((child) => {
-                    if (child.isLight && child.castShadow !== undefined) {
+                    if (child.isDirectionalLight || child.isSpotLight || child.isPointLight) {
                         child.castShadow = this.inputs.sceneShadows.checked;
                     }
                     if (child.material) {

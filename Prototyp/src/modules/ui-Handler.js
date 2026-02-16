@@ -124,7 +124,7 @@ export class UIHandler{
             this.renderer.shadowMap.enabled = ev.value;
 
             this.scene.traverse(child => {
-                if (child.isLight && child.castShadow !== undefined) {
+                if (child.isDirectionalLight || child.isSpotLight || child.isPointLight) {
                     child.castShadow = ev.value;
                 }
                 if (child.material) {

@@ -1,5 +1,5 @@
 import { Pane } from 'tweakpane';
-import { animate, utils } from 'animejs';
+import { animate } from 'animejs';
 
 export function initTweakpane(config,) {
     const pane = new Pane({
