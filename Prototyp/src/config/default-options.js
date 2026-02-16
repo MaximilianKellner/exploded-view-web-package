@@ -23,6 +23,7 @@ export const defaultOptions = {
         useSequenceAnim: false,
         layerDistance: 0.5,
         animationDuration: 1500,
+        animationEasing: 'inOut(4)',
         globalExpDirection: [1, 1, 1],
         allowScrollAnimation: false,
         scrollSensitivity: 0.001

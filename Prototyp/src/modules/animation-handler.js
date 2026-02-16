@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { animate } from 'animejs';
+import { animate, steps } from 'animejs';
 
 /**
  * Verwaltet die Logik für die Explosionsansicht eines 3D-Modells.
@@ -311,6 +311,18 @@ export class AnimationHandler {
         }
     }
 
+    // Easing-Funktion auflösen --> besonders für sonderfälle wichtig 
+    _resolveAnimationEasing() {
+        const fallback = this.config.animationConfig.useSequenceAnim ? 'inOut' : 'inOut(8)';
+        const easingValue = this.config.animationConfig.animationEasing ?? fallback;
+        if (easingValue === 'steps') {
+            const duration = this.config.animationConfig.animationDuration || 1000;
+            console.log('Using steps easing with duration:', duration);
+            return steps(6, true);
+        }
+        return easingValue;
+    }
+
     // --- Starten der Animation ---
     startAnimation(){
         if (this.isAnimating) return;
@@ -320,11 +332,13 @@ export class AnimationHandler {
         // Zielwert der Animation basierend auf der Richtung bestimmen
         let target = this.isReversed ? 0 : 1;
 
+        const easing = this._resolveAnimationEasing();
+
         // Animiere den expFactor von seinem aktuellen Wert auf 1
         this.animation = animate(this.config.animationConfig,{
             expFactor: target,
             duration: this.config.animationConfig.animationDuration || 1000, // Dauer in ms
-            ease: this.config.animationConfig.useSequenceAnim ? 'inOut' : 'inOut(8)',
+            ease: easing,
             onUpdate: () => {
             },
             onComplete: () => {
@@ -347,7 +361,7 @@ export class AnimationHandler {
         animate(this.config.animationConfig, {
             expFactor: targetExplosionFactor,
             duration: 300, // Dauer der Glättung in ms
-            easing: 'easeOutQuad', // Sanfte Abflachung am Ende
+            ease: 'easeOutQuad', // Sanfte Abflachung am Ende
         });
     }
 

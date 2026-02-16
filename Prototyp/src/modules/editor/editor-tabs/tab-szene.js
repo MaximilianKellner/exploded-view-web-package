@@ -44,9 +44,22 @@ export class TabScene {
                 </div>
 
                 <div class="editor-row">
-                    <span class="editor-label">Sequenziell</span>
-                    <div class="editor-input-group">
-                        <input type="checkbox" class="editor-checkbox" id="animation-sequence" />
+                    <span class="editor-label">Easing</span>
+                    <div class="editor-dropdown" data-dropdown="animation-easing">
+                        <button class="editor-dropdown-toggle" type="button" aria-haspopup="listbox" aria-expanded="false">
+                            <span class="editor-dropdown-icon" aria-hidden="true"></span>
+                        </button>
+                        <div class="editor-dropdown-value">inOut(8)</div>
+                        <ul class="editor-dropdown-menu" role="listbox" aria-hidden="true">
+                            <li class="editor-dropdown-option" role="option" data-value="inOut">inOut</li>
+                            <li class="editor-dropdown-option" role="option" data-value="inOut(4)">inOut(4)</li>
+                            <li class="editor-dropdown-option" role="option" data-value="inOut(8)">inOut(8)</li>
+                            <li class="editor-dropdown-option" role="option" data-value="inOutExpo">inOutExpo</li>
+                            <li class="editor-dropdown-option" role="option" data-value="outInBack(1.7)">outInBack</li>
+                            <li class="editor-dropdown-option" role="option" data-value="outBounce">outBounce</li>
+                            <li class="editor-dropdown-option" role="option" data-value="outElastic(1,0.3)">outElastic</li>
+                            <li class="editor-dropdown-option" role="option" data-value="steps">steps</li>
+                        </ul>
                     </div>
                 </div>
             </details>
@@ -270,7 +283,6 @@ export class TabScene {
         this.inputs = {
             exportSceneConfig: this.element.querySelector('#export-scene-config-btn'),
             animationScroll: this.element.querySelector('#animation-scroll'),
-            animationSequence: this.element.querySelector('#animation-sequence'),
             sceneShadows: this.element.querySelector('#scene-shadows'),
             sceneCoordinates: this.element.querySelector('#scene-coordinatesystem'),
             cameraPosX: this.element.querySelector('#camera-pos-x'),
@@ -314,9 +326,9 @@ export class TabScene {
             if (this.inputs.animationScroll) {
                 this.inputs.animationScroll.checked = Boolean(animationConfig.allowScrollAnimation);
             }
-            if (this.inputs.animationSequence) {
-                this.inputs.animationSequence.checked = Boolean(animationConfig.useSequenceAnim);
-            }
+            const easingValue = animationConfig.animationEasing
+                ?? 'inOut(4)';
+            this._setDropdownValue('animation-easing', easingValue);
         }
 
         if (sceneConfig) {
@@ -448,15 +460,6 @@ export class TabScene {
             });
         }
 
-        if (this.inputs.animationSequence) {
-            this.inputs.animationSequence.addEventListener('change', () => {
-                if (!this.config?.animationConfig) return;
-                if (this.inputs.animationSequence.checked) {
-                    console.warn('Stellen sie sicher, dass die sequenzielle Animation konfiguriert ist');
-                }
-                this.config.animationConfig.useSequenceAnim = this.inputs.animationSequence.checked;
-            });
-        }
 
         if (this.inputs.sceneShadows) {
             this.inputs.sceneShadows.addEventListener('change', () => {
@@ -662,6 +665,11 @@ export class TabScene {
                 const highlightOptions = this.config?.highlightOptions;
                 if (!highlightOptions) return;
                 highlightOptions.mode = value;
+            },
+            'animation-easing': (value) => {
+                const animationConfig = this.config?.animationConfig;
+                if (!animationConfig) return;
+                animationConfig.animationEasing = value;
             },
             'pointer-side': (value) => {
                 const pointerConfig = this.config?.pointerConfig;

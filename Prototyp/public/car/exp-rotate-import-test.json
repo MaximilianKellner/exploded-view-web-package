@@ -1,0 +1,221 @@
+{
+  "_comment": "[X|Y|Z] - start/end definieren Zeitfenster (0-1), sequence ist optional für Kompatibilität",
+  "objects": {
+    "boden": {
+      "level": 100,
+      "expDirection": [
+        0,
+        -1,
+        0
+      ],
+      "sequence": 1,
+      "start": 0,
+      "end": 0.095
+    },
+    "Diffusor": {
+      "level": 1,
+      "expDirection": [
+        0,
+        -1,
+        -1
+      ],
+      "start": 0,
+      "end": 1
+    },
+    "Kennzeichen": {
+      "level": 1,
+      "expDirection": [
+        0,
+        0,
+        -1
+      ],
+      "start": 0,
+      "end": 1
+    },
+    "Scheinwerfer-R": {
+      "level": 1.5,
+      "expDirection": [
+        0,
+        0,
+        1
+      ],
+      "sequence": 3,
+      "start": 0.666,
+      "end": 0.8
+    },
+    "Scheinwerfer-L": {
+      "level": 1.5,
+      "expDirection": [
+        0,
+        0,
+        1
+      ],
+      "sequence": 3,
+      "start": 0.666,
+      "end": 0.889
+    },
+    "Licht": {
+      "level": 1,
+      "expDirection": [
+        0,
+        0,
+        -1
+      ],
+      "start": 0,
+      "end": 1
+    },
+    "LSchweller": {
+      "level": 1,
+      "expDirection": [
+        1,
+        0,
+        0
+      ],
+      "start": 0,
+      "end": 1
+    },
+    "FL": {
+      "level": 3,
+      "expDirection": [
+        1,
+        0,
+        0
+      ],
+      "sequence": 2,
+      "start": 0.333,
+      "end": 0.666
+    },
+    "FLBremse": {
+      "level": 1,
+      "expDirection": [
+        1,
+        0,
+        0
+      ],
+      "sequence": 3,
+      "start": 0.666,
+      "end": 1
+    },
+    "FR": {
+      "level": 3,
+      "expDirection": [
+        -1,
+        0,
+        0
+      ],
+      "sequence": 2,
+      "start": 0.333,
+      "end": 0.666
+    },
+    "FRBremse": {
+      "level": 1,
+      "expDirection": [
+        -1,
+        0,
+        0
+      ],
+      "sequence": 3,
+      "start": 0.666,
+      "end": 1
+    },
+    "RR": {
+      "level": 3,
+      "expDirection": [
+        -1,
+        0,
+        0
+      ],
+      "sequence": 2,
+      "start": 0.333,
+      "end": 0.5
+    },
+    "RRBremse": {
+      "level": 1,
+      "expDirection": [
+        -1,
+        0,
+        0
+      ],
+      "sequence": 3,
+      "start": 0.666,
+      "end": 0.833
+    },
+    "RLBremse": {
+      "level": 1,
+      "expDirection": [
+        1,
+        0,
+        0
+      ],
+      "sequence": 3,
+      "start": 0.666,
+      "end": 0.833
+    },
+    "RSchweller": {
+      "level": 1,
+      "expDirection": [
+        -1,
+        0,
+        0
+      ],
+      "start": 0,
+      "end": 1
+    },
+    "Splitter": {
+      "level": 2,
+      "expDirection": [
+        0,
+        0,
+        1
+      ],
+      "sequence": 2,
+      "start": 0.333,
+      "end": 0.666
+    },
+    "main-body": {
+      "level": 0,
+      "expDirection": [
+        0,
+        1,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "start": 0,
+      "end": 1
+    },
+    "RL": {
+      "level": 0,
+      "expDirection": [
+        0,
+        1,
+        0
+      ],
+      "rotation": [
+        9999999,
+        0,
+        0
+      ],
+      "start": 0,
+      "end": 1
+    },
+    "Spoiler": {
+      "level": 0.2681591197899687,
+      "expDirection": [
+        0,
+        0.9925319820201579,
+        -0.1219846902981561
+      ],
+      "rotation": [
+        45,
+        0,
+        0
+      ],
+      "start": 0,
+      "end": 1
+    }
+  }
+}
