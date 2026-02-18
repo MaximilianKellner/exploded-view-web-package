@@ -62,6 +62,16 @@ export class TabScene {
                         </ul>
                     </div>
                 </div>
+
+                <div class="editor-row">
+                    <span class="editor-label">Abstand</span>
+                    <div class="slider-container">
+                        <div class="slider-value" id="animation-layer-distance-value">0.5</div>
+                        <div class="slider-wrapper">
+                            <input type="range" class="editor-slider" id="animation-layer-distance" min="0" max="10" step="0.1" value="0.5" />
+                        </div>
+                    </div>
+                </div>
             </details>
 
             <details class="editor-details" open>
@@ -283,6 +293,8 @@ export class TabScene {
         this.inputs = {
             exportSceneConfig: this.element.querySelector('#export-scene-config-btn'),
             animationScroll: this.element.querySelector('#animation-scroll'),
+            animationLayerDistance: this.element.querySelector('#animation-layer-distance'),
+            animationLayerDistanceValue: this.element.querySelector('#animation-layer-distance-value'),
             sceneShadows: this.element.querySelector('#scene-shadows'),
             sceneCoordinates: this.element.querySelector('#scene-coordinatesystem'),
             cameraPosX: this.element.querySelector('#camera-pos-x'),
@@ -329,6 +341,12 @@ export class TabScene {
             const easingValue = animationConfig.animationEasing
                 ?? 'inOut(4)';
             this._setDropdownValue('animation-easing', easingValue);
+
+            const layerDistance = this._clamp(this._readNumber(animationConfig.layerDistance, 0.5), 0, 10);
+            if (this.inputs.animationLayerDistance) {
+                this.inputs.animationLayerDistance.value = String(layerDistance);
+            }
+            this._setLayerDistanceDisplay(layerDistance);
         }
 
         if (sceneConfig) {
@@ -458,6 +476,21 @@ export class TabScene {
                     this.controls.enableZoom = !this.inputs.animationScroll.checked;
                 }
             });
+        }
+
+        if (this.inputs.animationLayerDistance) {
+            const handleLayerDistanceChange = () => {
+                const animationConfig = this.config?.animationConfig;
+                if (!animationConfig) return;
+
+                const value = this._clamp(this._readNumber(this.inputs.animationLayerDistance.value, 0.5), 0, 10);
+                animationConfig.layerDistance = value;
+                this._setLayerDistanceDisplay(value);
+                this.animationHandler?.updateExplosion();
+            };
+
+            this.inputs.animationLayerDistance.addEventListener('input', handleLayerDistanceChange);
+            this.inputs.animationLayerDistance.addEventListener('change', handleLayerDistanceChange);
         }
 
 
@@ -733,5 +766,15 @@ export class TabScene {
     _readNumber(value, fallback) {
         const parsed = Number(value);
         return Number.isFinite(parsed) ? parsed : fallback;
+    }
+
+    _clamp(value, min, max) {
+        return Math.min(Math.max(value, min), max);
+    }
+
+    _setLayerDistanceDisplay(value) {
+        if (this.inputs.animationLayerDistanceValue) {
+            this.inputs.animationLayerDistanceValue.textContent = Number(value).toFixed(1);
+        }
     }
 }
