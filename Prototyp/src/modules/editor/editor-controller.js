@@ -232,10 +232,18 @@ export class EditorController {
 
     // Callback für Export der Szenen-Konfiguration
     _onExportSceneConfig() {
-        const sceneConfig = this.config?.sceneConfig;
-        if (!sceneConfig) return;
+        if (!this.config?.sceneConfig) return;
 
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(sceneConfig, null, 2));
+        const exportConfig = {
+            infoElementType: this.config.infoElementType,
+            animationConfig: this.config.animationConfig,
+            cardConfig: this.config.cardConfig,
+            highlightOptions: this.config.highlightOptions,
+            pointerConfig: this.config.pointerConfig,
+            sceneConfig: this.config.sceneConfig
+        };
+
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportConfig, null, 2));
         const downloadAnchorNode = document.createElement('a');
         downloadAnchorNode.setAttribute("href", dataStr);
         downloadAnchorNode.setAttribute("download", "scene-config.json");
