@@ -1,6 +1,6 @@
 # Konzeption und Entwicklung eines interaktiven (Visualisierungs-)Systems für Exploded Views im Web.
 
-[![NPM-Version](https://img.shields.io/npm/v/@maximiliankellner/exploded-views)](https://www.npmjs.com/package/@maximiliankellner/exploded-views)
+[![NPM-Version](https://img.shields.io/npm/v/@maximiliankellner/exploded-views)](https://www.npmjs.com/package/explo.js)
 [![Lizenz](https://img.shields.io/github/license/MaximilianKellner/exploded-views-web-praxis-projekt)](https://github.com/MaximilianKellner/exploded-views-web-praxis-projekt/blob/main/LICENSE)
 
 Ein Paket zur einfachen Erstellung und Integration von interaktiven Exploded Views mit Beschriftungselementen für das Web.
