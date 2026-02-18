@@ -17,14 +17,38 @@ export class AnimationHandler {
         this.explosionConfig = null;
         this.animation = null;
         this.maxSequence = null;
+        this.explosionConfigUrl = null;
 
         this.isAnimating = false;
         this.isReversed = false;
         this.isPaused = false;
     }
 
+    _createEmptyExplosionConfig() {
+        return {
+            _comment: 'Vektoren und andere Wertepaare werden in der Reihenfolge [X, Y, Z] angegeben.',
+            objects: {}
+        };
+    }
+
+    _getExplosionConfigDownloadName() {
+        if (!this.explosionConfigUrl || typeof this.explosionConfigUrl !== 'string') {
+            return 'exp-config.json';
+        }
+
+        const sanitizedUrl = this.explosionConfigUrl.split('?')[0].split('#')[0];
+        const fileName = sanitizedUrl.substring(sanitizedUrl.lastIndexOf('/') + 1);
+
+        if (!fileName || !fileName.toLowerCase().endsWith('.json')) {
+            return 'exp-config.json';
+        }
+
+        return fileName;
+    }
+
     // --- Initialisiert den AnimationHandler mit dem geladenen Modell und der Konfigurationn ---
     async initialize(model, expConfigUrl) {
+        this.explosionConfigUrl = expConfigUrl;
         await this._loadExplosionConfig(expConfigUrl);
         this._parseModel(model);
     }
@@ -36,12 +60,21 @@ export class AnimationHandler {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-            this.explosionConfig = await response.json();
+            const loadedConfig = await response.json();
+            if (!loadedConfig || typeof loadedConfig !== 'object') {
+                throw new Error('Explosions-Konfiguration hat ein ungültiges JSON-Format.');
+            }
+            if (!loadedConfig.objects || typeof loadedConfig.objects !== 'object') {
+                loadedConfig.objects = {};
+            }
+            this.explosionConfig = loadedConfig;
 
             console.log('Explosions-Konfiguration geladen');
             //console.log(this.explosionConfig);
         } catch (error) {
             console.error('Fehler beim Laden der Explosions-Konfiguration:', error);
+            this.explosionConfig = this._createEmptyExplosionConfig();
+            console.warn('Leere Explosions-Konfiguration wurde erstellt. Bitte als JSON exportieren.');
         }
     }
 
@@ -50,6 +83,10 @@ export class AnimationHandler {
         if (!model || !this.explosionConfig) {
             console.error('Modell oder Explosions-Konfiguration nicht bereit.');
             return;
+        }
+
+        if (!this.explosionConfig.objects || typeof this.explosionConfig.objects !== 'object') {
+            this.explosionConfig.objects = {};
         }
 
         // Explodierbare Objekte aus der Konfiguration
@@ -509,7 +546,7 @@ export class AnimationHandler {
         const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(this.explosionConfig, null, 2));
         const downloadAnchorNode = document.createElement('a');
         downloadAnchorNode.setAttribute("href", dataStr);
-        downloadAnchorNode.setAttribute("download", "exp-config.json");
+        downloadAnchorNode.setAttribute("download", this._getExplosionConfigDownloadName());
         document.body.appendChild(downloadAnchorNode); // required for firefox
         downloadAnchorNode.click();
         downloadAnchorNode.remove();
