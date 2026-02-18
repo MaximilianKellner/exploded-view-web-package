@@ -1,7 +1,7 @@
 {
-  "name": "@maximiliankellner/exploded-views",
+  "name": "explo.js",
   "private": false,
-  "version": "3.0.11",
+  "version": "0.0.1",
   "description": "Eine Komponente um interaktive 3D exploded views zu erstellen und integriertem Editor",
   "type": "module",
   "main": "./dist/exploded-viewer.umd.cjs",
