@@ -26,6 +26,22 @@ export class TabLichter {
         this._collectLights();
     }
 
+    // Stabile Typableitung für Lichter --> Fix für fehlerhafte Namen beim Deployment (Minifizierung)
+    _getLightType(light) {
+        // Priorität 1: light.type (Three.js Standard-String)
+        if (light.type) {
+            return light.type;
+        }
+        
+        // Priorität 2: Fallback auf spezifische Three.js Flags
+        if (light.isDirectionalLight) return 'DirectionalLight';
+        if (light.isPointLight) return 'PointLight';
+        if (light.isAmbientLight) return 'AmbientLight';
+        
+        // Fallback: constructor.name (weniger zuverlässig bei Minifizierung)
+        return light.constructor?.name || 'Light';
+    }
+
     _init() {
         // Root Container
         this.element = document.createElement('div');
@@ -98,7 +114,7 @@ export class TabLichter {
         const text = searchText.toLowerCase();
         this.filteredLights = this.allLights.filter(light => 
             (light.name && light.name.toLowerCase().includes(text)) ||
-            light.constructor.name.toLowerCase().includes(text)
+            this._getLightType(light).toLowerCase().includes(text)
         );
         this._renderList(this.filteredLights);
     }
@@ -117,7 +133,7 @@ export class TabLichter {
             const li = document.createElement('li');
             li.className = 'tab-list-item';
 
-            const lightType = light.constructor.name;
+            const lightType = this._getLightType(light);
             const intensity = (light.intensity ?? 1).toFixed(2);
             const color = light.color ? '#' + light.color.getHexString() : '#ffffff';
             const isEnabled = light.visible !== false;
@@ -170,7 +186,7 @@ export class TabLichter {
         }
 
         if (typeEl) {
-            typeEl.textContent = light.constructor?.name || 'Light';
+            typeEl.textContent = this._getLightType(light);
         }
 
         const isEnabled = light.visible !== false;
