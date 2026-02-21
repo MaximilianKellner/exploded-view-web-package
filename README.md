@@ -1,9 +1,9 @@
-# Konzeption und Entwicklung eines interaktiven (Visualisierungs-)Systems für Exploded Views im Web.
+# explo.js - Optimierung und Erweiterung eines webbasierten Frameworks für interaktive 3D-Exploded-View-Animationen
 
-[![NPM-Version](https://img.shields.io/npm/v/@maximiliankellner/exploded-views)](https://www.npmjs.com/package/explo.js)
+[![NPM-Version](https://img.shields.io/npm/v/explo.js)](https://www.npmjs.com/package/explo.js)
 [![Lizenz](https://img.shields.io/github/license/MaximilianKellner/exploded-views-web-praxis-projekt)](https://github.com/MaximilianKellner/exploded-views-web-praxis-projekt/blob/main/LICENSE)
 
-Ein Paket zur einfachen Erstellung und Integration von interaktiven Exploded Views mit Beschriftungselementen für das Web.
+Ein Paket zur einfachen Erstellung, Bearbeitung und Integration von interaktiven Exploded Views mit Beschriftungselementen für das Web – inklusive eines integrierten visuellen WYSIWYG-Editors.
 
 <p align="center">
   <img src="img/Bildschirmaufnahme2025-10-24202510-ezgif.com-video-to-webp-converter.webp" alt="Exploded View Demo" style="max-height: 450px;"/>
@@ -11,42 +11,52 @@ Ein Paket zur einfachen Erstellung und Integration von interaktiven Exploded Vie
 
 ## Projektbeschreibung
 
-Dieses Projekt, welches im Rahmen des Praxisprojekts an der TH Köln bei Prof. Christian Noss entwickelt wurde, bietet eine Wiederverwendbare Möglichkeit zur Erstellung modularer und interaktiver Exploded Views, als JavaScript-Bibliothek.
+Dieses Projekt wurde im Rahmen meiner Bachelorarbeit an der TH Köln weiterentwickelt und optimiert. Es baut auf einem vorangegangenen Praxisprojekt auf und bietet eine wiederverwendbare JavaScript-Bibliothek zur Erstellung modularer und interaktiver Exploded Views. 
 
-## Forschungsfragen
+Das zentrale neue Element ist ein **interaktiver WYSIWYG-Editor**, der die bisherige rein codebasierte JSON-Konfiguration durch eine visuelle Benutzeroberfläche (mit Timeline, Transform-Controls und Keyframes) ersetzt, um die Einstiegshürde maßgeblich zu senken. Zudem wurde der Funktionumfang und die Szenenkonfigurationsmöglichkeiten erweitert, um weitere Anwendungsfälle abzudecken.
 
-1. Wie lassen sich Exploded Views im Web modular und wiederverwendbar umsetzen und welche Best Practices sowie Herausforderungen existieren dabei?
-2. Welche Vorteile und Möglichkeiten bieten 3D Modelle und Exploded Views im Hinblick auf Storytelling?
-3. Wie lassen sich Interaktivität und Animation (z.B. Scroll- oder Hover-Effekte) integrieren?
+## Forschungsfragen (Bachelorarbeit)
+
+1. Welche zentralen Probleme und Defizite von Explo.js beeinflussen den Workflow und die Nutzbarkeit, und wie lassen sich diese durch gezielte konzeptionelle und technische Anpassungen verbessern?
+2. Welche Visualisierungs- und Interaktionsmuster aus etablierter 3D-Software lassen sich sinnvoll auf einen webbasierten Exploded-View-Editor übertragen, um die Konfiguration, Steuerung und Vorschau von Animationen zu verbessern?
 
 Der Fokus liegt auf:
 
-- **Nahtloser Integration**: Einfache Einbettung in bestehende Web-Layouts.
-- **User Experience**: Intuitive Bedienung der Beschriftungselemente und Animationen.
-- **Kofigurierbarkeit**: Breiter Funktionsrahmen mit diversen Optionen. 
-- **Beschriftungselemente**: Auswahl an verschiedenen Beschriftungselementen. 
+- **Visueller Editor (WYSIWYG)**: Intuitive UI zur direkten Konfiguration und Vorschau der Animationen und der Szene im Browser.
+- **Nahtloser Integration**: Einfache Einbettung in bestehende Web-Layouts und verbesserte Installation über die offizielle NPM-Registry.
+- **User Experience & Animationslogik**: Intuitive Bedienung durch etablierte 3D-UI-Muster. Erweiterte Animationssteuerung durch Intervalle, Keyframes, Easing-Effekte, Vektoren und Rotation.
+- **Konfigurierbarkeit**: Breiter Funktionsrahmen für die einfache Anpassung von Licht (Ambient, Directional, Point), Kamera und Highlighting-Effekten (Wireframe- und Ghost-Modus).
+- **Beschriftungselemente**: Auswahl an verschiedenen 2D- und 3D-Beschriftungselementen
 
 ## Features
 
 - **Modell-Unterstützung**: Lädt `.glb`-Modelle.
-- **Animationssteuerung**: Definiere komplexe Explosionsanimationen über eine `JSON`-Konfigurationsdatei.
-- **Interaktivität**: Reagiere auf Klicks, hebe einzelne Bauteile hervor und zeige dynamisch Informationen an.
-- **Informationsanzeige**: Stelle Informationen in 2D oder in 3D über "Cards" oder "Pointer" dar.
-- **Debugging**: Eine integrierte Debug-UI ([Tweakpane](https://tweakpane.github.io/docs/)) zur einfachen Anpassung von Parametern.
-- **Kofigurierbarkeit**: Konfiguriere Kamera, Beleuchtung, Highlighting-Effekte und mehr.
+- **Visuelle Konfiguration**: Nutze den Online-Editor, um Bauteile visuell auszuwählen, Positionen über Transform-Controls anzupassen und auf einer Timeline zu organisieren.
+- **JSON-Export**: Exportiere komplexe Explosionsanimationen und Szeneneinstellungen mit einem Klick als `JSON`-Konfigurationsdatei.
+- **Interaktivität**: Reagiere auf Klicks, hebe einzelne Bauteile hervor und zeige dynamisch Zusatzinformationen an.
+- **Debugging & Lokaler EditMode**: Der Editor kann zur schnellen Anpassung auch lokal im eigenen Projekt direkt über das Framework aufgerufen werden (`editMode: true`).
 
 ## Installation
-Eine detaillierte Anleitung und alle verfügbaren optionen sind in der [**INSTALLATION.md**](https://github.com/MaximilianKellner/exploded-views-web-praxis-projekt/blob/main/INSTALLATION.MD) zu finden. Um Probleme beim Erstellen der Animation zu vermeiden sind hier einige [Tipps](https://github.com/MaximilianKellner/exploded-views-web-praxis-projekt/wiki/empfohlener-Workflow) für das Vorgehen zu finden.
 
-- **Beispieldaten Auto**: [/Prototyp/public/car](https://github.com/MaximilianKellner/exploded-views-web-praxis-projekt/tree/main/Prototyp/public/car)
-- **Beispieldaten Kopfhörer**: [/Prototyp/public/kopfhoerer](https://github.com/MaximilianKellner/exploded-views-web-praxis-projekt/tree/main/Prototyp/public/kopfhoerer)
-- **Beispieldaten Klemmbaustein Figur**: [/Prototyp/public/lego]((https://github.com/MaximilianKellner/exploded-views-web-praxis-projekt/tree/main/Prototyp/public/lego))
-- 
-## Beispiel
-Um die vorkonfigurierte Beispielanwendung zu starten können sie die folgenden Befehle ausführen. Alternathiv kann sie [hier](https://exploded-views-kellner.de-fender.it/) besucht werden
+Die Installation wurde im Rahmen der Bachelorarbeit deutlich vereinfacht (es wird kein GitHub Access-Token mehr benötigt). Installiere das Paket direkt über NPM:
 
 ```sh
-git clone https://github.com/MaximilianKellner/exploded-views-web-praxis-projekt.git
+npm i explo.js
+```
+
+Eine detaillierte Anleitung und alle verfügbaren optionen sind in der [**INSTALLATION.md**](https://github.com/MaximilianKellner/exploded-view-web-package/blob/main/INSTALLATION.MD) zu finden.
+
+- **Beispieldaten Auto**: [/Prototyp/public/car](https://github.com/MaximilianKellner/exploded-view-web-package/tree/main/Prototyp/public/car)
+- **Beispieldaten Kopfhörer**: [/Prototyp/public/kopfhoerer](https://github.com/MaximilianKellner/exploded-view-web-package/tree/main/Prototyp/public/kopfhoerer)
+- **Beispieldaten Klemmbaustein Figur**: [/Prototyp/public/lego]((https://github.com/MaximilianKellner/exploded-view-web-package/tree/main/Prototyp/public/lego))
+
+## Beispiel
+
+Um den neuen visuellen Editor direkt im Browser zu testen und eigene .glb-Modelle ohne Programmierung zu animieren, besuche die dedizierte Web-Applikation: [https://exploded-views-kellner.de-fender.it/](https://exploded-views-kellner.de-fender.it/)
+
+Alternativ kann die Beispielumgebung lokal gestartet werden:
+```sh
+git clone https://github.com/MaximilianKellner/exploded-view-web-package.git
 ```
 ```sh
 cd .\Prototyp\
@@ -55,18 +65,17 @@ cd .\Prototyp\
 npm i
 ```
 ```
-npm start
+npm run dev
 ```
 
 
 ## Links
-- [Abschlussvideo](https://youtu.be/Dp-yudm3Sj8)
-- [Beispielanwendung](https://exploded-views-kellner.de-fender.it/)
-- [Ausarbeitung](https://github.com/MaximilianKellner/exploded-views-web-praxis-projekt/blob/main/Konzeption-und-Entwicklung-eines-interaktiven-Visualisierungs-Systems-f%C3%BCr-Exploded-Views-im-Web-Maximilian-Kellner.pdf)
-- [Wiki & Dokumentation](https://github.com/MaximilianKellner/exploded-views-web-praxis-projekt/wiki)
-- [Exposé (Kontext des Uni-Projekts)](https://github.com/MaximilianKellner/exploded-views-web-praxis-projekt/wiki/Expos%C3%A9)
-- [Figma Jam Board](https://www.figma.com/board/RcSMqqvDBrkwL3dCG0Wz6w/Praxisprojekt?node-id=0-1&t=1YXQVP6LdfrHqSBl-1)
-- [Figma Design Board](https://www.figma.com/design/HBe8OrQcXQCB1ZgdsT1rkd/Praxisprojekt?node-id=0-1&t=SbWwg3q3qUSnSkLo-1)
+- [Abschlussvideo](TODO)
+- [Beispielanwendung & Editor](https://exploded-views-kellner.de-fender.it/)
+- [Ausarbeitung](TODO)
+- [Wiki & Dokumentation](https://github.com/MaximilianKellner/exploded-view-web-package/wiki)
+- [Editor Repo](https://github.com/MaximilianKellner/exploded-view-web-editor)
+- [Figma Design Board](https://www.figma.com/design/fngrAbHoOEJdR6A51TaMCG/Bachelor?node-id=0-1&t=Vi3Ns6Gp1smo0xzk-1)
 
 ## Autor
 

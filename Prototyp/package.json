@@ -1,7 +1,7 @@
 {
   "name": "explo.js",
   "private": false,
-  "version": "0.0.4",
+  "version": "0.0.6",
   "description": "Eine Komponente um interaktive 3D exploded views zu erstellen und integriertem Editor",
   "type": "module",
   "main": "./dist/exploded-viewer.umd.cjs",
@@ -32,12 +32,14 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md"
   ],
   "sideEffects": [
     "**/*.css"
   ],
   "scripts": {
+    "prepublishOnly": "node -e \"require('fs').copyFileSync('../README.md', './README.md')\"",
     "start": "vite",
     "dev": "vite",
     "build": "vite build",

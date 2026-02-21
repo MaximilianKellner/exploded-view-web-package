@@ -18,7 +18,7 @@ Diese Anleitung beschreibt die Installation und Integration von **Explo.js**, ei
 
 ## 1. Installation
 
-Das Paket ist über die offizielle npm-Registry verfügbar:
+Das Paket ist über die offizielle [npm-Registry](https://www.npmjs.com/package/explo.js) verfügbar:
 
 ```sh
 npm install explo.js
@@ -128,8 +128,8 @@ Definiert die Umgebung und Interaktions-Parameter.
 ---
 ## 5. Links & Ressourcen
 
-- **Onboarding-Tool:** [exploded-views-kellner.de-fender.it](https://exploded-views-kellner.de-fender.it/)
-- **Dokumentation:** Vollständige Parameterliste unter `src/config/default-options.js`.
+- **Onboarding-Tool und Playground:** [exploded-views-kellner.de-fender.it](https://exploded-views-kellner.de-fender.it/)
+- **Dokumentation:** Vollständige Parameterliste unter [`src/config/default-options.js`](https://github.com/MaximilianKellner/exploded-view-web-package/blob/main/Prototyp/src/config/default-options.js).
 
 ---
 ## 6. Beispieldaten
