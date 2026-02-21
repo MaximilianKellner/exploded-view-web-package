@@ -7,8 +7,8 @@ export const defaultOptions = {
     cardDataPath: null, // Pfad zu den Card-Inhalten
     
     editMode: false, // Editor-Mode für visuelle Config-Erstellung
-    showDebugUI: true,
-    showStats: true, //FPS + Latenz
+    showDebugUI: false,
+    showStats: false, //FPS + Latenz
 
     infoElementType: 'card', // 'pointer', 'attached-card', 'card'
 

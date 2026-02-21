@@ -49,7 +49,8 @@ const options = {
         explosionConfigPath: '/path/to/exp-config.json',
         cardDataPath: '/path/to/cards.json',
         editMode: true, // Aktiviert den visuellen Editor zur Konfiguration
-        showStats: false,
+        showStats: true,
+        showDebugUI: false, // Tweakpane ui zum stuern und testen. TRUE --> falls keine eigenen Triggerelemente implementiert werden.
 };
 
 const viewer = new ExplodedViewer(container, options);
