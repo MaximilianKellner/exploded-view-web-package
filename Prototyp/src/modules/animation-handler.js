@@ -582,6 +582,21 @@ export class AnimationHandler {
         this.config.animationConfig.expFactor = factor;
     }
 
+    // Setzt die Animation in einen definierten Anfangszustand zurück
+    resetAnimation(progress = 0) {
+        const clampedProgress = Math.max(0, Math.min(100, progress));
+
+        if (this.animation) {
+            this.animation.pause();
+            this.animation = null;
+        }
+
+        this.isAnimating = false;
+        this.isPaused = false;
+        this.isReversed = false;
+        this.seekToProgress(clampedProgress);
+    }
+
     // Setzt die Gesamtdauer der Animation (ms)
     setAnimationDuration(durationMs) {
         if (durationMs > 0) {

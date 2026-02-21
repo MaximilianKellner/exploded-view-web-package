@@ -54,8 +54,27 @@ const options = {
 };
 
 const viewer = new ExplodedViewer(container, options);
-viewer.init();
+await viewer.init();
+
+// Beispiel: Eigene DOM-Controls anbinden (nach init)
+
+viewer.registerAnimationButton('#playBtn', {
+        action: 'toggle' // 'toggle' | 'start' | 'pause'
+});
+
+viewer.registerAnimationSlider('#progressSlider', {
+        eventName: 'input',
+        usePercent: true, // Slider-Wert 0-100
+        animate: false,
+        syncWithAnimation: true
+});
+
+viewer.registerAnimationResetButton('#resetBtn', {
+        progress: 0 // Zielposition in Prozent
+});
 ```
+
+> Hinweis: Statt eigner UI-Elemente, kann `showDebugUI: true` gesetzt werden.
 
 ---
 ## 3. Visueller Editor (Editmode)

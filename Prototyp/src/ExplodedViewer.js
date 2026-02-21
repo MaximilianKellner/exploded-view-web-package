@@ -36,6 +36,9 @@ class ExplodedViewer {
         this.cardHandler = null;
         this.statsHandler = null;
         this._editorStylesLoaded = false;
+
+        this._customControlIdCounter = 0;
+        this._customControls = new Map();
     }
     
     async init() {
@@ -238,6 +241,8 @@ class ExplodedViewer {
             this.uiHandler.refreshPane()
         }
 
+        this._refreshCustomControls();
+
         // Stats aktualisieren, falls der Handler existiert
         if (this.statsHandler) {
             this.statsHandler.update();
@@ -248,6 +253,223 @@ class ExplodedViewer {
         if (this.infoElementHandler?.labelRenderer) {
         this.infoElementHandler.labelRenderer.render(this.scene, this.camera);
         }
+    }
+
+    // --- Custom Controlls einbinden ---
+
+    // Löst einen Selektor oder ein DOM-Element in ein gültiges UI-Element auf.
+    _resolveControlElement(elementOrSelector) {
+        if (!elementOrSelector) {
+            throw new Error('Kein UI-Element übergeben.');
+        }
+
+        if (typeof elementOrSelector === 'string') {
+            const element = document.querySelector(elementOrSelector);
+            if (!element) {
+                throw new Error(`UI-Element nicht gefunden: ${elementOrSelector}`);
+            }
+            return element;
+        }
+
+        return elementOrSelector;
+    }
+
+    // Stellt sicher, dass die Animations-API verfügbar ist.
+    _ensureAnimationHandlerReady() {
+        if (!this.animationHandler) {
+            throw new Error('AnimationHandler ist noch nicht verfügbar. Bitte erst viewer.init() aufrufen.');
+        }
+    }
+
+    // Registriert ein Control intern und gibt eine eindeutige ID zurück.
+    _registerCustomControlEntry(entry) {
+        const id = `control_${++this._customControlIdCounter}`;
+        this._customControls.set(id, entry);
+        return id;
+    }
+
+    // Synchronisiert registrierte Slider mit dem aktuellen Animationsfortschritt.
+    _refreshCustomControls() {
+        if (!this._customControls || this._customControls.size === 0 || !this.animationHandler) {
+            return;
+        }
+
+        const state = this.animationHandler.getAnimationState();
+        this._customControls.forEach((entry) => {
+            if (entry?.type !== 'slider' || !entry.syncWithAnimation) {
+                return;
+            }
+
+            const slider = entry.element;
+            if (!slider) {
+                return;
+            }
+
+            if (entry.usePercent) {
+                const percent = Math.round(state.currentProgress * 10000) / 100;
+                if (Number(slider.value) !== percent) {
+                    slider.value = String(percent);
+                }
+                return;
+            }
+
+            const factor = Math.round(state.currentProgress * 10000) / 10000;
+            if (Number(slider.value) !== factor) {
+                slider.value = String(factor);
+            }
+        });
+    }
+
+    // Registriert einen benutzerdefinierten Button für Start/Pause/Toggle der Animation.
+    registerAnimationButton(elementOrSelector, options = {}) {
+        this._ensureAnimationHandlerReady();
+
+        const element = this._resolveControlElement(elementOrSelector);
+        const {
+            eventName = 'click',
+            action = 'toggle',
+            onTrigger = null,
+        } = options;
+
+        const handler = () => {
+            switch (action) {
+                case 'start':
+                    this.animationHandler.startAnimation();
+                    break;
+                case 'pause':
+                    this.animationHandler.pauseAnimation();
+                    break;
+                case 'toggle':
+                default:
+                    this.animationHandler.toggleAnimation();
+                    break;
+            }
+
+            if (typeof onTrigger === 'function') {
+                onTrigger(this.animationHandler.getAnimationState(), this.animationHandler);
+            }
+        };
+
+        element.addEventListener(eventName, handler);
+
+        return this._registerCustomControlEntry({
+            type: 'button',
+            element,
+            cleanup: () => element.removeEventListener(eventName, handler),
+        });
+    }
+
+    // Registriert einen benutzerdefinierten Slider für den Animationsfortschritt.
+    registerAnimationSlider(elementOrSelector, options = {}) {
+        this._ensureAnimationHandlerReady();
+
+        const element = this._resolveControlElement(elementOrSelector);
+        const {
+            eventName = 'input',
+            usePercent = true,
+            animate = false,
+            syncWithAnimation = true,
+            onChange = null,
+        } = options;
+
+        const handler = () => {
+            const rawValue = Number(element.value);
+            if (!Number.isFinite(rawValue)) {
+                return;
+            }
+
+            if (usePercent) {
+                if (animate) {
+                    this.animationHandler.setProgress(rawValue);
+                } else {
+                    this.animationHandler.seekToProgress(rawValue);
+                }
+            } else {
+                const clamped = Math.max(0, Math.min(1, rawValue));
+                if (animate) {
+                    this.animationHandler.setExplosionFactorAnimated(clamped);
+                } else {
+                    this.config.animationConfig.expFactor = clamped;
+                }
+            }
+
+            if (typeof onChange === 'function') {
+                onChange(this.animationHandler.getAnimationState(), this.animationHandler);
+            }
+        };
+
+        element.addEventListener(eventName, handler);
+
+        const id = this._registerCustomControlEntry({
+            type: 'slider',
+            element,
+            usePercent,
+            syncWithAnimation,
+            cleanup: () => element.removeEventListener(eventName, handler),
+        });
+
+        this._refreshCustomControls();
+        return id;
+    }
+
+    // Registriert einen benutzerdefinierten Reset-Button
+    registerAnimationResetButton(elementOrSelector, options = {}) {
+        this._ensureAnimationHandlerReady();
+
+        const element = this._resolveControlElement(elementOrSelector);
+        const {
+            eventName = 'click',
+            progress = 0,
+            onTrigger = null,
+        } = options;
+
+        const targetProgress = Math.max(0, Math.min(100, progress));
+        const handler = () => {
+            this.animationHandler.resetAnimation(targetProgress);
+            this._refreshCustomControls();
+
+            if (typeof onTrigger === 'function') {
+                onTrigger(this.animationHandler.getAnimationState(), this.animationHandler);
+            }
+        };
+
+        element.addEventListener(eventName, handler);
+
+        return this._registerCustomControlEntry({
+            type: 'reset',
+            element,
+            cleanup: () => element.removeEventListener(eventName, handler),
+        });
+    }
+
+    // Entfernt ein einzelnes zuvor registriertes Custom-Control.
+    unregisterCustomControl(controlId) {
+        if (!this._customControls || !this._customControls.has(controlId)) {
+            return false;
+        }
+
+        const entry = this._customControls.get(controlId);
+        if (typeof entry.cleanup === 'function') {
+            entry.cleanup();
+        }
+
+        this._customControls.delete(controlId);
+        return true;
+    }
+
+    // Entfernt alle registrierten Custom-Controls inklusive Event-Listener.
+    unregisterAllCustomControls() {
+        if (!this._customControls) {
+            return;
+        }
+
+        this._customControls.forEach((entry) => {
+            if (typeof entry.cleanup === 'function') {
+                entry.cleanup();
+            }
+        });
+
+        this._customControls.clear();
     }
 
     // --- Edit-Mode Helpers ---
@@ -337,22 +559,6 @@ class ExplodedViewer {
         return this.config;
     }
 
-    updateConfig(partialConfig) {
-        this.config = deepMerge(this.config, partialConfig);
-        //TODO --> Richtig in das PRojekt & den animationHandler laden
-    }
-
-    // Explosion-Config
-    getExplosionConfig() {
-        //TODO
-        //return this.animationHandler.getExplosionConfig();
-    }
-
-    async setExplosionConfig(newConfig) {
-        //TODO
-        //await this.animationHandler.setExplosionConfig(newConfig);
-    }
-
     exportConfig() {
         return {
             sceneConfig: this.config,
@@ -391,6 +597,8 @@ class ExplodedViewer {
     }
 
     destroy() {
+
+        this.unregisterAllCustomControls();
 
         if (this._animationFrameId) {
             cancelAnimationFrame(this._animationFrameId);
