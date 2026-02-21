@@ -64,6 +64,15 @@ const kopfhoerer = {
     },
 }
 
+const speedTest = {
+    modelPath: '/speed-test/speed-test.glb', // Pfad zum explodierbaren .glb Modell
+    explosionConfigPath: '/speed-test/auto-speed-exp-config.json', // Pfad zur Explosions-Konfiguration
+    explosionConfigPath: '/speed-test/manual-speed-exp-config.json', // Pfad zur Explosions-Konfiguration
+    showStats: true,
+    editMode: false,
+
+}
+
 async function main() {
     const container = document.getElementById('exp-container');
     if (!container) {
@@ -71,8 +80,8 @@ async function main() {
         return;
     }
 
-    const expOptions = sportwagen;
-    // sportwagen || kopfhoerer || klemmbaustein;
+    const expOptions = speedTest;
+    // sportwagen || kopfhoerer || klemmbaustein || speedTest;
 
     const expViewer = new ExplodedViewer(container, expOptions);
     await expViewer.init();

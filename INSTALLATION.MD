@@ -1,159 +1,138 @@
 # Installationsanleitung
 
-## Beispiel
-Um die vorkonfigurierte Beispielanwendung zu starten können sie die folgenden Befehle ausführen.
+## Beispiel: Schnellstart
+
+Um die vorkonfigurierte Beispielanwendung zu starten, führen Sie folgende Befehle aus:
 
 ```sh
-git clone https://github.com/MaximilianKellner/exploded-views-web-praxis-projekt.git
+git clone https://github.com/MaximilianKellner/exploded-view-web-package.git
+cd Prototyp
+npm install
+npm run dev
 ```
-```sh
-cd .\Prototyp\
-```
-```
-npm i
-```
-```
-npm start
-```
+
+---
+# Explo.js: Installation & Integration
+
+Diese Anleitung beschreibt die Installation und Integration von **Explo.js**, einem Framework zur Erstellung interaktiver 3D-Exploded-View-Animationen im Web.
 
 ## 1. Installation
 
-erstellen sie eine `.npmrc`-Datei im Hauptverzeichnis
-```
-@maximiliankellner:registry=https://npm.pkg.github.com/
-```
+Das Paket ist über die offizielle npm-Registry verfügbar:
 
-Laden sie die relevanten Inhalte herunter
 ```sh
-npm install npm install @maximiliankellner/exploded-views
+npm install explo.js
 ```
 
-## 2. Setup
+---
+## 2. Schnelleinstieg
 
-fügen sie ein Container-Element in ihre HTML-Struktur ein.
+### HTML: Container für die 3D-Szene
+
 ```html
-<div id="exp-container" style="width: 100vw; height: 100vh;"></div>
+<div id="explo-viewer" style="width: 100%; height: 500px;"></div>
 ```
 
-bearbeiten sie ihre `main.js`
+### JavaScript: Initialisierung
+
 ```js
-import ExplodedViewer from '@maximiliankellner/exploded-views';
+import ExplodedViewer from 'explo.js';
 
-// (optional) Import default card styling
-import '@maximiliankellner/exploded-views/default-card-style.css';
+// Optional: Standard-Design für Beschriftungen (Cards) importieren
+import 'explo.js/default-card-style.css';
 
+const container = document.getElementById('explo-viewer');
 
-// Container element
-const expContainer = document.getElementById('exp-container');
-if (!expContainer) {
-    console.error('Container #exp-container konnte nicht gefunden werden.');
-}
-
-// Optionen für die Szene
 const options = {
-    modelPath: '/path/to/model.glb',
-    sceneConfigPath: '/path/to/scene-config.json',
-    explosionConfigPath: '/path/to/exp-config.json',
-    cardDataPath: 'path/to/card-content.json',
-    showDebugUI: true,
-    showStats: true,
+        modelPath: '/path/to/model.glb',
+        sceneConfigPath: '/path/to/scene-config.json',
+        explosionConfigPath: '/path/to/exp-config.json',
+        cardDataPath: '/path/to/cards.json',
+        editMode: true, // Aktiviert den visuellen Editor zur Konfiguration
+        showStats: false,
 };
 
-// Viewer erstellen und initialisieren
-const expViewer = new ExplodedViewer(expContainer, options);
-expViewer.init();
+const viewer = new ExplodedViewer(container, options);
+viewer.init();
 ```
 
-## 3. Konfiguration
-Falls sie die Standardeinstellungen  überschreiben wollen, geben sie eine `scene-config.json` an oder fügen sie optionen in die options in ihrer `main.js` ein. die Standardeinstellungen und verfügbare Optionen sind unter [`src/config/default-options.js`](https://github.com/MaximilianKellner/exploded-views-web-praxis-projekt/blob/main/Prototyp/src/config/default-options.js) zu finden.
+---
+## 3. Visueller Editor (Editmode)
 
-### Beispiel für eine `scene-config.json`
+Die effizienteste Art, Animationen zu erstellen, ist der integrierte visuelle Editor.
+
+**Schritte:**
+
+1. Setze `editMode: true` in deinen Optionen.
+2. Starte deine Anwendung und öffne sie im Browser.
+3. Nutze das Interface:
+        - **Objekt-Selektion:** Klicke Teile des Modells direkt an.
+        - **Manipulation:** Verschiebe oder rotiere Teile mit den Transform-Controls.
+        - **Timeline:** Nutze die Timeline am unteren Rand, um Start- und Endpunkte der Animation per Drag-and-Drop festzulegen.
+4. **Export:** Klicke auf den Export-Button im Menü, um die fertigen JSON-Dateien herunterzuladen und dauerhaft in dein Projekt zu integrieren.
+
+---
+## 4. Konfigurationsdateien im Detail
+
+### Animations-Konfiguration (`exp-config.json`)
+
+Diese Datei steuert das Verhalten der Einzelteile während der Explosion.
+
+**Wichtigste Parameter:**
+
+- `level`: Multiplikator für die Distanz der Verschiebung.
+- `expDirection`: Richtungsvektor der Bewegung `[X, Y, Z]`.
+- `rotation`: Rotation in Grad während der Animation `[X, Y, Z]`.
+- `start`: Startzeitpunkt der Animation im Gesamtverlauf (0.0 bis 1.0).
+- `end`: Endzeitpunkt der Animation (muss größer als start sein).
+
+**Beispiel:**
 
 ```json
 {
-    "infoElementType": "card",
-    "highlightOptions": {
-        "highlightComponent": false,
-        "mode": "ghost"
-    },
-    "pointerConfig": {
-        "defaultSide": "auto"
-    },
-    "sceneConfig": {
-        "camera": {
-        "position": [3.5, 2, 5],
-        "lookAt": [0, 0, 0],
-        "minDistance": 3.5,
-        "maxDistance": 10
+    "objects": {
+        "Spoiler_Heck": {
+            "level": 0.5,
+            "expDirection": [0, 1, 0],
+            "rotation": [45, 0, 0],
+            "start": 0.1,
+            "end": 0.9
         }
     }
 }
 ```
 
-### Beispiel für die `main.js` 
+### Szenen-Konfiguration (`scene-config.json`)
 
-```js
-const sportwagen = {
+Definiert die Umgebung und Interaktions-Parameter.
 
-    // Pfad zur Szenenkonfiguration
-    sceneConfigPath: '/scene-config.json', 
-
-    // Pfad zum explodierbaren .glb Modell
-    modelPath: '/911.glb', 
-    
-    // Pfad zur Explosions-Konfiguration
-    explosionConfigPath: '/911-exp-config.json',
-
-    // Pfad zu den Card-Inhalten
-    cardDataPath: '/911-cards.json',
-
-    showDebugUI: true,
-    showStats: true,
-    
-    // --------------- OPTIONEN ---------------
-    sceneConfig: {
-        backgroundColor: "#6480be",
-        camera: {
-            position: [5, 3, 9],
-            maxDistance: 50,
-            lockVertical: true,
-        }
-    },
-    
-    highlightOptions: {
-        highlightComponent: true,
-        mode: "ghost"  // 'wireframe' oder 'ghost'
-    },
-}
-```
-
-## 4. Animation erstellen
-
-Um die Animation der Explosionsansicht zu steuern, benötigen Sie eine `exp-config.json`. Diese Datei definiert für jedes Objekt im 3D-Modell, wie es sich während der Explosion verhält.
-
-Die wichtigsten Eigenschaften:
-- `level`: Ein Multiplikator für die Explosionsdistanz. Dieser Wert bestimmt auf welcher Ebene sich das Objekt zum Abschluss der Animation befindet.
-- `expDirection`: Ein Vektor `[X, Y, Z]`, der die Richtung der Bewegung angibt.
-- `sequence` (optional): Definiert die Reihenfolge der Animation. Teile mit der gleichen Sequenznummer bewegen sich gleichzeitig.
-
-### Beispiel für eine `exp-config.json`
+**Beispiel:**
 
 ```json
 {
-  "_comment": "Die Richtung der Explosion (expDirection) wird als Vektor [X, Y, Z] angegeben.",
-  "objects": {
-    "Cube000": {
-      "level": 0,
-      "expDirection": [-1, -0.5, 0],
-      "sequence": 1
-    },
-    [...]
-  }
+        "sceneConfig": {
+                "backgroundColor": "#1a1a1a",
+                "camera": {
+                        "position": [5, 3, 9],
+                        "lookAt": [0, 0, 0],
+                        "maxDistance": 20
+                }
+        },
+        "highlightOptions": {
+                "mode": "ghost",
+                "highlightComponent": true
+        }
 }
 ```
 
-# Beispieldaten
+---
+## 5. Links & Ressourcen
 
-Beispiel 1: [Auto](https://github.com/MaximilianKellner/exploded-views-web-praxis-projekt/tree/main/Prototyp/public/car)
+- **Onboarding-Tool:** [exploded-views-kellner.de-fender.it](https://exploded-views-kellner.de-fender.it/)
+- **Dokumentation:** Vollständige Parameterliste unter `src/config/default-options.js`.
 
-Beispiel 2: [Kopfhörer](https://github.com/MaximilianKellner/exploded-views-web-praxis-projekt/tree/main/Prototyp/public/kopfhoerer)
+---
+## 6. Beispieldaten
+
+- [Auto](https://github.com/MaximilianKellner/exploded-views-web-praxis-projekt/tree/main/Prototyp/public/car)
+- [Kopfhörer](https://github.com/MaximilianKellner/exploded-views-web-praxis-projekt/tree/main/Prototyp/public/kopfhoerer)

@@ -1,0 +1,36 @@
+{
+  "_comment": "[X|Y|Z] - start/end definieren Zeitfenster (0-1), sequence ist optional für Kompatibilität",
+  "objects": {  
+
+    "oben001": {
+      "level": 1.5,
+      "expDirection": [0, 1, 0],
+      "start": 0,
+      "end": 1
+    },
+    "mitte": {
+      "level": 1,
+      "expDirection": [0, 1, 0],
+      "start": 0,
+      "end": 1
+    },
+    "links": {
+      "level": 2,
+      "expDirection": [0, 0, -1],
+      "start": 0,
+      "end": 1
+    },
+    "rechts": {
+      "level": 2,
+      "expDirection": [0, 0, 1],
+      "start": 0,
+      "end": 1
+    },
+    "unten001": {
+      "level": 1,
+      "expDirection": [0, -1, 0],
+      "start": 0,
+      "end": 1
+    }
+  }
+}

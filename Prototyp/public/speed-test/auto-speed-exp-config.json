@@ -1,0 +1,80 @@
+{
+  "_comment": "Vektoren und andere Wertepaare werden in der Reihenfolge [X, Y, Z] angegeben.",
+  "objects": {
+    "rechts": {
+      "level": 2,
+      "expDirection": [
+        0,
+        0,
+        1
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "start": 0,
+      "end": 1
+    },
+    "links": {
+      "level": 2,
+      "expDirection": [
+        0,
+        0,
+        -1
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "start": 0,
+      "end": 1
+    },
+    "oben001": {
+      "level": 1.5635624869030704,
+      "expDirection": [
+        0,
+        1,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "start": 0,
+      "end": 1
+    },
+    "mitte": {
+      "level": 1,
+      "expDirection": [
+        0,
+        1,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "start": 0,
+      "end": 1
+    },
+    "unten001": {
+      "level": 1.3537093661519606,
+      "expDirection": [
+        0,
+        -1,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "start": 0,
+      "end": 1
+    }
+  }
+}

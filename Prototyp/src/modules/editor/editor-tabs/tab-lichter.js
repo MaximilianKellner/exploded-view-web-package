@@ -30,6 +30,7 @@ export class TabLichter {
     _getLightType(light) {
         // Priorität 1: light.type (Three.js Standard-String)
         if (light.type) {
+            console.warn(`Licht ${light.name || light.uuid} hat type: ${light.type}`);
             return light.type;
         }
         
