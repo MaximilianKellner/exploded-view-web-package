@@ -22,6 +22,7 @@ export class AnimationHandler {
         this.isAnimating = false;
         this.isReversed = false;
         this.isPaused = false;
+        this._wheelListener = null;
     }
 
     _createEmptyExplosionConfig() {
@@ -407,13 +408,17 @@ export class AnimationHandler {
         this.scrollSensitivity = this.config.animationConfig.scrollSensitivity || 0.01;
         let targetExplosionFactor = this.config.animationConfig.expFactor;
 
+        if (this._wheelListener) {
+            this.removeScrollListener();
+        }
+
         // Event-Listener für scrollen auf der Seite
         this._wheelListener = (event) => {
-            event.preventDefault();
-            
             if(this.config.animationConfig.allowScrollAnimation === false){
                 return;
             }
+
+            event.preventDefault();
 
             // Explosionsfaktor anpassen
             targetExplosionFactor += event.deltaY * this.scrollSensitivity;

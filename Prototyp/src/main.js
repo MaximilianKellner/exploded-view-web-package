@@ -80,7 +80,7 @@ async function main() {
         return;
     }
 
-    const expOptions = speedTest;
+    const expOptions = sportwagen;
     // sportwagen || kopfhoerer || klemmbaustein || speedTest;
 
     const expViewer = new ExplodedViewer(container, expOptions);
