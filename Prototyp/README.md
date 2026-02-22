@@ -72,7 +72,7 @@ npm run dev
 ## Links
 - [Abschlussvideo](TODO)
 - [Beispielanwendung & Editor](https://exploded-views-kellner.de-fender.it/)
-- [Bachelorarbeit](https://github.com/MaximilianKellner/exploded-view-web-package/blob/main/Optimierung%20und%20Erweiterung%20eines%20webbasierten%20Frameworks%20fuer%20interaktive%203D-Exploded-View-Animationen.pdf)
+- [Ausarbeitung](TODO)
 - [Wiki & Dokumentation](https://github.com/MaximilianKellner/exploded-view-web-package/wiki)
 - [Editor Repo](https://github.com/MaximilianKellner/exploded-view-web-editor)
 - [Figma Design Board](https://www.figma.com/design/fngrAbHoOEJdR6A51TaMCG/Bachelor?node-id=0-1&t=Vi3Ns6Gp1smo0xzk-1)

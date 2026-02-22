@@ -36,6 +36,7 @@ class ExplodedViewer {
         this.cardHandler = null;
         this.statsHandler = null;
         this._editorStylesLoaded = false;
+        this._isInitialized = false;
 
         this._customControlIdCounter = 0;
         this._customControls = new Map();
@@ -43,6 +44,7 @@ class ExplodedViewer {
     
     async init() {
         try {
+            this._isInitialized = false;
             await this._loadAndMergeConfigs();
             this._setupScene();
             this._setupRenderer();
@@ -56,6 +58,9 @@ class ExplodedViewer {
 
             this.cameraHandler.animateCameraOnLoad();
             this.animationHandler.initScrollListener();
+
+            this._isInitialized = true;
+            this._flushPendingCustomControls();
             
             this._animate();
             
@@ -67,6 +72,7 @@ class ExplodedViewer {
             console.log('ExplodedViewer erfolgreich initialisiert.');
 
         } catch (error) {
+            this._isInitialized = false;
             console.error('Fehler beim initialisieren des ExplodedViewers:', error)
         }
     }
@@ -281,9 +287,50 @@ class ExplodedViewer {
         }
     }
 
+    // Merkt ein Control vor, bis die Initialisierung abgeschlossen ist.
+    _registerPendingCustomControl(type, elementOrSelector, options = {}) {
+        return this._registerCustomControlEntry({
+            type,
+            pending: true,
+            elementOrSelector,
+            options,
+        });
+    }
+
+    // Bindet alle vorgemerkten Controls, sobald der AnimationHandler bereit ist.
+    _flushPendingCustomControls() {
+        if (!this.animationHandler || !this._customControls || this._customControls.size === 0) {
+            return;
+        }
+
+        this._customControls.forEach((entry, id) => {
+            if (!entry?.pending) {
+                return;
+            }
+
+            try {
+                switch (entry.type) {
+                    case 'button':
+                        this._bindAnimationButtonControl(id, entry.elementOrSelector, entry.options);
+                        break;
+                    case 'slider':
+                        this._bindAnimationSliderControl(id, entry.elementOrSelector, entry.options);
+                        break;
+                    case 'reset':
+                        this._bindAnimationResetButtonControl(id, entry.elementOrSelector, entry.options);
+                        break;
+                    default:
+                        break;
+                }
+            } catch (error) {
+                console.error('Fehler beim Registrieren eines vorgemerkten Custom-Controls:', error);
+            }
+        });
+    }
+
     // Registriert ein Control intern und gibt eine eindeutige ID zurück.
-    _registerCustomControlEntry(entry) {
-        const id = `control_${++this._customControlIdCounter}`;
+    _registerCustomControlEntry(entry, controlId = null) {
+        const id = controlId ?? `control_${++this._customControlIdCounter}`;
         this._customControls.set(id, entry);
         return id;
     }
@@ -319,11 +366,9 @@ class ExplodedViewer {
             }
         });
     }
-
     // Registriert einen benutzerdefinierten Button für Start/Pause/Toggle der Animation.
-    registerAnimationButton(elementOrSelector, options = {}) {
+    _bindAnimationButtonControl(controlId, elementOrSelector, options = {}) {
         this._ensureAnimationHandlerReady();
-
         const element = this._resolveControlElement(elementOrSelector);
         const {
             eventName = 'click',
@@ -356,11 +401,20 @@ class ExplodedViewer {
             type: 'button',
             element,
             cleanup: () => element.removeEventListener(eventName, handler),
-        });
+        }, controlId);
+    }
+
+    // Registriert einen Button sofort oder merkt ihn bis nach init() vor.
+    registerAnimationButton(elementOrSelector, options = {}) {
+        if (!this.animationHandler || !this._isInitialized) {
+            return this._registerPendingCustomControl('button', elementOrSelector, options);
+        }
+
+        return this._bindAnimationButtonControl(null, elementOrSelector, options);
     }
 
     // Registriert einen benutzerdefinierten Slider für den Animationsfortschritt.
-    registerAnimationSlider(elementOrSelector, options = {}) {
+    _bindAnimationSliderControl(controlId, elementOrSelector, options = {}) {
         this._ensureAnimationHandlerReady();
 
         const element = this._resolveControlElement(elementOrSelector);
@@ -406,14 +460,23 @@ class ExplodedViewer {
             usePercent,
             syncWithAnimation,
             cleanup: () => element.removeEventListener(eventName, handler),
-        });
+        }, controlId);
 
         this._refreshCustomControls();
         return id;
     }
 
+    // Registriert einen Slider sofort oder merkt ihn bis nach init() vor.
+    registerAnimationSlider(elementOrSelector, options = {}) {
+        if (!this.animationHandler || !this._isInitialized) {
+            return this._registerPendingCustomControl('slider', elementOrSelector, options);
+        }
+
+        return this._bindAnimationSliderControl(null, elementOrSelector, options);
+    }
+
     // Registriert einen benutzerdefinierten Reset-Button
-    registerAnimationResetButton(elementOrSelector, options = {}) {
+    _bindAnimationResetButtonControl(controlId, elementOrSelector, options = {}) {
         this._ensureAnimationHandlerReady();
 
         const element = this._resolveControlElement(elementOrSelector);
@@ -439,7 +502,16 @@ class ExplodedViewer {
             type: 'reset',
             element,
             cleanup: () => element.removeEventListener(eventName, handler),
-        });
+        }, controlId);
+    }
+
+    // Registriert einen Reset-Button sofort oder merkt ihn bis nach init() vor.
+    registerAnimationResetButton(elementOrSelector, options = {}) {
+        if (!this.animationHandler || !this._isInitialized) {
+            return this._registerPendingCustomControl('reset', elementOrSelector, options);
+        }
+
+        return this._bindAnimationResetButtonControl(null, elementOrSelector, options);
     }
 
     // Entfernt ein einzelnes zuvor registriertes Custom-Control.
@@ -664,7 +736,7 @@ class ExplodedViewer {
         this.statsHandler = null;
         this.config = null;
         this.lights = null;
-        this.options = null;
+        this.userOptions = null;
         this.container = null;
         this.editor = null;
     }

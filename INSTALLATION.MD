@@ -74,6 +74,23 @@ viewer.registerAnimationResetButton('#resetBtn', {
 });
 ```
 
+### JavaScript: Zwei Viewer mit gemeinsamem Play-Button
+
+```js
+const containerA = document.getElementById('explo-viewer');
+const containerB = document.getElementById('explo-viewer-2');
+
+const viewerA = new ExplodedViewer(containerA, optionsA);
+const viewerB = new ExplodedViewer(containerB, optionsB);
+
+viewerA.init(),
+viewerB.init();
+
+// Ein gemeinsamer Button kann mehrere Viewer steuern
+viewerA.registerAnimationButton('#playBothBtn', { action: 'toggle' });
+viewerB.registerAnimationButton('#playBothBtn', { action: 'toggle' });
+```
+
 > Hinweis: Statt eigner UI-Elemente, kann `showDebugUI: true` gesetzt werden.
 
 ---
