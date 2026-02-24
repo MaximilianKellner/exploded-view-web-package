@@ -22,7 +22,7 @@ export const defaultOptions = {
         expFactor: 0,
         useSequenceAnim: false,
         layerDistance: 0.5,
-        animationDuration: 1500,
+        animationDuration: 2000,
         animationEasing: 'inOut(4)', // alle standart Easing-Funktionen von anime.js sind möglich (https://animejs.com/easing-editor/spring/default)
         globalExpDirection: [1, 1, 1],
         allowScrollAnimation: false,
