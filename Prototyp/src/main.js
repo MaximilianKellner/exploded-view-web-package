@@ -73,6 +73,14 @@ const speedTest = {
 
 }
 
+const bett = {
+    modelPath: '/bett/bett.glb', // Pfad zum explodierbaren .glb Modell
+    explosionConfigPath: '/bett/exp-config.json', // Pfad zur Explosions-Konfiguration
+    showStats: true,
+    editMode: false,
+    showDebugUI: true,
+}
+
 async function main() {
     const container = document.getElementById('exp-container');
     if (!container) {
@@ -80,7 +88,7 @@ async function main() {
         return;
     }
 
-    const expOptions = sportwagen;
+    const expOptions = bett;
     // sportwagen || kopfhoerer || klemmbaustein || speedTest;
 
     const expViewer = new ExplodedViewer(container, expOptions);
