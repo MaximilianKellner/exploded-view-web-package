@@ -70,11 +70,11 @@ npm run dev
 
 
 ## Links
-- [Abschlussvideo](TODO)
+- [Abschlussvideo](https://youtu.be/zfNJg03HQ-Y)
 - [Beispielanwendung & Editor](https://exploded-views-kellner.de-fender.it/)
-- [Ausarbeitung](TODO)
+- [Ausarbeitung](https://github.com/MaximilianKellner/exploded-view-web-package/blob/main/bachelorarbeit-maximilian-elias-kellner-11158861.pdf)
 - [Wiki & Dokumentation](https://github.com/MaximilianKellner/exploded-view-web-package/wiki)
-- [Editor Repo](https://github.com/MaximilianKellner/exploded-view-web-editor)
+- [Demo & Onboarding Repo](https://github.com/MaximilianKellner/exploded-view-web-editor)
 - [Figma Design Board](https://www.figma.com/design/fngrAbHoOEJdR6A51TaMCG/Bachelor?node-id=0-1&t=Vi3Ns6Gp1smo0xzk-1)
 
 ## Autor
